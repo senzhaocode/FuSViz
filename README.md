@@ -6,5 +6,5 @@ A web app to visualise, interpret and prioritise genomic/transcriptomic structur
 
 <br><br>
 
-<img align="center" width = "560" height = "750" border = 2, src="FuSViz_overview.gif"/>
+<img align="center" width = "100%" height = "100%" border = 2, src="FuSViz_overview.gif"/>
 
