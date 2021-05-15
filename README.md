@@ -11,10 +11,11 @@ A web app to visualise, interpret and prioritise genomic/transcriptomic structur
 
 #### Installation
 
-  if (! require(‘devtools’)) install.packages(‘devtools’)
-  devtools::install_github(‘senzhao_code/FuSViz’)
+    if (! require(‘devtools’)) install.packages(‘devtools’)
+    devtools::install_github(‘senzhao_code/FuSViz’)
+    
+    source(file.path(system.file("app", package = "FuSViz"), "global.R"), local = TRUE, chdir = TRUE)
+    FuSViz_app()
 
-  source(file.path(system.file("app", package = "FuSViz"), "global.R"), local = TRUE, chdir = TRUE)
-  FuSViz_app()
-  
+
  
