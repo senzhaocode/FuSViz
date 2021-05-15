@@ -19,7 +19,7 @@ A web app to visualise, interpret and prioritise genomic/transcriptomic structur
 
 #### Usage & manual
 
-A full description of FuSViz documentation is available [![Documentation Status](https://readthedocs.org/projects/fusviz-docs/badge/?version=latest)](https://fusviz-docs.readthedocs.io/en/latest/index.html)
+A full description of FuSViz documentation is available:  [![Documentation Status](https://readthedocs.org/projects/fusviz-docs/badge/?version=latest)](https://fusviz-docs.readthedocs.io/en/latest/index.html)
 
 
  
