@@ -16,7 +16,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 #### NOTE: For Linux OS, some libraries need to be installed properly before setup FuSViz.
 
-1. Install a software library [OpenSSL](https://www.openssl.org) - a depedency of R package [openssl](https://cran.r-project.org/web/packages/openssl/index.html)
+1. Install software library [OpenSSL](https://www.openssl.org) - a depedency of R package [openssl](https://cran.r-project.org/web/packages/openssl/index.html)
 
     * For Debian or Ubuntu, `sudo apt-get install -y libssl-dev`
     * For Fedora, CentOS or RHEL, `sudo yum install openssl-devel`
@@ -31,7 +31,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
             
     * Install R package [openssl](https://cran.r-project.org/web/packages/openssl/index.html): `install.packages("openssl")`
 
-2. Install a software library [libxml2](http://xmlsoft.org) - a depedency of R package [xml2](https://cran.r-project.org/web/packages/XML/index.html)
+2. Install software library [libxml2](http://xmlsoft.org) - a depedency of R package [xml2](https://cran.r-project.org/web/packages/XML/index.html)
 
     * For Debian or Ubuntu, `sudo apt install libxml2`
     * For Fedora, CentOS or RHEL, `sudo yum install libxml2-devel`
@@ -48,6 +48,36 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
     
     * Install R package [xml2](https://cran.r-project.org/web/packages/XML/index.html): `install.packages("xml2")`
 
+3. Install software library [libjpeg](https://ijg.org) - a dependency of R package [jpeg](https://cran.r-project.org/web/packages/jpeg/index.html)
+
+    * For Debian or Ubuntu, `sudo apt-get install libjpeg-dev`  
+    * For Fedora, CentOS or RHEL, `sudo yum install libjpeg-turbo-devel`
+    * If root privillege is not available, users have to download [source code](https://ijg.org) and install at $HOME directory. For example,
+    
+            ./Configure --prefix=/libjpeg_path --libdir=/libjpeg_path/lib --includedir=/libjpeg_path/include
+            make && make install
+            C_INCLUDE_PATH=/libjpeg_path/include
+            export C_INCLUDE_PATH
+            LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/libjpeg_path/lib
+            export LD_LIBRARY_PATH
+            
+     * Install R package [jpeg](https://cran.r-project.org/web/packages/jpeg/index.html): `install.packages("jpeg")`
+
+4. Install software library [libpng](https://libpng.sourceforge.io) - a dependency of R package [png](https://cran.r-project.org/web/packages/png/index.html)
+
+    * For Debian or Ubuntu, `sudo apt-get install libpng-dev`
+    * For Fedora, CentOS or RHEL, `sudo yum install libpng-devel`
+    * If root privillege is not available, users have to download [source code](https://libpng.sourceforge.io) and install at $HOME directory. For example,
+
+            ./Configure --prefix=/libpng_path
+            make && make install
+            C_INCLUDE_PATH=/libpng_path/include
+            export C_INCLUDE_PATH
+            LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/libpng_path/lib
+            export LD_LIBRARY_PATH
+            
+     * Install R package [png](https://cran.r-project.org/web/packages/png/index.html): `install.packages("png")`
+ 
 #### Launch FuSViz App
 
     source(file.path(system.file("app", package = "FuSViz"), "global.R"), local = TRUE, chdir = TRUE)
