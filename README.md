@@ -9,13 +9,10 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 ### Getting a quick start
 
-#### Installation & launch
+#### Installation
 
     if (! require('remotes')) install.packages('remotes')
     remotes::install_github('senzhaocode/FuSViz')
-    
-    source(file.path(system.file("app", package = "FuSViz"), "global.R"), local = TRUE, chdir = TRUE)
-    FuSViz_app()
 
 #### NOTE: some libraries need to be installed in Linux properly before FuSViz setup.
 
@@ -51,6 +48,10 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
     
     * Install R package [xml2](https://cran.r-project.org/web/packages/XML/index.html): `install.packages("xml2")`
 
+#### Launch FuSViz App
+
+    source(file.path(system.file("app", package = "FuSViz"), "global.R"), local = TRUE, chdir = TRUE)
+    FuSViz_app()
 
 #### Usage & manual
 
