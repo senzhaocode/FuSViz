@@ -37,7 +37,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
     * For Fedora, CentOS or RHEL, `sudo yum install libxml2-devel`
     * If root privillege is not available, users have to download [source code](http://xmlsoft.org/downloads.html) and install at $HOME directory. For example,
     
-            ./configure --prefix=/libxml2_path
+            ./configure --prefix=/libxml2_path # if ./configure fie does not exist, please run ./autogen.sh --prefix=/libxml2_path instead.
             make && make install
             C_INCLUDE_PATH=/libxml2_path/include
             export C_INCLUDE_PATH
