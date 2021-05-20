@@ -18,7 +18,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 1. Install software library [OpenSSL](https://www.openssl.org) - a dependency of R package [openssl](https://cran.r-project.org/web/packages/openssl/index.html)
 
-    * For Debian or Ubuntu, `sudo apt-get install -y libssl-dev`; For Fedora, CentOS or RHEL, `sudo yum install openssl-devel`
+    * For **Debian or Ubuntu**: `sudo apt-get install -y libssl-dev`; For **Fedora, CentOS or RHEL**: `sudo yum install openssl-devel`
     * If root privillege is not available, users have to download [source code](https://github.com/openssl/openssl) and install at $HOME directory. For example,
     
             ./Configure --prefix=/OpenSSL_path --openssldir=/OpenSSL_path/ssl
@@ -32,7 +32,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 2. Install software library [libxml2](http://xmlsoft.org) - a dependency of R package [xml2](https://cran.r-project.org/web/packages/XML/index.html)
 
-    * For Debian or Ubuntu, `sudo apt install libxml2`; For Fedora, CentOS or RHEL, `sudo yum install libxml2-devel`
+    * For **Debian or Ubuntu**: `sudo apt-get install libxml2-dev`; For **Fedora, CentOS or RHEL**: `sudo yum install libxml2-devel`
     * If root privillege is not available, users have to download [source code](http://xmlsoft.org/downloads.html) and install at $HOME directory. For example,
     
             ./configure --prefix=/libxml2_path # if ./configure file does not exist, please run ./autogen.sh --prefix=/libxml2_path instead.
@@ -48,7 +48,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 3. Install software library [libjpeg](https://ijg.org) - a dependency of R package [jpeg](https://cran.r-project.org/web/packages/jpeg/index.html)
 
-    * For Debian or Ubuntu, `sudo apt-get install libjpeg-dev`; For Fedora, CentOS or RHEL, `sudo yum install libjpeg-turbo-devel`
+    * For **Debian or Ubuntu**: `sudo apt-get install libjpeg-dev`; For **Fedora, CentOS or RHEL**: `sudo yum install libjpeg-turbo-devel`
     * If root privillege is not available, users have to download [source code](https://ijg.org) and install at $HOME directory. For example,
     
             ./Configure --prefix=/libjpeg_path --libdir=/libjpeg_path/lib --includedir=/libjpeg_path/include
@@ -62,7 +62,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 4. Install software library [libpng](https://libpng.sourceforge.io) - a dependency of R package [png](https://cran.r-project.org/web/packages/png/index.html)
 
-    * For Debian or Ubuntu, `sudo apt-get install libpng-dev`; For Fedora, CentOS or RHEL, `sudo yum install libpng-devel`
+    * For **Debian or Ubuntu**: `sudo apt-get install libpng-dev`; For **Fedora, CentOS or RHEL**: `sudo yum install libpng-devel`
     * If root privillege is not available, users have to download [source code](https://libpng.sourceforge.io) and install at $HOME directory. For example,
 
             ./Configure --prefix=/libpng_path
