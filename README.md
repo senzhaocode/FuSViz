@@ -19,10 +19,21 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 ##### NOTE: some libraries need to be installed in Linux properly before FuSViz setup.
 
-1. Install a software library [OpenSSL](https://www.openssl.org)
+1. Install a software library [OpenSSL](https://www.openssl.org) - a depedency of R package ['openssl'](https://github.com/jeroen/openssl)
 
     * For Debian or Ubuntu OS, `sudo apt-get install -y libssl-dev`
     * For Fedora, CentOS or RHEL OS, `sudo yum install openssl-devel`
+    * If root privillege is not available, users have to download source code and install at their HOME directory. For example,
+    
+            ./Configure --prefix=/tsd/p1532/home/p1532-senz/openssl --openssldir=/tsd/p1532/home/p1532-senz/openssl/ssl
+            make && install
+            C_INCLUDE_PATH=/tsd/p1532/home/p1532-senz/openssl/include
+            export C_INCLUDE_PATH
+            LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tsd/p1532/home/p1532-senz/openssl/lib
+            export LD_LIBRARY_PATH
+            
+    * Install R package 'openssl': `install.packages("openssl")`
+2. install libjpeg
     
 #### Usage & manual
 
