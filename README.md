@@ -23,17 +23,18 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
     * For Debian or Ubuntu OS, `sudo apt-get install -y libssl-dev`
     * For Fedora, CentOS or RHEL OS, `sudo yum install openssl-devel`
-    * If root privillege is not available, users have to download source code and install at their HOME directory. For example,
+    * If root privillege is not available, users have to download [source code](https://github.com/openssl/openssl) and install at $HOME directory. For example,
     
-            ./Configure --prefix=/tsd/p1532/home/p1532-senz/openssl --openssldir=/tsd/p1532/home/p1532-senz/openssl/ssl
+            ./Configure --prefix=/path --openssldir=/path/ssl
             make && install
-            C_INCLUDE_PATH=/tsd/p1532/home/p1532-senz/openssl/include
+            C_INCLUDE_PATH=/path/include
             export C_INCLUDE_PATH
-            LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tsd/p1532/home/p1532-senz/openssl/lib
+            LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/lib
             export LD_LIBRARY_PATH
             
     * Install R package 'openssl': `install.packages("openssl")`
-2. install libjpeg
+
+2. Install libjpeg
     
 #### Usage & manual
 
