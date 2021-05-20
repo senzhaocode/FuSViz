@@ -19,23 +19,39 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 #### NOTE: some libraries need to be installed in Linux properly before FuSViz setup.
 
-1. Install a software library [OpenSSL](https://www.openssl.org) - a depedency of R package ['openssl'](https://github.com/jeroen/openssl)
+1. Install a software library [OpenSSL](https://www.openssl.org) - a depedency of R package [openssl](https://cran.r-project.org/web/packages/openssl/index.html)
 
-    * For Debian or Ubuntu OS, `sudo apt-get install -y libssl-dev`
-    * For Fedora, CentOS or RHEL OS, `sudo yum install openssl-devel`
+    * For Debian or Ubuntu, `sudo apt-get install -y libssl-dev`
+    * For Fedora, CentOS or RHEL, `sudo yum install openssl-devel`
     * If root privillege is not available, users have to download [source code](https://github.com/openssl/openssl) and install at $HOME directory. For example,
     
-            ./Configure --prefix=/path --openssldir=/path/ssl
-            make && install
-            C_INCLUDE_PATH=/path/include
+            ./Configure --prefix=/OpenSSL_path --openssldir=/OpenSSL_path/ssl
+            make && make install
+            C_INCLUDE_PATH=/OpenSSL_path/include
             export C_INCLUDE_PATH
-            LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/lib
+            LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OpenSSL_path/lib
             export LD_LIBRARY_PATH
             
-    * Install R package 'openssl': `install.packages("openssl")`
+    * Install R package [openssl](https://cran.r-project.org/web/packages/openssl/index.html): `install.packages("openssl")`
 
-2. Install libjpeg
+2. Install a software library [libxml2](http://xmlsoft.org) - a depedency of R package [xml2](https://cran.r-project.org/web/packages/XML/index.html)
+
+    * For Debian or Ubuntu, `sudo apt install libxml2`
+    * For Fedora, CentOS or RHEL, `sudo yum install libxml2-devel`
+    * If root privillege is not available, users have to download [source code](http://xmlsoft.org/downloads.html) and install at $HOME directory. For example,
     
+            ./configure --prefix=/libxml2_path
+            make && make install
+            C_INCLUDE_PATH=/libxml2_path/include
+            export C_INCLUDE_PATH
+            CPLUS_INCLUDE_PATH=/libxml2_path/include
+            export CPLUS_INCLUDE_PATH
+            LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/libxml2_path/lib
+            export LD_LIBRARY_PATH
+    
+    * Install R package [xml2](https://cran.r-project.org/web/packages/XML/index.html): `install.packages("xml2")`
+
+
 #### Usage & manual
 
 A full description of FuSViz documentation is available: &nbsp;&nbsp; [![Documentation Status](https://readthedocs.org/projects/fusviz-docs/badge/?version=latest)](https://fusviz-docs.readthedocs.io/en/latest/index.html)
