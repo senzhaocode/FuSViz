@@ -17,7 +17,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
     source(file.path(system.file("app", package = "FuSViz"), "global.R"), local = TRUE, chdir = TRUE)
     FuSViz_app()
 
-##### NOTE: some libraries need to be installed in Linux properly before FuSViz setup.
+#### NOTE: some libraries need to be installed in Linux properly before FuSViz setup.
 
 1. Install a software library [OpenSSL](https://www.openssl.org) - a depedency of R package ['openssl'](https://github.com/jeroen/openssl)
 
