@@ -17,6 +17,8 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
     source(file.path(system.file("app", package = "FuSViz"), "global.R"), local = TRUE, chdir = TRUE)
     FuSViz_app()
 
+#### Some libraries need to be installed in Linux properly before FuSViz setup.
+
 #### Usage & manual
 
 A full description of FuSViz documentation is available: &nbsp;&nbsp; [![Documentation Status](https://readthedocs.org/projects/fusviz-docs/badge/?version=latest)](https://fusviz-docs.readthedocs.io/en/latest/index.html)
