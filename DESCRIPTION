@@ -11,7 +11,7 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Depends: R (>= 4.0.0), grid
-Imports: jsonlite, htmlwidgets (>= 1.5.2), data.table, stringi (<= 1.5.3), Gviz (>= 1.32.0), GenomicFeatures (>= 1.40.1), AnnotationDbi, GenomicRanges, IRanges, S4Vectors, GenomicAlignments, Rsamtools,
+Imports: jsonlite, htmlwidgets (>= 1.5.2), data.table, Gviz (>= 1.32.0), GenomicFeatures (>= 1.40.1), AnnotationDbi, GenomicRanges, IRanges, S4Vectors, GenomicAlignments, Rsamtools,
          shiny (>= 1.5.0), shinyWidgets (>= 0.5.4), shinydashboard (>= 0.7.1), shinycssloaders (>= 1.0.0), DT (>= 0.16), BioCircos (>= 0.3.4), 
          visNetwork (>= 2.0.9), igraph (>= 1.2.6), wordcloud2
 Remotes: github::lchiffon/wordcloud2
