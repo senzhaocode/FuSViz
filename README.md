@@ -74,6 +74,10 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
             
      * Install R package [png](https://cran.r-project.org/web/packages/png/index.html): `install.packages("png")`
  
+5. Install software library [libcurl](https://curl.se/libcurl/) - a dependency of R package [RCurl](https://cran.r-project.org/web/packages/RCurl/index.html)
+
+    * Need for **Debian or Ubuntu**: `sudo apt install libcurl4-openssl-dev`
+
 #### Launch FuSViz App
 
     source(file.path(system.file("app", package = "FuSViz"), "global.R"), local = TRUE, chdir = TRUE)
