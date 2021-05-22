@@ -83,7 +83,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
     * Need for **Debian or Ubuntu**: `sudo apt install libcurl4-openssl-dev`
 
-6. If users have a problem to install the latest version of one dependency R package **stringi** (v1.6.2) for Linux OS, please install the earlier one (e.g. **v1.5.3**) before setup FuSViz: `install.packages("https://cran.r-project.org/src/contrib/Archive/stringi/stringi_1.5.3.tar.gz", repos=NULL, type="source")`
+6. If users have a problem to install one dependency R package **stringi** (the latest: v1.6.2) for Linux OS, please install an earlier one (e.g. **v1.5.3**) before setup FuSViz: `install.packages("https://cran.r-project.org/src/contrib/Archive/stringi/stringi_1.5.3.tar.gz", repos=NULL, type="source")`
 
 #### Launch FuSViz App
 
