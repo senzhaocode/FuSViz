@@ -9,6 +9,11 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 ### Getting a quick start
 
+#### Prerequisite
+
+R (>=4.0.0): https://www.r-project.org/; [RStudio](https://rstudio.com/products/rstudio/download/#download) is recommended but not mandatory. 
+For windows users, if an earlier version of R (< 4.0) is present in the system, please uninstall it firstly and make sure only R >=4.0 is available.
+
 #### Installation
 
     if (! require('remotes')) install.packages('remotes')
