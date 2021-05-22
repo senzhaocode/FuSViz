@@ -19,7 +19,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
     if (! require('remotes')) install.packages('remotes')
     remotes::install_github('senzhaocode/FuSViz')
 
-#### NOTE: For Linux OS, some libraries need to be installed properly before setup FuSViz.
+#### IMPORTANT NOTE For Linux OS, some libraries need to be installed properly before setup FuSViz.
 
 1. Install software library [OpenSSL](https://www.openssl.org) - a dependency of R package [openssl](https://cran.r-project.org/web/packages/openssl/index.html)
 
@@ -82,6 +82,8 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 5. Install software library [libcurl](https://curl.se/libcurl/) - a dependency of R package [RCurl](https://cran.r-project.org/web/packages/RCurl/index.html)
 
     * Need for **Debian or Ubuntu**: `sudo apt install libcurl4-openssl-dev`
+
+6. If users have a problem to install the latest version of one dependency R package **stringi** (v1.6.2) for Linux OS, please install the earlier one (e.g. v1.5.3) before setup FuSViz: `install.packages("https://cran.r-project.org/src/contrib/Archive/stringi/stringi_1.5.3.tar.gz", repos=NULL, type="source")`
 
 #### Launch FuSViz App
 
