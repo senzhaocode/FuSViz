@@ -5,20 +5,29 @@ cache: packages
 
 warnings_are_errors: true
 
-before_install:
-  - sudo apt-get install -y libssl-dev
-  - sudo apt-get install libxml2-dev
-  - sudo apt-get install libjpeg-dev
-  - sudo apt-get install libpng-dev
-  - sudo apt-get install libcurl4-openssl-dev
-  
+addons:
+  apt:
+    packages:
+    - libssl-dev
+    - libxml2-dev
+    - libjpeg-dev
+    - libpng-dev
+    - libcurl4-openssl-dev
+
+#before_install:
+#  - sudo apt-get install -y libssl-dev
+#  - sudo apt-get install libxml2-dev
+#  - sudo apt-get install libjpeg-dev
+#  - sudo apt-get install libpng-dev
+#  - sudo apt-get install libcurl4-openssl-dev
+
 r:
   - release
   - bioc-release
-  
+
 r_github_packages:
   - r-lib/covr
-  
+
 after_success:
   - Rscript -e 'covr::codecov()'
   - Rscript -e 'library(FuSViz); sessionInfo();'
