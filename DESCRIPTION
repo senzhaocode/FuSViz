@@ -21,5 +21,4 @@ Suggests:
     devtools,
     knitr,
     rmarkdown
-biocViews: Visualization
-VignetteBuilder: knitr
+biocViews: visualization, infrastructure
