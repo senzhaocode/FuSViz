@@ -1,0 +1,29 @@
+language: r
+dist: focal
+sudo: true
+cache: packages
+
+warnings_are_errors: true
+
+before_install:
+  - sudo apt-get install -y libssl-dev
+  - sudo apt-get install libxml2-dev
+  - sudo apt-get install libjpeg-dev
+  - sudo apt-get install libpng-dev
+  - sudo apt-get install libcurl4-openssl-dev
+  
+r:
+  - release
+  - bioc-release
+  
+r_github_packages:
+  - r-lib/covr
+  
+after_success:
+  - Rscript -e 'covr::codecov()'
+  - Rscript -e 'library(FuSViz); sessionInfo();'
+  
+ notifications:
+   email:
+     on_success: always
+     on_failure: always
