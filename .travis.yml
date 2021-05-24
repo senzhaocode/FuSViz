@@ -24,15 +24,16 @@ addons:
 r:
   - release
 
-r_github_packages:
-  - r-lib/covr
+#r_github_packages:
+#  - r-lib/covr
+
+script:
+  - R CMD build .
 
 after_success:
-  - Rscript -e 'covr::codecov()'
   - Rscript -e 'library(FuSViz); sessionInfo();'
 
 notifications:
   email:
     on_success: always
     on_failure: always
-
