@@ -64,4 +64,7 @@ importFrom(Gviz,HighlightTrack)
 importFrom(Gviz,DataTrack)
 importFrom(Gviz,plotTracks)
 importFrom(Gviz,displayPars)
+importFrom(methods, "is")
+importFrom(stats, "aggregate", "end", "na.omit", "start")
+importFrom(utils, "tail")
 
