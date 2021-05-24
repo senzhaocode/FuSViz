@@ -23,7 +23,6 @@ addons:
 
 r:
   - release
-  - bioc-release
 
 r_github_packages:
   - r-lib/covr
