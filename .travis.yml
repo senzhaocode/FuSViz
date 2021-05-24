@@ -24,9 +24,6 @@ addons:
 r:
   - release
 
-#r_github_packages:
-#  - r-lib/covr
-
 script:
   - R CMD build .
 
