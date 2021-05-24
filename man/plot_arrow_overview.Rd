@@ -18,8 +18,8 @@ plot_arrow_overview(collect, first, second, breakpoint, zoom)
 (only one row) that collects evaluation of breakpoint pos in geneB transcript; \code{'second\$pos\$select_region'} is a data.frame object
 (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.}
 
-\item{breakpoint}{A data.frame with three columns (e.g. 'breakpoint\link{i,1}' - breakpoint pos in geneA; 'breakpoint\link{i,2}' - breakpoint pos in geneB;
-'breakpoint\link{i,3}' is the number of samples with such fusion).}
+\item{breakpoint}{A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA; \code{'breakpoint[i,2]'} - breakpoint pos in geneB;
+\code{'breakpoint[i,3]'} is the number of samples with such fusion).}
 
 \item{zoom}{A numeric value indicates zoom degree of plotting.}
 }

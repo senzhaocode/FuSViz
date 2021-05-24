@@ -6,6 +6,11 @@
 \usage{
 check_input_format(inputdf, type)
 }
+\arguments{
+\item{inputdf}{A data.table object for RNA-seq SVs, DNA-seq SVs or mutation profile.}
+
+\item{type}{Uploading file source (e.g. RNA SVs, DNA SVs, mutations).}
+}
 \description{
-Input format control on uploading file (e.g. RNA SVs, DNA SVs, mutations)
+Check the input format of upload files.
 }

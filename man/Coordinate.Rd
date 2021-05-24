@@ -7,6 +7,8 @@
 Coordinate(session, inputid)
 }
 \arguments{
+\item{session}{An environment object that can be used to access information and functionality by shiny.}
+
 \item{inputid}{A string represents the name of DOM element (inputId) defined in ui.R (e.g. \code{textInput(inputId, label, value = "")}).}
 }
 \description{

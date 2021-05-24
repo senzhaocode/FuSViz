@@ -21,8 +21,8 @@
 
 \item{downstream_flag}{A list (i.e. the same object \code{'second'} used in FUNCTION "plot_arrow_overview"; \code{'second\$pos\$transcript'} is a one-row data.frame).}
 
-\item{breakpoint_xy}{A data.frame with one row (i.e. 'breakpoint_xy\link{i,1}' - breakpoint pos in geneA; 'breakpoint_xy\link{i,2}' - breakpoint pos in geneB;
-'breakpoint_xy\link{i,3}' is the number of samples with such fusion).}
+\item{breakpoint_xy}{A data.frame with one row (i.e. \code{'breakpoint_xy[i,1]'} - breakpoint pos in geneA; \code{'breakpoint_xy[i,2]'} - breakpoint pos in geneB;
+\code{'breakpoint_xy[i,3]'} is the number of samples with such fusion).}
 }
 \value{
 A data.frame with three columns (i.e. \code{'x_pos_gene_upstream'}, \code{'x_pos_gene_downstream'}, \code{'y_pos'})

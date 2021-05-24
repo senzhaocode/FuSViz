@@ -21,7 +21,7 @@ that collects evaluation of breakpoint pos in geneA transcript after reducing in
 that collects evaluation of breakpoint pos in geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
 (5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.}
 
-\item{breakpoint}{A data.frame with two columns (e.g. 'breakpoint\link{i,1}' - breakpoint pos in geneA transcript; 'breakpoint\link{i,2}' - breakpoint pos in geneB transcript).}
+\item{breakpoint}{A data.frame with two columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos in geneB transcript).}
 }
 \value{
 NULL

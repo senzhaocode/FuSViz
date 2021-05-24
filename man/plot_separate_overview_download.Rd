@@ -13,6 +13,23 @@ plot_separate_overview_download(
   breakpoint
 )
 }
+\arguments{
+\item{first}{A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneA); \code{'first\$pos\$transcript'} is a data.frame object
+(only one row) that collects evaluation of breakpoint pos in geneA transcript; \code{'first\$pos\$select_region'} is a data.frame object
+(5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.}
+
+\item{first_name}{A string - symbol name of geneA (e.g. 'TMPRSS2').}
+
+\item{second}{A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneB); \code{'second\$pos\$transcript'} is a data.frame object
+(only one row) that collects evaluation of breakpoint pos in geneB transcript; \code{'second\$pos\$select_region'} is a data.frame object
+(5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.}
+
+\item{second_name}{A string - symbol name of geneB (e.g. 'ERG').}
+
+\item{cytoband}{A GRange object for plotting cytoband of chromosome ideogram.}
+
+\item{breakpoint}{A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA; \code{'breakpoint[i,2]'} - breakpoint pos in geneB;}
+}
 \description{
 Plot transcript-model, chromosome ideogram and multiple curved lines that link breakpoints of geneA and geneB transcripts together in 'overview' tab-panel
 }

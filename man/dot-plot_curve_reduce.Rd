@@ -23,7 +23,7 @@ with two elements (e.g. \code{'first\$pos\$transcript'} and \code{'first\$pos\$s
 \item{downstream_flag}{A list (i.e. the same object \code{'second'} used in FUNCTION "plot_separate_domain_geneB")
 with two elements (e.g. \code{'second\$pos\$transcript'} and \code{'second\$pos\$select_region'}, in which introns were reduced in the transcript).}
 
-\item{breakpoint_xy}{A data.frame with one row (e.g. 'breakpoint_xy\link{i,1}' - breakpoint pos in geneA transcript; 'breakpoint_xy\link{i,2}' - breakpoint pos in geneB transcript).
+\item{breakpoint_xy}{A data.frame with one row (e.g. \code{'breakpoint_xy[i,1]'} - breakpoint pos in geneA transcript; \code{'breakpoint_xy[i,2]'} - breakpoint pos in geneB transcript).
 NOTE: breakpoint coordinates are adjusted by reducing introns.}
 }
 \value{

@@ -19,6 +19,8 @@ FuSViz(
 
 \item{trackHeight}{A number defines initial height of a track (e.g. default value: \code{300}).}
 
+\item{displayMode}{Annotation track display mode (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).}
+
 \item{initialLocus}{A string defines initial genomic location when widget loading is launched (e.g. default value: \code{TP53}).}
 
 \item{width, height}{Must be a valid CSS unit (like \code{100\%},

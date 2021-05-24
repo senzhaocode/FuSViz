@@ -16,6 +16,33 @@ plot_separate_domain_download(
   breakpoint
 )
 }
+\arguments{
+\item{first}{A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneA); \code{'first\$pos\$transcript'} is a data.frame object
+that collects evaluation of breakpoint pos in geneA transcripts after reducing intron; \code{'first\$pos\$select_region'} is a data.frame object
+(5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.}
+
+\item{first_name}{A string - symbol name of geneA (e.g. 'TMPRSS2').}
+
+\item{first_domain}{A data.frame for collecting domain annotation (e.g. \code{'first_domain\$Start'}: domain start; \code{'first_domain\$End'}: domain end;
+\code{'first_domain\$Domain_name'}: domain name abbreviation).}
+
+\item{first_motif}{A data.frame for collecting motif annotation (e.g. \code{'first_motif\$Start'}: motif start; \code{'first_motif\$End'}: motif end;
+\code{'first_motif\$Domain_name'}: motif name abbreviation).}
+
+\item{second}{A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneB); \code{'second\$pos\$transcript'} is a data.frame object
+that collects evaluation of breakpoint pos in geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
+(5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.}
+
+\item{second_name}{A string - symbol name of geneB (e.g. 'ERG').}
+
+\item{second_domain}{A data.frame for collecting domain annotation (e.g. \code{'second_domain\$Start'}: domain start; \code{'second_domain\$End'}: domain end;
+\code{'second_domain\$Domain_name'}: domain name abbreviation).}
+
+\item{second_motif}{A data.frame for collecting motif annotation (e.g. \code{'second_motif\$Start'}: motif start; \code{'secondt_motif\$End'}: motif end;
+\code{'second_motif\$Domain_name'}: motif name abbreviation).}
+
+\item{breakpoint}{A data.frame with two columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos in geneB transcript).}
+}
 \description{
 Plot transcript-model(reducing introns), domain, motif and multiple straight lines that link breakpoints of geneA and geneB transcripts together.
 }

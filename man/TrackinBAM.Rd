@@ -7,6 +7,8 @@
 TrackinBAM(session, bam, bamindex, trackHeight = 200)
 }
 \arguments{
+\item{session}{An environment object that can be used to access information and functionality by shiny.}
+
 \item{bam}{An url link of BAM file}
 
 \item{bamindex}{An url link of BAM index file}

@@ -26,8 +26,8 @@ plot_separate_individual(
 
 \item{second_name}{A string - symbol name of geneB (e.g. 'ERG').}
 
-\item{breakpoint}{A data.frame with three columns (e.g. 'breakpoint\link{i,1}' - breakpoint pos in geneA; 'breakpoint\link{i,2}' - breakpoint pos in geneB;
-'breakpoint\link{i,3}' and 'breakpoint\link{i,4}' are the number of split and span reads supporting this fusion).}
+\item{breakpoint}{A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA; \code{'breakpoint[i,2]'} - breakpoint pos in geneB;
+\code{'breakpoint[i,3]'} and \code{'breakpoint[i,4]'} are the number of split and span reads supporting this fusion).}
 
 \item{cytoband}{A GRange object for plotting cytoband of chromosome ideogram.}
 }
