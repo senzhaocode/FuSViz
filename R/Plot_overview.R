@@ -6,8 +6,8 @@
 #' @param upstream_flag A list (i.e. the same object \code{'first'} used in FUNCTION "plot_arrow_overview"; \code{'first\$pos\$transcript'} is a one-row data.frame).
 #' @param downstream_xy A data.frame (i.e. a returned object \code{'collect\$B1_xy'} in FUNCTION "plot_arrow_overview" - exon coordinates(x1, y1, x2, y2) of geneB transcripts).
 #' @param downstream_flag A list (i.e. the same object \code{'second'} used in FUNCTION "plot_arrow_overview"; \code{'second\$pos\$transcript'} is a one-row data.frame).
-#' @param breakpoint_xy A data.frame with one row (i.e. 'breakpoint_xy[i,1]' - breakpoint pos in geneA; 'breakpoint_xy[i,2]' - breakpoint pos in geneB;
-#'        'breakpoint_xy[i,3]' is the number of samples with such fusion).
+#' @param breakpoint_xy A data.frame with one row (i.e. \code{'breakpoint_xy[i,1]'} - breakpoint pos in geneA; \code{'breakpoint_xy[i,2]'} - breakpoint pos in geneB;
+#'        \code{'breakpoint_xy[i,3]'} is the number of samples with such fusion).
 #'
 #' @return A data.frame with three columns (i.e. \code{'x_pos_gene_upstream'}, \code{'x_pos_gene_downstream'}, \code{'y_pos'})
 #'
@@ -183,7 +183,8 @@ plot_separate_overview <- function(first, first_name, second, second_name, cytob
 	grTrack_s = Gviz::GeneRegionTrack(second[[1]]$select_region, chromosome=chrom_s, showId=T, stacking="squish", geneSymbols=F, transcriptAnnotation="transcript", 
 		just.group="below", fontsize=5, fontcolor="black", fontcolor.group="black", showTitle=F, col="black", col.line="black", fill="orange", col.symbol="black", lwd=0.1, 
 		lwd.border=1, lex=1, cex=0.6, cex.axis=0.6, background.title="transparent", background.panel="transparent", stackHeight=0.8, min.width=0.1, min.height=3, min.distance=0);
-	second_vis_s = min(second[[1]]$transcript$GStart) #// start position of geneB for visualization 
+
+	second_vis_s = max(second[[1]]$transcript$GStart) #// start position of geneB for visualization 
 	second_vis_e = max(second[[1]]$transcript$GEnd) #// start position of geneB for visualization
 
 	#// adjust font size of transcript_id (it will probably be adjusted by customers in UI in further version)
@@ -309,8 +310,8 @@ plot_separate_overview <- function(first, first_name, second, second_name, cytob
 #' @param second A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneB); \code{'second\$pos\$transcript'} is a data.frame object
 #'        (only one row) that collects evaluation of breakpoint pos in geneB transcript; \code{'second\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.
-#' @param breakpoint A data.frame with three columns (e.g. 'breakpoint[i,1]' - breakpoint pos in geneA; 'breakpoint[i,2]' - breakpoint pos in geneB; 
-#'        'breakpoint[i,3]' is the number of samples with such fusion).
+#' @param breakpoint A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA; \code{'breakpoint[i,2]'} - breakpoint pos in geneB; 
+#'        \code{'breakpoint[i,3]'} is the number of samples with such fusion).
 #' @param zoom A numeric value indicates zoom degree of plotting.
 #'
 #' @return NULL
@@ -353,6 +354,17 @@ plot_arrow_overview <- function(collect, first, second, breakpoint, zoom) {
 #' Plot transcript-model, chromosome ideogram and multiple curved lines that link breakpoints of geneA and geneB transcripts (plot downloading version)
 #'
 #' @description Plot transcript-model, chromosome ideogram and multiple curved lines that link breakpoints of geneA and geneB transcripts together in 'overview' tab-panel
+#'
+#' @param first A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneA); \code{'first\$pos\$transcript'} is a data.frame object
+#'        (only one row) that collects evaluation of breakpoint pos in geneA transcript; \code{'first\$pos\$select_region'} is a data.frame object
+#'        (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.
+#' @param first_name A string - symbol name of geneA (e.g. 'TMPRSS2').
+#' @param second A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneB); \code{'second\$pos\$transcript'} is a data.frame object
+#'        (only one row) that collects evaluation of breakpoint pos in geneB transcript; \code{'second\$pos\$select_region'} is a data.frame object
+#'        (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.
+#' @param second_name A string - symbol name of geneB (e.g. 'ERG').
+#' @param cytoband A GRange object for plotting cytoband of chromosome ideogram.
+#' @param breakpoint A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA; \code{'breakpoint[i,2]'} - breakpoint pos in geneB;
 #'
 #' @export
 plot_separate_overview_download <- function(first, first_name, second, second_name, cytoband, breakpoint) {

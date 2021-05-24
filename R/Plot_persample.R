@@ -6,7 +6,7 @@
 #' @param upstream_flag A list (i.e. the same object \code{'first'} used in FUNCTION "plot_separate_individual"; \code{'first\$pos\$transcript'} is a one-row data.frame).
 #' @param downstream_xy A data.frame (i.e. a returned object \code{'B1_xy'} in FUNCTION "plot_separate_individual" - exon coordinates(x1, y1, x2, y2) of geneB transcripts).
 #' @param downstream_flag A list (i.e. the same object \code{'second'} used in FUNCTION "plot_separate_individual"; \code{'second\$pos\$transcript'} is a one-row data.frame).
-#' @param breakpoint_xy A data.frame with one row (i.e. 'breakpoint_xy[i,1]' - breakpoint pos in geneA; 'breakpoint_xy[i,2]' - breakpoint pos in geneB).
+#' @param breakpoint_xy A data.frame with one row (i.e. \code{'breakpoint_xy[i,1]'} - breakpoint pos in geneA; \code{'breakpoint_xy[i,2]'} - breakpoint pos in geneB).
 #'
 #' @return A data.frame with three columns (i.e. \code{'x_pos_gene_upstream'}, \code{'x_pos_gene_downstream'}, \code{'y_pos'})
 #'
@@ -164,8 +164,8 @@
 #'        (only one row) that collects evaluation of breakpoint pos in geneB transcript; \code{'second\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.
 #' @param second_name A string - symbol name of geneB (e.g. 'ERG').
-#' @param breakpoint A data.frame with three columns (e.g. 'breakpoint[i,1]' - breakpoint pos in geneA; 'breakpoint[i,2]' - breakpoint pos in geneB;
-#'        'breakpoint[i,3]' and 'breakpoint[i,4]' are the number of split and span reads supporting this fusion).
+#' @param breakpoint A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA; \code{'breakpoint[i,2]'} - breakpoint pos in geneB;
+#'        \code{'breakpoint[i,3]'} and \code{'breakpoint[i,4]'} are the number of split and span reads supporting this fusion).
 #' @param cytoband A GRange object for plotting cytoband of chromosome ideogram.
 #'
 #' @return NULL

@@ -1,6 +1,6 @@
 #' Start FuSViz web app
 #'
-#' The app is started with system default browser
+#' @description The app is started with system default browser
 #'
 #' @param data Data to be loaded with app; the default value as NULL
 #'
@@ -16,7 +16,10 @@ FuSViz_app <- function(data = NULL) {
 
 #' Input format control on uploading files
 #'
-#' @description Input format control on uploading file (e.g. RNA SVs, DNA SVs, mutations)
+#' @description Check the input format of upload files.
+#'
+#' @param inputdf A data.table object for RNA-seq SVs, DNA-seq SVs or mutation profile.
+#' @param type Uploading file source (e.g. RNA SVs, DNA SVs, mutations).
 #'
 #' @export
 check_input_format <- function(inputdf, type) {

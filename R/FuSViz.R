@@ -11,6 +11,7 @@ configure <- NULL
 #' 
 #' @param genomeName A string shows human genome reference version, either \code{hg19} or \code{hg38}.
 #' @param trackHeight A number defines initial height of a track (e.g. default value: \code{300}).
+#' @param displayMode Annotation track display mode (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
 #' @param initialLocus A string defines initial genomic location when widget loading is launched (e.g. default value: \code{TP53}).
 #' @param width,height Must be a valid CSS unit (like \code{100\%},
 #'        \code{400px}, \code{auto}) or a number, which will be coerced to a string and have \code{px} appended.
@@ -227,6 +228,7 @@ TrackinSeg <- function(session, datastr, name, trackHeight=50, color="red", isLo
 #'
 #' @description Load a BAM format from url
 #'
+#' @param session An environment object that can be used to access information and functionality by shiny.
 #' @param bam An url link of BAM file
 #' @param bamindex An url link of BAM index file
 #' @param trackHeight Initial height of track viewport in pixels (e.g. \code{200}).
@@ -268,7 +270,7 @@ TrackinFile <- function(session, fileobj, trackHeight=100) {
 #' Genomic coordinate retrieve
 #'
 #' @description Obtain genomic coordinate of a zoom region
-#'
+#' @param session An environment object that can be used to access information and functionality by shiny.
 #' @param inputid A string represents the name of DOM element (inputId) defined in ui.R (e.g. \code{textInput(inputId, label, value = "")}).
 #'
 #' @export

@@ -50,7 +50,7 @@ gene_trans_ex_overview <- function(breakpoint, object, whole_tx) {
 				if ( as.character(region_f_group[1,]$strand) == "+" ) {
 					prop = (breakpoint - region_f_group[1,]$start + 1)/(region_f_group[1,]$end - region_f_group[1,]$start + 1); #// 0 <= prop <= 1
 					flag = region_f_group[1,]; flag[,"Prop"] = prop;
-				} else if ( as.character(region_f_group[i,]$strand) == "-" ) {
+				} else if ( as.character(region_f_group[1,]$strand) == "-" ) {
 					prop = (region_f_group[1,]$end - breakpoint + 1)/(region_f_group[1,]$end - region_f_group[1,]$start + 1); #// 0 <= prop <= 1
 					flag = region_f_group[1,]; flag[,"Prop"] = prop;
 				}
