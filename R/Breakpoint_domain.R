@@ -103,7 +103,7 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx) {
 					tmp_shift = 1 - start(region_f_group_relative[z]);
 					region_f_group_relative[z] = IRanges::shift(region_f_group_relative[z], shift = tmp_shift)
 				} else {
-					tmp_shift =	 - (start(region_f_group_relative[z]) - end(region_f_group_relative[z-1])) + 1; 
+					tmp_shift = - (start(region_f_group_relative[z]) - end(region_f_group_relative[z-1])) + 1; 
 					region_f_group_relative[z] = IRanges::shift(region_f_group_relative[z], shift = tmp_shift)
 				}
 						
