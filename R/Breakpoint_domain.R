@@ -103,7 +103,7 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx) {
 					tmp_shift = 1 - start(region_f_group_relative[z]);
 					region_f_group_relative[z] = IRanges::shift(region_f_group_relative[z], shift = tmp_shift)
 				} else {
-					tmp_shift = - (start(region_f_group_relative[z]) - end(region_f_group_relative[z-1])) + 1; 
+					tmp_shift = 0 - (start(region_f_group_relative[z]) - end(region_f_group_relative[z-1])) + 1; 
 					region_f_group_relative[z] = IRanges::shift(region_f_group_relative[z], shift = tmp_shift)
 				}
 						
@@ -127,7 +127,7 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx) {
 				}
 					
 				if ( z == y ) { #// loop at the second last exon
-					tmp_plus_shift = - (start(region_f_group_relative[z+1]) - end(region_f_group_relative[z])) + 1; 
+					tmp_plus_shift = 0 - (start(region_f_group_relative[z+1]) - end(region_f_group_relative[z])) + 1; 
 					region_f_group_relative[z+1] = IRanges::shift(region_f_group_relative[z+1], shift = tmp_plus_shift)
 					if ( breakpoint >= region_f_group[z+1,]$start && region_f_group[z+1,]$end >= breakpoint ) { #// breakpoint at the boundary or within the last exon
 						prop = (breakpoint - region_f_group[z+1,]$start + 1)/(region_f_group[z+1,]$end - region_f_group[z+1,]$start + 1); #// 0 <= prop <= 1
@@ -160,7 +160,7 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx) {
 				if (i == 1) {
 					region_f_relative[i] = IRanges::shift(region_f_relative[i], shift = 1 - start(region_f_relative[i]))
 				} else {
-					tmp_shift = - (start(region_f_relative[i]) - end(region_f_relative[i-1])) + 1
+					tmp_shift = 0 - (start(region_f_relative[i]) - end(region_f_relative[i-1])) + 1
 					region_f_relative[i] = IRanges::shift(region_f_relative[i], shift = tmp_shift)
 				}
 			}
