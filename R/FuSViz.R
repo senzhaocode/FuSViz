@@ -228,9 +228,9 @@ TrackinSeg <- function(session, datastr, name, trackHeight=50, color="red", isLo
 #'
 #' @description Load a BAM format from url
 #'
-#' @param session An environment object that can be used to access information and functionality by shiny.
-#' @param bam An url link of BAM file
-#' @param bamindex An url link of BAM index file
+#' @param session An environment object that is used to access information and functionality by shiny.
+#' @param bam An url link of BAM file.
+#' @param bamindex An url link of BAM index file.
 #' @param trackHeight Initial height of track viewport in pixels (e.g. \code{200}).
 #'
 #' @export
@@ -270,6 +270,7 @@ TrackinFile <- function(session, fileobj, trackHeight=100) {
 #' Genomic coordinate retrieve
 #'
 #' @description Obtain genomic coordinate of a zoom region
+#'
 #' @param session An environment object that can be used to access information and functionality by shiny.
 #' @param inputid A string represents the name of DOM element (inputId) defined in ui.R (e.g. \code{textInput(inputId, label, value = "")}).
 #'

@@ -183,7 +183,7 @@ plot_separate_overview <- function(first, first_name, second, second_name, cytob
 	grTrack_s = Gviz::GeneRegionTrack(second[[1]]$select_region, chromosome=chrom_s, showId=T, stacking="squish", geneSymbols=F, transcriptAnnotation="transcript", 
 		just.group="below", fontsize=5, fontcolor="black", fontcolor.group="black", showTitle=F, col="black", col.line="black", fill="orange", col.symbol="black", lwd=0.1, 
 		lwd.border=1, lex=1, cex=0.6, cex.axis=0.6, background.title="transparent", background.panel="transparent", stackHeight=0.8, min.width=0.1, min.height=3, min.distance=0);
-	second_vis_s = max(second[[1]]$transcript$GStart) #// start position of geneB for visualization 
+	second_vis_s = min(second[[1]]$transcript$GStart) #// start position of geneB for visualization 
 	second_vis_e = max(second[[1]]$transcript$GEnd) #// end position of geneB for visualization
 
 	#// adjust font size of transcript_id (it will probably be adjusted by customers in UI in further version)
@@ -382,7 +382,7 @@ plot_separate_overview_download <- function(first, first_name, second, second_na
 			just.group="below", fontsize=5, fontcolor="black", fontcolor.group="black", showTitle=F, col="black", col.line="black", fill="orange", col.symbol="black", lwd=0.1,
 			lwd.border=1, lex=1, cex=0.6, cex.axis=0.6, background.title="transparent", background.panel="transparent", stackHeight=0.8, min.width=0.1, min.height=3, min.distance=0);
 	second_vis_s = min(second[[1]]$transcript$GStart) #// start position of geneB for visualization
-	second_vis_e = max(second[[1]]$transcript$GEnd) #// start position of geneB for visualization
+	second_vis_e = max(second[[1]]$transcript$GEnd) #// end position of geneB for visualization
 
 	#// adjust font size of transcript_id (it will probably be adjusted by customers in UI in further version)
 	if ( length(first[[1]]$transcript$TXNAME) > 0 &&  length(first[[1]]$transcript$TXNAME) <= 5 ) { 

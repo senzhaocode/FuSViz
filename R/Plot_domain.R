@@ -378,7 +378,7 @@ plot_separate_domain_arrow <- function(A1_xy, B1_xy, first, second, breakpoint) 
 #'        that collects evaluation of breakpoint pos in geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.
 #' @param second_name A string - symbol name of geneB (e.g. 'ERG').
-#' @param second_domain A data.frame for collecting domain annotation (e.g. \code{'second_domain\$Start'}: domain start; \code{'second_domain\$End'}: domain end; 
+#' @param second_domain A data.frame for collecting domain annotation (e.g. \code{'second_domain\$Start'}: domain start; \code{'second_domain\$End'}: domain end;
 #'        \code{'second_domain\$Domain_name'}: domain name abbreviation).
 #' @param second_motif A data.frame for collecting motif annotation (e.g. \code{'second_motif\$Start'}: motif start; \code{'secondt_motif\$End'}: motif end;
 #'        \code{'second_motif\$Domain_name'}: motif name abbreviation).
