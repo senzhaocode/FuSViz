@@ -1235,7 +1235,7 @@ options(ucscChromosomeNames=FALSE)
 			breakpoint_set = unique(domain_1()$pos1)
 			for (i in 1:length(breakpoint_set)) { # print(paste("start domain A loop: ", i))
 				if (! exists(as.character(breakpoint_set[i]), where=geneA) ) {
-					geneA[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_A$value, database$whole_txdb) #// For geneA
+					geneA[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_A$value, database$whole_txdb, "upstream", 5) #// For geneA
 				}
 			}
 			#// remove the elements in the list where breakpoint outside transcript region of geneA
@@ -1268,7 +1268,7 @@ options(ucscChromosomeNames=FALSE)
 			breakpoint_set = unique(domain_1()$pos2)
 			for (i in 1:length(breakpoint_set)) { # print(paste("start domain B loop: ", i))
 				if (! exists(as.character(breakpoint_set[i]), where=geneB) ) {
-					geneB[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_B$value, database$whole_txdb) #// For geneB
+					geneB[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_B$value, database$whole_txdb, "downstream", 5) #// For geneB
 				}
 			}
 			#// remove the elements in the list where breakpoint outside transcript region of geneB
