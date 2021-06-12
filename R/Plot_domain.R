@@ -118,7 +118,7 @@
 					tag = 1; # "Unknown";
 				} else {
 					if (! is.na(cds_start_A) && ! is.na(cds_start_B) ) {
-						Yushu_A = (domain_breakpoint_A - 1 - cds_start_A + 1) %% 3;
+						Yushu_A = (domain_breakpoint_A - cds_start_A + 1) %% 3;
 						Yushu_B = (domain_breakpoint_B - cds_start_B + 1) %% 3;
 						if ( Yushu_A == 0 && Yushu_B == 1 ) {
 							tag = 2; # "Inframe";
