@@ -67,12 +67,14 @@ chrom_name_function <- function(file, selection) {
 #' @param fusion_strandB A string - the strand direction of geneB in transcribed fusion (default: NULL; options: '+' or '-').
 #' @param coverage_max_A A number - the range of y-axis (RNA-seq read coverage) scale for geneA (default: NULL).
 #' @param coverage_max_B A number - the range of y-axis (RNA-seq read coverage) scale for geneB (default: NULL).
+#' @param duplicate A boolean type - a logical value indicating that un-duplicated (FALSE), duplicated (TRUE), or any (NA) reads should be returen (default: NA).
+#' @param properpair A boolean type - a logical value indicating whether improperly paired (FALSE), properly paired (TRUE), or any (NA) reads should be returen (default: NA).
 #' 
 #' @return NULL
 #' 
 #' @export
 plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, breakpoint_B, rna_bam_path, dna_bam_path=NULL, coverage_plot_trans=F, offset=5, chrom_notation_rna=T,
-	chrom_notation_dna=T, split=NULL, span=NULL, transcriptA=NULL, transcriptB=NULL, fusion_strandA=NULL, fusion_strandB=NULL, coverage_max_A=NULL, coverage_max_B=NULL) {
+	chrom_notation_dna=T, duplicate=NA, properpair=NA, split=NULL, span=NULL, transcriptA=NULL, transcriptB=NULL, fusion_strandA=NULL, fusion_strandB=NULL, coverage_max_A=NULL, coverage_max_B=NULL) {
 
 	stopifnot(is(first_name, "character")); 
 	stopifnot(is(second_name, "character"));
@@ -80,6 +82,11 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	stopifnot(is(breakpoint_B, "numeric"));
 	stopifnot(is(rna_bam_path, "character"));
 	stopifnot(is(offset, "numeric"));
+	stopifnot(is.logical(coverage_plot_trans));
+	stopifnot(is.logical(chrom_notation_rna));
+	stopifnot(is.logical(chrom_notation_dna));
+	stopifnot(is.logical(duplicate));
+	stopifnot(is.logical(properpair));
 
 	if (! is.null(dna_bam_path) ) { stopifnot(is(dna_bam_path, "character")); }
 	if (! is.null(split) ) { stopifnot(is(split, "numeric")); }
@@ -160,7 +167,7 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 			minCoverageHeight=5, col.title="black", background.title="transparent", background.panel="transparent", lty=1, lwd=0.2, cex=0.6, cex.axis=0.6, 
 			cex.title=0.6, lwd.coverage=0.2, lty.coverage=1, fontsize=9, stackHeight=0.7, stacking="squish", min.width=0.1, min.height=3, min.distance=0)
 	} else { #// coverage calculated by reads mapped to selected transcripts of upstream and downstrean genes
-		flag = Rsamtools::scanBamFlag(isPaired=T, isProperPair=T, isUnmappedQuery=F, isDuplicate=F, isSecondaryAlignment=F)
+		flag = Rsamtools::scanBamFlag(isPaired=T, isProperPair=properpair, isUnmappedQuery=F, isDuplicate=duplicate, isSecondaryAlignment=F)
 		# Get first coverage
 		df_A = GenomicRanges::makeGRangesFromDataFrame(first[[1]]$select_region, keep.extra.columns=TRUE)
 		first_trans = unique(df_A@elementMetadata$transcript); # get all transcript id of geneA
