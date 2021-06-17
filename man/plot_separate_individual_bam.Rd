@@ -15,6 +15,10 @@ plot_separate_individual_bam(
   offset = 5,
   chrom_notation_rna = T,
   chrom_notation_dna = T,
+  duplicate = F,
+  unmappedmate = NA,
+  notpassQC = F,
+  properpair = NA,
   split = NULL,
   span = NULL,
   transcriptA = NULL,
@@ -45,6 +49,14 @@ plot_separate_individual_bam(
 \item{chrom_notation_rna}{A boolean type - if TRUE (default value) chromosome name in RNA-seq alignment denotes like 'chrX'; if FALSE chromosome denotes like 'X'.}
 
 \item{chrom_notation_dna}{A boolean type - if TRUE (default value) chromosome name in DNA-seq alignment denotes like 'chrX'; if FALSE chromosome denotes like 'X'.}
+
+\item{duplicate}{A boolean type - a logical value indicating that un-duplicated (FALSE), duplicated (TRUE), or any (NA) reads should be returned (default: F).}
+
+\item{unmappedmate}{A boolean type - a logical value indicating whether reads with mapped (FALSE), unmapped (TRUE), or any (NA) mate should be returned (default: NA).}
+
+\item{notpassQC}{A boolean type - a logical value indicating whether reads passing QC (FALSE), reads not passing QC (TRUE), or any (NA) reads should be returned (default: F).}
+
+\item{properpair}{A boolean type - a logical value indicating whether improperly paired (FALSE), properly paired (TRUE), or any (NA) reads should be returned (default: NA).}
 
 \item{split}{A number - split reads support (default: NULL).}
 
