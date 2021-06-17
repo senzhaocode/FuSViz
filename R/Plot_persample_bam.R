@@ -133,6 +133,9 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	}
 	second[[as.character(breakpoint_B)]] <- gene_trans_ex(breakpoint_B, object_individual_B, whole_txdb)
 
+	if ( length(first) == 0 ) { stop("first object is empty, breakpoint coordinate out of geneA range!"); }
+	if ( length(second) == 0 ) { stop("second object is empty, breakpoint coordinate out of geneB range!"); }
+
 	#// get chromosome name for 'first' and 'second'
 	chrom_f = first[[1]]$transcript$Chrom[1];
 	chrom_s = second[[1]]$transcript$Chrom[1];
@@ -152,91 +155,86 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	second_vis_e = max(second[[1]]$transcript$GEnd) #// visualization start position of geneB
 
 	#// load bam file from RNA-seq: the AlignmentsTrack can only read the bam file with chrom name 'chr' (Ensembl reference not recognised correctly)
-	if ( coverage_plot_trans == F ) { #// coverage calculated by all reads mapped to regions of upstream and downstream genes
-		if ( chrom_notation_rna == T ) {
-			alTrack_f = Gviz::AlignmentsTrack(rna_bam_path, isPaired=TRUE, name="RNA read coverage")
-		} else {  # ensembl chromosome name like '1'
-			alTrack_f = Gviz::AlignmentsTrack(rna_bam_path, isPaired=TRUE, name="RNA read coverage", importFunction = chrom_name_function)
-		}
-		Gviz::displayPars(alTrack_f) = list(col.coverage="black", fill.coverage="green", col.axis="black", type="coverage", strand = '*', coverageHeight=0.08, 
-			minCoverageHeight=5, col.title="black", background.title="transparent", background.panel="transparent", lty=1, lwd=0.2, cex=0.6, cex.axis=0.6, 
-			cex.title=0.6, lwd.coverage=0.2, lty.coverage=1, fontsize=9, stackHeight=0.7, stacking="squish", min.width=0.1, min.height=3, min.distance=0)	
-
-		if ( chrom_notation_rna == T ) {
-			alTrack_s = Gviz::AlignmentsTrack(rna_bam_path, isPaired=TRUE, name="RNA read coverage")
-		} else { # ensembl chromosome name like '1'
-			alTrack_s = Gviz::AlignmentsTrack(rna_bam_path, isPaired=TRUE, name="RNA read coverage", importFunction = chrom_name_function)
-		}
-		Gviz::displayPars(alTrack_s) = list(col.coverage="black", fill.coverage="orange", col.axis="black", type="coverage", strand = '*', coverageHeight=0.08, 
-			minCoverageHeight=5, col.title="black", background.title="transparent", background.panel="transparent", lty=1, lwd=0.2, cex=0.6, cex.axis=0.6, 
-			cex.title=0.6, lwd.coverage=0.2, lty.coverage=1, fontsize=9, stackHeight=0.7, stacking="squish", min.width=0.1, min.height=3, min.distance=0)
-	} else { #// coverage calculated by reads mapped to selected transcripts of upstream and downstrean genes
-		flag = Rsamtools::scanBamFlag(isPaired=T, isProperPair=properpair, isUnmappedQuery=F, isDuplicate=duplicate, isSecondaryAlignment=F, 
-									  hasUnmappedMate=unmappedmate, isNotPassingQualityControls=notpassQC)
-		# Get first coverage
+	# set flag value for BAM file filtering
+	flag = Rsamtools::scanBamFlag(isPaired=T, isProperPair=properpair, isUnmappedQuery=F, isDuplicate=duplicate, 
+				isSecondaryAlignment=F, hasUnmappedMate=unmappedmate, isNotPassingQualityControls=notpassQC)
+	# Get first coverage
+	collapse_trans_A = NULL; # initial status
+	if ( coverage_plot_trans == F ) { #// coverage calculated by all reads mapped to regions of upstream genes
+		collapse_trans_A=GenomicRanges::GRanges(seqnames = S4Vectors::Rle(c(chrom_f), c(1)),
+    		ranges = IRanges::IRanges(start=first_vis_s, end=first_vis_e, names = NULL),
+			strand = S4Vectors::Rle(strand(c(first[[1]]$transcript$Strand[1])), c(1)),
+			feature = "CDS", id = "unknown", exon=first_name, transcript=first_name, gene=first_name, symbol=first_name, density = 1)
+	} else { #// coverage calculated by reads mapped to selected transcripts of upstream genes
 		df_A = GenomicRanges::makeGRangesFromDataFrame(first[[1]]$select_region, keep.extra.columns=TRUE)
 		first_trans = unique(df_A@elementMetadata$transcript); # get all transcript id of geneA
 		collapse_trans_A = df_A[df_A@elementMetadata$transcript=="ZZZZZZZZ",]; # a GRange object - collapse exon intervals of all transcripts
 		#// collapse exon interval - using union mode
 		for ( id in first_trans ) { collapse_trans_A = GenomicRanges::union(collapse_trans_A, df_A[df_A@elementMetadata$transcript==id, ]); }
-		if ( chrom_notation_rna != T ) { # ensembl chromosome name like '1'
-			chrname = as.character(collapse_trans_A@seqnames@values)
-			chrname = sub("chr", "", chrname)
-			collapse_trans_A@seqnames@values = factor(chrname)
+	}
+	if ( chrom_notation_rna != T ) { # ensembl chromosome name like '1'
+		chrname = as.character(collapse_trans_A@seqnames@values)
+		chrname = sub("chr", "", chrname)
+		collapse_trans_A@seqnames@values = factor(chrname)
+	}
+	# calculate the coverage
+	cov_A = GenomicAlignments::coverage(rna_bam_path, param = Rsamtools::ScanBamParam(flag = flag, tag = "MD", which = collapse_trans_A))
+	cov_A = cov_A[collapse_trans_A]
+	# convert object collapse_trans_A from a GRange to a data.frame
+	collapse_trans_A = as.data.frame(collapse_trans_A)
+	bedgraph_A = NULL;
+	if ( nrow(collapse_trans_A) == length(cov_A) ) {
+		for ( i in 1:nrow(collapse_trans_A) ) {
+			value = as.numeric(cov_A[[i]])
+			end = seq(collapse_trans_A[i,]$start, collapse_trans_A[i,]$end, by = 1)
+			start = end - 1;
+			tmp = data.frame(start, end, value, stringsAsFactors = F)
+			bedgraph_A = rbind(bedgraph_A, tmp) 
 		}
-		#// calculate the coverage
-		cov_A = GenomicAlignments::coverage(rna_bam_path, param = Rsamtools::ScanBamParam(flag = flag, tag = "MD", which = collapse_trans_A))
-		cov_A = cov_A[collapse_trans_A]
-		#// convert object collapse_trans_A from a GRange to a data.frame
-		collapse_trans_A = as.data.frame(collapse_trans_A)
-		bedgraph_A = NULL;
-		if ( nrow(collapse_trans_A) == length(cov_A) ) {
-			for ( i in 1:nrow(collapse_trans_A) ) {
-				value = as.numeric(cov_A[[i]])
-				end = seq(collapse_trans_A[i,]$start, collapse_trans_A[i,]$end, by = 1)
-				start = end - 1;
-				tmp = data.frame(start, end, value, stringsAsFactors = F)
-				bedgraph_A = rbind(bedgraph_A, tmp) 
-			}
-		}
-		bedgraph_A=unique(bedgraph_A)
-		alTrack_f <- Gviz::DataTrack(range = bedgraph_A, chromosome = as.character(first[[1]]$select_region[1,]$seqnames), 
-			strand = as.character(first[[1]]$select_region[1,]$strand), genome="NA", name="RNA read coverage", type="h", col="green", fill="green", 
-			col.axis="black", col.title="black", background.title="transparent", background.panel="transparent", 
-			lty=1, lwd=0.2, cex=0.6, cex.axis=0.6, cex.title=0.6, fontsize=9)
+	}
+	bedgraph_A=unique(bedgraph_A)
+	alTrack_f <- Gviz::DataTrack(range = bedgraph_A, chromosome = as.character(first[[1]]$select_region[1,]$seqnames), strand = as.character(first[[1]]$select_region[1,]$strand), 
+			genome="NA", name="RNA read coverage", type="h", col="green", fill="green", col.axis="black", col.title="black", 
+			background.title="transparent", background.panel="transparent", lty=1, lwd=0.2, cex=0.6, cex.axis=0.6, cex.title=0.6, fontsize=9)
 
-		# Get second coverage
+	# Get second coverage
+	collapse_trans_B = NULL; # initial status
+	if ( coverage_plot_trans == F ) { #// coverage calculated by all reads mapped to regions of upstream genes
+		collapse_trans_B=GenomicRanges::GRanges(seqnames = S4Vectors::Rle(c(chrom_s), c(1)),
+    		ranges = IRanges::IRanges(start=second_vis_s, end=second_vis_e, names = NULL),
+			strand = S4Vectors::Rle(strand(c(second[[1]]$transcript$Strand[1])), c(1)),
+			feature = "CDS", id = "unknown", exon=second_name, transcript=second_name, gene=second_name, symbol=second_name, density = 1)
+	} else { #// coverage calculated by reads mapped to selected transcripts of upstream genes
 		df_B = GenomicRanges::makeGRangesFromDataFrame(second[[1]]$select_region, keep.extra.columns=TRUE)
 		second_trans = unique(df_B@elementMetadata$transcript); # get all transcript id of geneA
 		collapse_trans_B = df_B[df_B@elementMetadata$transcript=="ZZZZZZZZ",]; # a GRange object - collapse exon intervals of all transcripts
 		#// collapse exon interval - using union mode
 		for ( id in second_trans ) { collapse_trans_B = GenomicRanges::union(collapse_trans_B, df_B[df_B@elementMetadata$transcript==id, ]); }
-		if ( chrom_notation_rna != T ) { # ensembl chromosome name like '1'
-			chrname = as.character(collapse_trans_B@seqnames@values)
-			chrname = sub("chr", "", chrname)
-			collapse_trans_B@seqnames@values = factor(chrname)
-		}
-		#// calculate the coverage
-		cov_B = GenomicAlignments::coverage(rna_bam_path, param = Rsamtools::ScanBamParam(flag = flag, tag = "MD", which = collapse_trans_B))
-		cov_B = cov_B[collapse_trans_B]
-		#// convert object collapse_trans_A from a GRange to a data.frame
-		collapse_trans_B = as.data.frame(collapse_trans_B)
-		bedgraph_B = NULL;
-		if ( nrow(collapse_trans_B) == length(cov_B) ) {
-			for ( i in 1:nrow(collapse_trans_B) ) {
-				value = as.numeric(cov_B[[i]])
-				end = seq(collapse_trans_B[i,]$start, collapse_trans_B[i,]$end, by = 1)
-				start = end - 1;
-				tmp = data.frame(start, end, value, stringsAsFactors = F)
-				bedgraph_B = rbind(bedgraph_B, tmp) 
-			}
-		}
-		bedgraph_B=unique(bedgraph_B)
-		alTrack_s <- Gviz::DataTrack(range = bedgraph_B, chromosome = as.character(second[[1]]$select_region[1,]$seqnames), 
-			strand = as.character(second[[1]]$select_region[1,]$strand), genome="NA", name="RNA read coverage", type="h", col="orange", fill="orange",
-			col.axis="black", col.title="black", background.title="transparent", background.panel="transparent", 
-			lty=1, lwd=0.2, cex=0.6, cex.axis=0.6, cex.title=0.6, fontsize=9)
 	}
+	if ( chrom_notation_rna != T ) { # ensembl chromosome name like '1'
+		chrname = as.character(collapse_trans_B@seqnames@values)
+		chrname = sub("chr", "", chrname)
+		collapse_trans_B@seqnames@values = factor(chrname)
+	}
+	#// calculate the coverage
+	cov_B = GenomicAlignments::coverage(rna_bam_path, param = Rsamtools::ScanBamParam(flag = flag, tag = "MD", which = collapse_trans_B))
+	cov_B = cov_B[collapse_trans_B]
+	#// convert object collapse_trans_A from a GRange to a data.frame
+	collapse_trans_B = as.data.frame(collapse_trans_B)
+	bedgraph_B = NULL;
+	if ( nrow(collapse_trans_B) == length(cov_B) ) {
+		for ( i in 1:nrow(collapse_trans_B) ) {
+			value = as.numeric(cov_B[[i]])
+			end = seq(collapse_trans_B[i,]$start, collapse_trans_B[i,]$end, by = 1)
+			start = end - 1;
+			tmp = data.frame(start, end, value, stringsAsFactors = F)
+			bedgraph_B = rbind(bedgraph_B, tmp) 
+		}
+	}
+	bedgraph_B=unique(bedgraph_B)
+	alTrack_s <- Gviz::DataTrack(range = bedgraph_B, chromosome = as.character(second[[1]]$select_region[1,]$seqnames), strand = as.character(second[[1]]$select_region[1,]$strand), 
+			genome="NA", name="RNA read coverage", type="h", col="orange", fill="orange", col.axis="black", col.title="black", 
+			background.title="transparent", background.panel="transparent", lty=1, lwd=0.2, cex=0.6, cex.axis=0.6, cex.title=0.6, fontsize=9)
 
 	#// load bam file from DNA-seq: the AlignmentsTrack can only read the bam file with chrom name 'chr' (Ensembl reference not recognised correctly)
 	if (! is.null(dna_bam_path) ) {
@@ -443,7 +441,7 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 			default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"), gp = grid::gpar(col="red", fill="red", lwd=1));
 
 	number_position_x = curve_coordinate["x_pos_gene_upstream"] + (curve_coordinate["x_pos_gene_downstream"] - curve_coordinate["x_pos_gene_upstream"]) / 2
-	number_position_y = curve_coordinate["y_pos"] - bezier_control_point_offset + 4
+	number_position_y = curve_coordinate["y_pos"] - bezier_control_point_offset + 14
 	#// 'supporting_reads_text' is (num of split reads, num of span reads)
 	supporting_reads_text = paste("(", split, ", ", span, ")", sep="")
 	grid::grid.text(supporting_reads_text, x = number_position_x / grDevices::dev.size(units = "px")[1], y = 1 - number_position_y / grDevices::dev.size(units = "px")[2],
@@ -483,4 +481,3 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
     	c(curve_coordinate["y_pos"] - 5, 450), #// y positions
         default.units = "native", arrow=NULL, gp = grid::gpar(col="black", lty=3, lwd=0.3));
 }
-

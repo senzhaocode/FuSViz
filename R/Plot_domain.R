@@ -190,6 +190,8 @@ plot_separate_domain_geneA <- function(first, first_name, first_domain, first_mo
 	chrom_f = first[[1]]$transcript$Chrom[1] #// chromosome name of first: Ensembl
 		
 	#// Set plotting tracks for geneA after reducing intron
+	tmp_transcript = first[[1]]$select_region$transcript;
+	first[[1]]$select_region$transcript = paste(first_name, " (", first[[1]]$select_region$transcript, ")", sep="")
 	grTrack_f = Gviz::GeneRegionTrack(first[[1]]$select_region, chromosome=chrom_f, showId=T, stacking="squish", geneSymbols=F, transcriptAnnotation="transcript", 
 		just.group="above", fontsize.group = 11, fontsize=7, fontcolor="black", fontcolor.group="black", showTitle=F, col="black", col.line="black", fill="green", col.symbol="black", 
 		lwd=0.1, lwd.border=1, lex=1, cex=0.6, cex.axis=0.6, background.title="transparent", background.panel="transparent", stackHeight=0.8, min.width=0.1, min.height=3, min.distance=0);	
@@ -229,6 +231,9 @@ plot_separate_domain_geneA <- function(first, first_name, first_domain, first_mo
 	grid::popViewport(1); #// close the section (1, 1)
 		
 	#// 'A1_xy$GeneRegionTrack': coordinates(x1, y1, x2, y2) of all exons of transcripts for geneA after reducing intron
+	#// convert trancript id from 'symbol (ENT00000XXXX)' to 'ENT00000XXXX'
+	first[[1]]$select_region$transcript = tmp_transcript;
+	A1_xy$GeneRegionTrack@imageMap@tags$title = tmp_transcript;
 	return(A1_xy)
 }
 
@@ -253,6 +258,8 @@ plot_separate_domain_geneB <- function(second, second_name, second_domain, secon
 	chrom_s = second[[1]]$transcript$Chrom[1] #// chromosome name of second: Ensembl
 
 	#// Set plotting tracks for geneB after reducing intron
+	tmp_transcript = second[[1]]$select_region$transcript;
+	second[[1]]$select_region$transcript = paste(second_name, " (", second[[1]]$select_region$transcript, ")", sep="")
 	grTrack_s = Gviz::GeneRegionTrack(second[[1]]$select_region, chromosome=chrom_s, showId=T, stacking="squish", geneSymbols=F, transcriptAnnotation="transcript", just.group="below", 
 		fontsize.group = 11, fontsize=7, fontcolor="black", fontcolor.group="black", showTitle=F, col="black", col.line="black", fill="orange", col.symbol="black", lwd=0.1, lwd.border=1, 
 		lex=1, cex=0.6, cex.axis=0.6, background.title="transparent", background.panel="transparent", stackHeight=0.8, min.width=0.1, min.height=3, min.distance=0);
@@ -292,6 +299,9 @@ plot_separate_domain_geneB <- function(second, second_name, second_domain, secon
 	grid::popViewport(1); #// close the section (1, 1)
 	
 	#// 'B1_xy$GeneRegionTrack': coordinates(x1, y1, x2, y2) of all exons of transcripts for geneB after reducing intron
+	#// convert trancript id from 'symbol (ENT00000XXXX)' to 'ENT00000XXXX'
+	second[[1]]$select_region$transcript = tmp_transcript;
+	B1_xy$GeneRegionTrack@imageMap@tags$title = tmp_transcript;
 	return(B1_xy)
 }
 
@@ -389,6 +399,8 @@ plot_separate_domain_download <- function(first, first_name, first_domain, first
 
 	chrom_f = first[[1]]$transcript$Chrom[1] #// chromosome name of first: Ensembl
 	#// Set plotting tracks for geneA after reducing intron
+	tmp_transcriptA = first[[1]]$select_region$transcript
+	first[[1]]$select_region$transcript = paste(first_name, " (", first[[1]]$select_region$transcript, ")", sep="")
 	grTrack_f = Gviz::GeneRegionTrack(first[[1]]$select_region, chromosome=chrom_f, showId=T, stacking="squish", geneSymbols=F, transcriptAnnotation="transcript", just.group="above", 
 		fontsize.group = 11, fontsize=7, fontcolor="black", fontcolor.group="black", showTitle=F, col="black", col.line="black", fill="green", col.symbol="black", lwd=0.1, 
 		lwd.border=1, lex=1, cex=0.6, cex.axis=0.6, background.title="transparent", background.panel="transparent", stackHeight=0.8, min.width=0.1, min.height=3, min.distance=0);     
@@ -411,6 +423,8 @@ plot_separate_domain_download <- function(first, first_name, first_domain, first
 
 	chrom_s = second[[1]]$transcript$Chrom[1] #// chromosome name of second: Ensembl
 	#// Set plotting tracks for geneB after reducing intron
+	tmp_transcriptB = second[[1]]$select_region$transcript
+	second[[1]]$select_region$transcript = paste(second_name, " (", second[[1]]$select_region$transcript, ")", sep="")
 	grTrack_s = Gviz::GeneRegionTrack(second[[1]]$select_region, chromosome=chrom_s, showId=T, stacking="squish", geneSymbols=F, transcriptAnnotation="transcript", just.group="below", 
 		fontsize.group = 11, fontsize=7, fontcolor="black", fontcolor.group="black", showTitle=F, col="black", col.line="black", fill="orange", col.symbol="black", lwd=0.1, 
 		lwd.border=1, lex=1, cex=0.6, cex.axis=0.6, background.title="transparent", background.panel="transparent", stackHeight=0.8, min.width=0.1, min.height=3, min.distance=0);
@@ -450,6 +464,12 @@ plot_separate_domain_download <- function(first, first_name, first_domain, first
 	B1_xy = Gviz::plotTracks(c(grTrack_s, axis, domain_s, motif_s), chromosome=chrom_s, from=second_vis_s-offset, to=second_vis_e+offset, margin=0,
 			innerMargin=1, sizes=c(1, 0.25, 0.6, 0.6), add=T);
 	grid::popViewport(1); #// close the section (3)
+
+	#// convert transcript id 'symbol (ENT00000XXXXXX)' to 'ENT00000XXXXXX'
+	first[[1]]$select_region$transcript = tmp_transcriptA;
+	second[[1]]$select_region$transcript = tmp_transcriptB;
+	A1_xy$GeneRegionTrack@imageMap@tags$title = tmp_transcriptA;
+	B1_xy$GeneRegionTrack@imageMap@tags$title = tmp_transcriptB;
 
 	if ( nrow(breakpoint) > 0 ) { #// make sure 'breakpoint' data.frame is not empty
 		for (i in 1:length(breakpoint[,1])) {
