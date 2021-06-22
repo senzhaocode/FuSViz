@@ -208,8 +208,8 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset)
 										break;
 									}
 								}
+								m = m + 1;
 							}
-							m = m + 1;
 						}
 						if ( m > offset ) {
 							Judge = 2;
