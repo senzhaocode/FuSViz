@@ -210,12 +210,12 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset)
 								}
 								m = m + 1;
 							}
+							if ( m > offset ) {
+								Judge = 2;
+								breakpoint_relative = IRanges::shift(breakpoint_relative, shift = tmp_plus_shift)
+							}
+							break; #// quit the loop
 						}
-						if ( m > offset ) {
-							Judge = 2;
-							breakpoint_relative = IRanges::shift(breakpoint_relative, shift = tmp_plus_shift)
-						}
-						break; #// quit the loop
 					}
 				}
 			}
