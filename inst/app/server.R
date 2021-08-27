@@ -28,7 +28,7 @@ options(ucscChromosomeNames=FALSE)
 				shiny::showModal(modalDialog(title = "Warning message", "Please choose genome version!"));	req(NULL);
 			} else {
 				shiny::withProgress(message='Load genomic/transcriptomic annotations', detail="Please wait for a while...", min=0, max=1, value=0.1, {
-					txdb <- suppressWarnings(suppressPackageStartupMessages(AnnotationDbi::loadDb(file=file.path(extdata, paste("gencode.v36.annotation.", input$genome, ".sqlite", sep="")))));
+					txdb <- suppressWarnings(suppressPackageStartupMessages(AnnotationDbi::loadDb(file=file.path(extdata, paste("gencode.annotation.", input$genome, ".sqlite", sep="")))));
 					shiny::incProgress(0.2);
 					load(file=file.path(extdata, paste("grTrack.", input$genome, ".Rd", sep="")));
 					shiny::incProgress(0.1);
