@@ -9,7 +9,6 @@ TrackinSeg(
   datastr,
   name,
   trackHeight = 50,
-  color = "red",
   isLog = TRUE,
   displayMode = "EXPANDED",
   SameNameDel = TRUE
@@ -23,8 +22,6 @@ TrackinSeg(
 \item{name}{A string of track name (e.g. \code{DNA seg track}).}
 
 \item{trackHeight}{Initial height of track viewport in pixels (e.g. \code{100}).}
-
-\item{color}{CSS color value for track features (e.g. \code{#ff0000} or \code{rgb(100,0,100)}).}
 
 \item{isLog}{A logical value (e.g. \code{FALSE} or \code{TRUE} - if segment values are 2*log2(copyNumber/2)).}
 
