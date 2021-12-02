@@ -3,6 +3,7 @@
 	addResourcePath(prefix = 'Visualize', directoryPath = file.path(path.package("FuSViz"), "www"))
 	#removeResourcePath('tmp')
 	addResourcePath(prefix = 'tmp', directoryPath = tempdir())
+	addResourcePath(prefix = 'Reference', directoryPath = file.path(path.package("FuSViz"), "tmp"))
 
 	#---------------------------
 	# Define dashboard manual 
@@ -58,7 +59,7 @@
 						box(title = "Import genomic and transcriptomic annotations", width = 12, status = "info", solidHeader = TRUE,
 							fluidRow(
 								column(3, h5(icon("database"), "Annotation data", style = "font-weight: bold; font-size: 16px;")),
-								column(4, selectizeInput("genome", label = "Genome version", choices = c("hg19", "hg38"), multiple = F, 
+								column(4, selectizeInput("genome", label = "Genome version", choices = c("hg19", "hg38", "hg19_offline", "hg38_offline"), multiple = F, 
 											options = list(placeholder = 'select', onInitialize = I('function() { this.setValue(""); }')))),
 								column(3, style = "margin-top: 25px;", actionButton("Import_genome_data", "Import", icon = icon("bolt"), width = "100%"))
 							)

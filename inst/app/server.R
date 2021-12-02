@@ -27,30 +27,31 @@ options(ucscChromosomeNames=FALSE)
 			if ( input$genome == "" ) {
 				shiny::showModal(modalDialog(title = "Warning message", "Please choose genome version!"));	req(NULL);
 			} else {
+				version = gsub('_offline', '', input$genome);
 				shiny::withProgress(message='Load genomic/transcriptomic annotations', detail="Please wait for a while...", min=0, max=1, value=0.1, {
-					txdb <- suppressWarnings(suppressPackageStartupMessages(AnnotationDbi::loadDb(file=file.path(extdata, paste("gencode.annotation.", input$genome, ".sqlite", sep="")))));
+					txdb <- suppressWarnings(suppressPackageStartupMessages(AnnotationDbi::loadDb(file=file.path(extdata, paste("gencode.annotation.", version, ".sqlite", sep="")))));
 					shiny::incProgress(0.2);
-					load(file=file.path(extdata, paste("grTrack.", input$genome, ".Rd", sep="")));
+					load(file=file.path(extdata, paste("grTrack.", version, ".Rd", sep="")));
 					shiny::incProgress(0.1);
-					load(file=file.path(extdata, paste("cytoband.", input$genome, ".Rd", sep="")));
+					load(file=file.path(extdata, paste("cytoband.", version, ".Rd", sep="")));
 					shiny::incProgress(0.1);
 					whole_txdb <- GenomicFeatures::exonsBy(txdb, by = "tx", use.names=TRUE); # group exons by transcript_id
 					shiny::incProgress(0.2);
 
 					#// load domain annotation - one data.frame: domain
-					load(file=file.path(extdata, paste("Domain_interval.", input$genome, ".Rd", sep="")));
+					load(file=file.path(extdata, paste("Domain_interval.", version, ".Rd", sep="")));
 					shiny::incProgress(0.1);
 					# // load motif annotation - one data.frame: motif
-					load(file=file.path(extdata, paste("Motif_interval.", input$genome, ".Rd", sep="")));
+					load(file=file.path(extdata, paste("Motif_interval.", version, ".Rd", sep="")));
 					shiny::incProgress(0.1);
 
 					#// create genome length for circle plot
 					genome_cir = NULL;
-					if ( input$genome == "hg38" ) {
+					if ( input$genome == "hg38" || input$genome == "hg38_offline" ) {
 						genome_cir = list("chr1"=248956422, "chr2"=242193529, "chr3"=198295559, "chr4"=190214555, "chr5"=181538259, "chr6"=170805979, "chr7"=159345973, "chr8"=145138636,
 							"chr9"=138394717, "chr10"=133797422, "chr11"=135086622, "chr12"=133275309, "chr13"=114364328, "chr14"=107043718, "chr15"=101991189, "chr16"=90338345,
 							"chr17"=83257441, "chr18"=80373285, "chr19"=58617616, "chr20"=64444167, "chr21"=46709983, "chr22"=50818468, "chrX"=156040895, "chrY"=57227415);
-					} else if (  input$genome == "hg19" ) {
+					} else if (  input$genome == "hg19" || input$genome == "hg19_offline" ) {
 						genome_cir = list("chr1"=249250621, "chr2"=243199373, "chr3"=198022430, "chr4"=191154276, "chr5"=180915260, "chr6"=171115067, "chr7"=159138663, "chr8"=146364022, 
 							"chr9"=141213431, "chr10"=135534747, "chr11"=135006516, "chr12"=133851895, "chr13"=115169878, "chr14"=107349540, "chr15"=102531392, "chr16"=90354753,
 							"chr17"=81195210, "chr18"=78077248, "chr19"=59128983, "chr20"=63025520, "chr21"=48129895, "chr22"=51304566, "chrX"=155270560, "chrY"=59373566);
@@ -1695,15 +1696,15 @@ options(ucscChromosomeNames=FALSE)
 			if ( is.null(input_twoway_dna_seg()) ) { return(); }
 			if ( nrow(input_twoway_dna_seg()[['dup']]) > 0 ) {
 				if ( nrow(input_twoway_dna_seg()[['del']]) > 0) {
-					FuSViz::TrackinSeg(session, input_twoway_dna_seg()[['dup']], name="DNA small CNV - DUP", color="red", trackHeight=100)
-					FuSViz::TrackinSeg(session, input_twoway_dna_seg()[['del']], name="DNA small CNV - DEL", color="blue", trackHeight=100)
+					FuSViz::TrackinSeg(session, input_twoway_dna_seg()[['dup']], name="DNA small CNV - DUP", trackHeight=100)
+					FuSViz::TrackinSeg(session, input_twoway_dna_seg()[['del']], name="DNA small CNV - DEL", trackHeight=100)
 				} else {
-					FuSViz::TrackinSeg(session, input_twoway_dna_seg()[['dup']], name="DNA small CNV - DUP", color="red", trackHeight=100)
+					FuSViz::TrackinSeg(session, input_twoway_dna_seg()[['dup']], name="DNA small CNV - DUP", trackHeight=100)
 					showModal(modalDialog(title = "Error message", "No DEL SVs available for seg track after filtering control!")); req(NULL);
 				}
 			} else {
 				if ( nrow(input_twoway_dna_seg()[['del']]) > 0 ) {
-					FuSViz::TrackinSeg(session, input_twoway_dna_seg()[['del']], name="DNA small CNV - DEL", color="blue", trackHeight=100)
+					FuSViz::TrackinSeg(session, input_twoway_dna_seg()[['del']], name="DNA small CNV - DEL", trackHeight=100)
 					showModal(modalDialog(title = "Error message", "No DUP SVs available for seg track after filtering control!")); req(NULL);
 				} else {
 					showModal(modalDialog(title = "Error message", "No DUP and DEL SVs available for seg track after filtering control!")); req(NULL);
