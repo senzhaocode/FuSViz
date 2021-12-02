@@ -21,7 +21,7 @@ configure <- NULL
 FuSViz <- function(genomeName, trackHeight=300, displayMode="EXPANDED", initialLocus=NULL, width=NULL, height=NULL, elementId=NULL) {
 	# parameters "genomeName, trackHeight, displayMode and initialLocus" are related to setting in igv.js
 	print("Loading parameters from FuSViz class.");
-	stopifnot(genomeName == 'hg38' || genomeName == 'hg19');
+	stopifnot(genomeName == 'hg38' || genomeName == 'hg19' || genomeName == 'hg19_offline' || genomeName == 'hg38_offline');
 
 	# create a list 
 	x <- list(genomeName=genomeName, initialLocus=initialLocus, displayMode=displayMode, trackHeight=trackHeight);
@@ -199,13 +199,12 @@ TrackinBedPe <- function(session, datastr, name, color="blue", thickness=0.5, tr
 #' @param datastr A data.frame with five columns (e.g. \code{chr}, \code{start}, \code{end}, \code{value} and \code{sample}).
 #' @param name A string of track name (e.g. \code{DNA seg track}).
 #' @param trackHeight Initial height of track viewport in pixels (e.g. \code{100}).
-#' @param color CSS color value for track features (e.g. \code{#ff0000} or \code{rgb(100,0,100)}).
 #' @param isLog A logical value (e.g. \code{FALSE} or \code{TRUE} - if segment values are 2*log2(copyNumber/2)).
 #' @param displayMode Annotation display mode (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
 #' @param SameNameDel A logical value controls whether to add track if its name has been existed (e.g. \code{FALSE} or \code{TRUE}).
 #'
 #' @export
-TrackinSeg <- function(session, datastr, name, trackHeight=50, color="red", isLog=TRUE, displayMode="EXPANDED", SameNameDel=TRUE) {
+TrackinSeg <- function(session, datastr, name, trackHeight=50, isLog=TRUE, displayMode="EXPANDED", SameNameDel=TRUE) {
 	print("load user-defined track in seg format")
 	if ( SameNameDel ) { #// if userdefined track has been loaded, please remove the previous one first
 		DuplicateTrackRemove(session, name)
@@ -220,7 +219,7 @@ TrackinSeg <- function(session, datastr, name, trackHeight=50, color="red", isLo
 	if (! is(datastr$sample, "character") ) { stop("datastr$sample not character!"); }
 
 	datastr = datastr[order(datastr$chr, datastr$start), ] # sort by chromosome and position
-	connect.igvjs <- list(name=name, datastr=jsonlite::toJSON(datastr), trackHeight=trackHeight, color=color, isLog=isLog, displayMode=displayMode) # convert datastr to JSON format
+	connect.igvjs <- list(name=name, datastr=jsonlite::toJSON(datastr), trackHeight=trackHeight, isLog=isLog, displayMode=displayMode) # convert datastr to JSON format
 	session$sendCustomMessage("TrackinSeg", connect.igvjs)
 }
 
