@@ -5,9 +5,9 @@ HTMLWidgets.widget({
 
 	factory: function(el, width, height) {
 		/*
-		 * igv.min.js v2.7.4 (modified version)
-		 * (the raw js files were modified to meet some requirements of SV visualization, then compiled by Nodejs)
-		 * igv.css v2.7.4
+		 * igv.min.js v2.10.4 (modified version)
+		 * (the raw code were modified to meet some requirements of SV visualization, then compiled by Nodejs)
+		 * igv.css v2.10.4
 		 */
 
 		var widgets = null; // initilize widgets
@@ -19,7 +19,8 @@ HTMLWidgets.widget({
 				var objectid = el.id;
 				console.log("el.id:" + el.id + '!'); // contents of el object
 				var options = selectIGVoptions(x.genomeName, x.initialLocus, x.displayMode, x.trackHeight);
-
+				
+				igv.removeAllBrowsers()
 				igv.createBrowser(div, options).
 					then(function (browser) {
 						igv.browser = browser;
@@ -124,14 +125,13 @@ Shiny.addCustomMessageHandler("TrackinSeg",
 	function(message){
 		console.log("TrackinSeg in js");
 		var name = message.name;
-		var color = message.color;
 		var trackHeight = message.trackHeight;
 		var displayMode = message.displayMode;
 		var isLog = message.isLog;
 		var datastr = message.datastr;
 
-		var setting = {type: "seg", format: "seg", isLog: isLog, features: datastr, name: name, indexed: false, 
-					displayMode: displayMode, color: color, height: trackHeight, order: Number.MAX_VALUE, removable: true};
+		var setting = {type: "seg", format: "seg", name: name, isLog: isLog, features: datastr, indexed: false, 
+					displayMode: displayMode, height: trackHeight, order: Number.MAX_VALUE, removable: true};
 		igv.browser.loadTrack(setting);
 	}
 );
@@ -372,6 +372,31 @@ function selectIGVoptions(genomeName, initialLocus, displayMode, trackHeight) {
 				displayMode: displayMode
 			}
 		]
+	}	
+	// setting for hg19 version (offline)
+	var genome_hg19_offline = {
+		locus: initialLocus,
+		minimumBases: 5,
+		flanking: 1000,
+		showRuler: true,
+		reference: {
+			id: "hg19",
+			name: "Human [CRCh37/hg19]",
+			fastaURL: window.location.href + "Reference/hg19.fasta",
+			indexURL: window.location.href + "Reference/hg19.fasta.fai",
+			cytobandURL: window.location.href + "Reference/cytoBand.txt"
+		},
+		tracks: [
+			{
+				name: 'RefSeq Genes [hg19]',
+				url: window.location.href + "Reference/refGene.hg19.bed.gz",
+				indexURL: window.location.href + "Reference/refGene.hg19.bed.gz.tbi",
+				visibilityWindow: -1,
+				removable: false,
+				height: trackHeight,
+				displayMode: displayMode
+			}
+		]
 	}
 	// setting for hg38 version
 	var genome_hg38 = {
@@ -398,11 +423,40 @@ function selectIGVoptions(genomeName, initialLocus, displayMode, trackHeight) {
 			}
 		]
 	}
+	// setting for hg38 version (offline)
+	var genome_hg38_offline = {
+		locus: initialLocus,
+		minimumBases: 5,
+		flanking: 1000,
+		showRuler: true,
+		reference: {
+			id: "hg38",
+			name: "Human [GRCh38/hg38]",
+			fastaURL: window.location.href + "Reference/hg38.fa",
+			indexURL: window.location.href + "Reference/hg38.fa.fai",
+			cytobandURL: window.location.href + "Reference/cytoBandIdeo.txt.gz"
+		},
+		tracks: [
+			{
+				name: 'RefSeq Genes [hg38]',
+				url: window.location.href + "Reference/refGene.sorted.txt.gz",
+				indexURL: window.location.href + "Reference/refGene.sorted.txt.gz.tbi",
+				visibilityWindow: -1,
+				removable: false,
+				height: trackHeight,
+				displayMode: displayMode
+			}
+		]
+	}
 
 	if ( genomeName === "hg19" ) {
 		return(genome_hg19);
 	} else if ( genomeName === "hg38" ) {
 		return(genome_hg38);
+	} else if ( genomeName === "hg19_offline" ) {
+		return(genome_hg19_offline);
+	} else if ( genomeName === "hg38_offline" ) {
+		return(genome_hg38_offline);
 	} else {
 		console.log("Genome version " + genomeName + " is not present!");
 		return(undefined);
