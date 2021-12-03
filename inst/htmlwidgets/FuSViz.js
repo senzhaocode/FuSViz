@@ -350,7 +350,6 @@ Shiny.addCustomMessageHandler("TrackinFile",
 function selectIGVoptions(genomeName, initialLocus, displayMode, trackHeight) {
 	// setting for hg19 version
 	var genome_hg19 = {
-		locus: initialLocus,
 		minimumBases: 5,
 		flanking: 1000,
 		showRuler: true,
@@ -375,7 +374,7 @@ function selectIGVoptions(genomeName, initialLocus, displayMode, trackHeight) {
 	}	
 	// setting for hg19 version (offline)
 	var genome_hg19_offline = {
-		locus: initialLocus,
+		loadDefaultGenomes: false,
 		minimumBases: 5,
 		flanking: 1000,
 		showRuler: true,
@@ -389,18 +388,18 @@ function selectIGVoptions(genomeName, initialLocus, displayMode, trackHeight) {
 		tracks: [
 			{
 				name: 'RefSeq Genes [hg19]',
-				url: window.location.href + "Reference/refGene.hg19.bed.gz",
-				indexURL: window.location.href + "Reference/refGene.hg19.bed.gz.tbi",
+				url: window.location.href + "Reference/refGene.hg19.bed",
+				indexed: false,
 				visibilityWindow: -1,
 				removable: false,
 				height: trackHeight,
+				searchable: true,
 				displayMode: displayMode
 			}
 		]
 	}
 	// setting for hg38 version
 	var genome_hg38 = {
-		locus: initialLocus,
 		minimumBases: 5,
 		flanking: 1000,
 		showRuler: true,
@@ -425,7 +424,7 @@ function selectIGVoptions(genomeName, initialLocus, displayMode, trackHeight) {
 	}
 	// setting for hg38 version (offline)
 	var genome_hg38_offline = {
-		locus: initialLocus,
+		loadDefaultGenomes: false,
 		minimumBases: 5,
 		flanking: 1000,
 		showRuler: true,
@@ -439,11 +438,13 @@ function selectIGVoptions(genomeName, initialLocus, displayMode, trackHeight) {
 		tracks: [
 			{
 				name: 'RefSeq Genes [hg38]',
-				url: window.location.href + "Reference/refGene.sorted.txt.gz",
-				indexURL: window.location.href + "Reference/refGene.sorted.txt.gz.tbi",
+				format: "refgene",
+				url: window.location.href + "Reference/refGene.sorted.txt",
+				indexed: false,
 				visibilityWindow: -1,
 				removable: false,
 				height: trackHeight,
+				searchable: true,
 				displayMode: displayMode
 			}
 		]
