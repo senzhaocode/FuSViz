@@ -24,7 +24,7 @@ FuSViz <- function(genomeName, trackHeight=300, displayMode="EXPANDED", initialL
 	stopifnot(genomeName == 'hg38' || genomeName == 'hg19' || genomeName == 'hg19_offline' || genomeName == 'hg38_offline');
 
 	# create a list 
-	x <- list(genomeName=genomeName, initialLocus=initialLocus, displayMode=displayMode, trackHeight=trackHeight);
+	x <- list(genomeName=genomeName, displayMode=displayMode, trackHeight=trackHeight);
 
 	# binding to FuSViz.js using htmlwidgets::createWidget
 	htmlwidgets::createWidget(name = 'FuSViz', x, width = width, height = height, elementId = elementId, package = 'FuSViz');
