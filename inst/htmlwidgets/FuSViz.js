@@ -383,7 +383,8 @@ function selectIGVoptions(genomeName, initialLocus, displayMode, trackHeight) {
 			name: "Human [CRCh37/hg19]",
 			fastaURL: window.location.href + "Reference/hg19.fasta",
 			indexURL: window.location.href + "Reference/hg19.fasta.fai",
-			cytobandURL: window.location.href + "Reference/cytoBand.txt"
+			cytobandURL: window.location.href + "Reference/cytoBand.txt",
+			visibilityWindow: 1
 		},
 		tracks: [
 			{
@@ -433,7 +434,8 @@ function selectIGVoptions(genomeName, initialLocus, displayMode, trackHeight) {
 			name: "Human [GRCh38/hg38]",
 			fastaURL: window.location.href + "Reference/hg38.fa",
 			indexURL: window.location.href + "Reference/hg38.fa.fai",
-			cytobandURL: window.location.href + "Reference/cytoBandIdeo.txt.gz"
+			cytobandURL: window.location.href + "Reference/cytoBandIdeo.txt.gz",
+			visibilityWindow: 1
 		},
 		tracks: [
 			{
