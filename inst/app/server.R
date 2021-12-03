@@ -1655,7 +1655,7 @@ options(ucscChromosomeNames=FALSE)
 			if ( is.null(input$genome) || input$genome == "" ) {
 			} else {
 				output$FuSViz <- FuSViz::renderFuSViz(
-					FuSViz::FuSViz(genomeName=input$genome, initialLocus="TP53", displayMode="EXPANDED", trackHeight=200)
+					FuSViz::FuSViz(genomeName=input$genome, displayMode="EXPANDED", trackHeight=200)
 				)
 			}
 		})
