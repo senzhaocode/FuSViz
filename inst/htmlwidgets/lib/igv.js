@@ -20552,7 +20552,7 @@
       constructor(config, browser) {
         this.type = "sequence";
         this.browser = browser;
-        this.removable = false;
+        this.removable = true;
         this.config = config;
         this.name = "Sequence";
         this.id = "sequence";
