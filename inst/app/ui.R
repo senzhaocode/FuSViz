@@ -308,7 +308,7 @@
 											gene = list(inputId = "gene", title = "Gene", placeholder = 'select'),
 											name = list(inputId = "name", title = "Sample", placeholder = 'select')
 									)),
-									sliderInput(inputId = "circle_split", label = "Num of split reads", value=1, min=0, max=20, step=1),
+									sliderInput(inputId = "circle_split", label = "Num of split reads", value=0, min=0, max=20, step=1),
 									sliderInput(inputId = "circle_span", label = "Num of span reads", value=0, min=0, max=20, step=1),
 									sliderInput(inputId = "circle_num", label = "Num of samples", value=0, min=0, max=50, step=1),
 									checkboxInput("cirmutcheck", "Load mutation data", FALSE),
@@ -335,7 +335,7 @@
 											gene = list(inputId = "gene", title = "Gene", placeholder = 'select'),
 											name = list(inputId = "name", title = "Sample", placeholder = 'select')
 									)),
-									sliderInput(inputId = "circle_split_dna", label = "Num of split reads", value=1, min=0, max=20, step=1),
+									sliderInput(inputId = "circle_split_dna", label = "Num of split reads", value=0, min=0, max=20, step=1),
 									sliderInput(inputId = "circle_span_dna", label = "Num of span reads", value=0, min=0, max=20, step=1),
 									sliderInput(inputId = "circle_num_dna", label = "Num of samples", value=0, min=0, max=50, step=1),
 									sliderInput(inputId = "circle_dis_dna", label = "Dist intra-chrom", value=1000000, min=0, max=10000000, step=100000),
@@ -434,13 +434,19 @@
 #										column(12, fileInput('load_file', label = "Upload compressed BED, VCF or GTF", accept = c('.gz', '.tbi'), 
 #													multiple = T, placeholder = "*.gz with index *.tbi format")),
 										column(12, tags$p(tags$b("Upload local alignments (indexed ", tags$u("BAM"), " and ", tags$u("CRAM"), ") / annotations (bgzipped and tabixed", 
-															tags$u("VCF"), ", ", tags$u("BED"), " and ", tags$u("GTF"), "):"), " choose both file and index together!")),
+															tags$u("VCF"), ", ", tags$u("BED"), " and ", tags$u("GTF"), ") / genome references (indexed ", tags$u("fasta"), " and cytoband in ", 
+															tags$u("txt"), " format - only usage in offline mode):"), " choose file and index!")),
 										br(),
-										column(12, HTML("<input id='uploadfile' class='hidden' type='file' multiple='true' accept='.bam,.bai,.cram,.crai,.gz,.tbi' onchange=\"load()\"/>
+										column(12, HTML("<input id='uploadfile' class='hidden' type='file' multiple='true' accept='.bam,.bai,.cram,.crai,.gz,.tbi,.fasta,.fai,.txt' onchange=\"load()\"/>
 														<label for='uploadfile'><img src='Visualize/Button.png' alt='Upload img' height='100' width='200'></label>")),
 										br(),
 										column(12, HTML("<div id='filename'></div>")),
 										tags$script(src = "Visualize/Upload_file.js")
+									),
+									hr(tags$style("border-top: 3px solid #000000; color: black; background-color: black")),
+									fluidRow(
+										column(12, tags$p(tags$b("* Only usage in offline mode - upload genome references before click"))),
+										column(12, actionButton("offlineTrackButton", "Load gene track (offline)"))
 									)
 								),
 								tabPanel("RNA_SV",
@@ -530,7 +536,7 @@
 										column(6, div(class="two-way-select", selectizeInput(inputId = "transB_overview", label = div(style="font-size:12px", "GeneB transcript"), 
 													choices = NULL, multiple = TRUE, options = list(placeholder = 'Ensembl transcript id'))))
 									),
-									sliderInput(inputId = "overview_split", label = div(style="font-size:12px", "Num of split reads"), value=1, min=0, max=20, step=1),
+									sliderInput(inputId = "overview_split", label = div(style="font-size:12px", "Num of split reads"), value=0, min=0, max=20, step=1),
 									sliderInput(inputId = "overview_span", label = div(style="font-size:12px", "Num of span reads"), value=0, min=0, max=20, step=1),
 									fluidRow(column(12, HTML("<label for='dashline'>Ruler line:&nbsp;&nbsp;&nbsp;&nbsp;</label><input id='dashline' type='checkbox'>"))),
 									fluidRow(column(12, div(style="font-size:12px", HTML("<b>(*)</b> indicates required input")))),
@@ -550,7 +556,9 @@
 										params = list(
 											pos1 = list(inputId = "pos1", title = div(style="font-size:12px", "Breakpoint A(*)"), placeholder = 'select'),
 											pos2 = list(inputId = "pos2", title = div(style="font-size:12px", "Breakpoint B(*)"), placeholder = 'select'),
-											sample = list(inputId = "name", title = div(style="font-size:12px", "Sample (*)"), placeholder = 'select')
+											sample = list(inputId = "name", title = div(style="font-size:12px", "Sample (*)"), placeholder = 'select'),
+											strand1 = list(inputId = "strand1", title = div(style="font-size:12px", "Strand(fusion) A"), placeholder = 'select'),
+											strand2 = list(inputId = "strand2", title = div(style="font-size:12px", "Strand(fusion) B"), placeholder = 'select')
 										)
 									),
 									selectizeInput(inputId = "transA_individual", label = div(style="font-size:12px", "GeneA transcript"), choices = NULL, multiple = TRUE, 

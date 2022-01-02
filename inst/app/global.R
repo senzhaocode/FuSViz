@@ -35,6 +35,7 @@ related = cancergenes$related;
 onco_color = "#ff8566";
 supp_color = "#00ccff";
 rela_color = "#ffcc33";
+not_onco_supp_rela = "black";
 intergenic_color = "#262626";
 other_color = "#f2f2f2";
 

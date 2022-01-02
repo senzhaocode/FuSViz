@@ -21,7 +21,7 @@ options(ucscChromosomeNames=FALSE)
 		#/////////////////////////////////////////////////////////
 		# Load genomics/transcriptomics database (hg19 or hg38) //
 		#/////////////////////////////////////////////////////////
-		database <- reactiveValues(txdb=NULL, whole_txdb=NULL, grTrack=NULL, chrTrack=NULL, domain=NULL, motif=NULL, genome_cir=NULL, gene_range=NULL, karyto=NULL);
+		database <- reactiveValues(txdb=NULL, whole_txdb=NULL, grTrack=NULL, chrTrack=NULL, domain=NULL, motif=NULL, genome_cir=NULL, gene_range=NULL, karyto=NULL, ensembl_id=NULL);
 		observeEvent(input$Import_genome_data, {
 			#// load annotation db
 			if ( input$genome == "" ) {
@@ -59,6 +59,7 @@ options(ucscChromosomeNames=FALSE)
 					#// create gene annotation for circle plot
 					gene_range = as.data.frame(genes(txdb), stringsAsFactors=F);
 					names(gene_range)[6] = "Gene_ID";
+					ensembl_id = unique(gene_range$Gene_ID);
 					#// union of x and y by "Gene_ID" - merge(gene_range, gene_id, by="Gene_ID", all.x=T, all.y=T)
 					#// intersection of x and y by "Gene_ID" - merge(gene_range, gene_id, by="Gene_ID", all.x=F, all.y=F)
 					#// only use "Gene_id" of y - merge(gene_range, gene_id, by="Gene_ID", all.x=F, all.y=T)
@@ -67,6 +68,11 @@ options(ucscChromosomeNames=FALSE)
 					gene_range = gene_range[gene_range$seqnames %in% chrom_cir, ];
 					names(gene_range)[7] = "gene";	names(gene_range)[2] = "chr";
 					gene_range$strand = as.character(gene_range$strand);
+					#// if gene_symbol is NA, substitute with ensembl_id
+					gene_update=apply(gene_range, 1, function(x){
+        					if ( is.na(x[7]) ) { return(as.character(x[1])); } else { return(as.character(x[7])); }
+					})
+					gene_range$gene = gene_update
 					shiny::incProgress(0.1);
 
 					#// Create cytoband info for circule plot
@@ -82,7 +88,7 @@ options(ucscChromosomeNames=FALSE)
 					shiny::incProgress(0.1);
 				})
 				database$txdb=txdb;	database$whole_txdb=whole_txdb;	database$grTrack=grTrack;	database$chrTrack=chrTrack;	database$domain=domain;
-				database$motif=motif;	database$genome_cir=genome_cir;	database$gene_range=gene_range;	database$karyto=karyto;
+				database$motif=motif;	database$genome_cir=genome_cir;	database$gene_range=gene_range;	database$karyto=karyto; database$ensembl_id=ensembl_id;
 			}
 		})
 		observe({ req(database$txdb); })
@@ -94,7 +100,7 @@ options(ucscChromosomeNames=FALSE)
 			#// Initialize data.frame class 'tumordata' for RNA SVs
 			tumordata = NULL;
 			req(input$file_rna_data);  #// Avoid 'input$file_rna_data' infinite problem when no file loading; the req() basically aborts the rest of the block 
-			#// Upload and read inputfile of RNA SVs (10 columns)
+			#// Upload and read inputfile of RNA SVs (11 columns)
 			tumordata = read.csv(input$file_rna_data$datapath, header=TRUE, sep=input$sep_rna_file, quote="");
 			tumordata = FuSViz::check_input_format(tumordata, "RNA");
 			return(tumordata);
@@ -106,7 +112,7 @@ options(ucscChromosomeNames=FALSE)
 			#// Initialize data.table class 'dnadata' for DNA SVs
 			dnadata = NULL;
 			req(input$file_dna_data);  #// Avoid 'input$file_dna_data' infinite problem when no file loading; the req() basically aborts the rest of the block
-			#// Upload and read inputfile of DNA SVs (10 columns)
+			#// Upload and read inputfile of DNA SVs (12 columns)
 			dnadata = data.table::fread(input$file_dna_data$datapath, sep=input$sep_dna_file, stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE,
 						header = TRUE, fill = TRUE, quote = "");
 			dnadata = FuSViz::check_input_format(dnadata, "DNA");
@@ -303,7 +309,7 @@ options(ucscChromosomeNames=FALSE)
 			#// Defined data.frame class 'rnabed' and 'rnabedgraph' for RNA SVs
 			rnabed = NULL;	rnabedgraph = NULL;
 			#// Set num of split and span reads for filtering control
-			rnatmp = inputdata()[inputdata()$split > input$rna_split_bed & inputdata()$span > input$rna_span_bed, ];
+			rnatmp = inputdata()[inputdata()$split >= input$rna_split_bed & inputdata()$span >= input$rna_span_bed, ];
 			#// Assign SV type either 'Intra' or 'Inter''
 			type = apply(rnatmp, 1, function(x){
 				if ( as.character(x[1]) == as.character(x[4]) ) { return("Intra"); } else { return("Inter"); }
@@ -316,15 +322,15 @@ options(ucscChromosomeNames=FALSE)
 			}
 			dis_bed = apply(rnatmp, 1, function(x){
 				y=as.numeric(x[5]) - as.numeric(x[2]);
-				if ( as.character(x[11]) == "Inter" ) { return(TRUE); } else { abs(y) >= input$rna_dismin_bed && abs(y) <= input$rna_dismax_bed; }
+				if ( as.character(x[12]) == "Inter" ) { return(TRUE); } else { abs(y) >= input$rna_dismin_bed && abs(y) <= input$rna_dismax_bed; }
 			})
-			rnatmp = cbind(rnatmp, dis_bed); rnatmp = rnatmp[rnatmp$dis_bed == T,]; rnatmp = rnatmp[, c(1,2,3,4,5,6,7,8,9,10)];
+			rnatmp = cbind(rnatmp, dis_bed); rnatmp = rnatmp[rnatmp$dis_bed == T,]; rnatmp = rnatmp[, c(1,2,3,4,5,6,7,8,9,10,11)]; # only keep 1-9 column
 
-			#// Set 'rnabed' as a bed format for IGV input
+			#// Set 'rnabed' as a bed format for IGV input - note bed format start coordinate [start - 1]
 			rnabed = data.frame(chr=c(as.character(rnatmp$chrom1), as.character(rnatmp$chrom2)), start=c(as.numeric(rnatmp$pos1) - 1, as.numeric(rnatmp$pos2) - 1),
 					end=c(as.numeric(rnatmp$pos1), as.numeric(rnatmp$pos2)), gene_id=c(as.character(rnatmp$gene1), as.character(rnatmp$gene2)),
 					name=c(as.character(rnatmp$name), as.character(rnatmp$name)), split=c(as.numeric(rnatmp$split), as.numeric(rnatmp$split)),
-					span=c(as.numeric(rnatmp$span), as.numeric(rnatmp$span)), tag=c(as.character(rnatmp$evidence), as.character(rnatmp$evidence)),
+					span=c(as.numeric(rnatmp$span), as.numeric(rnatmp$span)), tag=c(as.character(rnatmp$strand1), as.character(rnatmp$strand2)),
 					partner_chr=c(as.character(rnatmp$chrom2), as.character(rnatmp$chrom1)), partner_start=c(as.numeric(rnatmp$pos2), as.numeric(rnatmp$pos1)),
 					partner_end=c(as.numeric(rnatmp$pos2), as.numeric(rnatmp$pos1)), partner_gene_id=c(as.character(rnatmp$gene2), as.character(rnatmp$gene1)), stringsAsFactors=FALSE)
 			#// Set 'rnabedgraph' as a bedgraph format (only four columns accepted) for IGV input
@@ -339,8 +345,8 @@ options(ucscChromosomeNames=FALSE)
 		#///////////////////////////////////////////////////////////////////
 		#// 'input_twoway_rna_bedpe' has one element: 'rnabedpe' - a data.frame class for bedpe format 
 		rnabedpe_tmp <- reactive({ 
-			tmp = inputdata()[inputdata()$split > input$rna_split_bedpe & inputdata()$span > input$rna_span_bedpe, ];
-			#// remove translocs events due to poor support from igv
+			tmp = inputdata()[inputdata()$split >= input$rna_split_bedpe & inputdata()$span >= input$rna_span_bedpe, ];
+			#// remove translocs events / intra-events > a given distance
 			dis = apply(tmp, 1, function(x){
 				if ( as.character(x[1]) == as.character(x[4]) ) { #// intra-chromosome
 					y=as.numeric(x[5]) - as.numeric(x[2]); abs(y) >= input$rna_dismin_bedpe && abs(y) <= input$rna_dismax_bedpe;
@@ -383,7 +389,7 @@ options(ucscChromosomeNames=FALSE)
 		#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		#// 'input_twoway_dna_bed' has two element: 'dnabed' - a data.frame class for bed format and 'dnabedgraph' - a data.frame class for bedgraph format
 		dnabed_tmp <- reactive({ 
-			tmp = inputdata_dna()[inputdata_dna()$split > input$dna_split_bed & inputdata_dna()$span > input$dna_span_bed, ];
+			tmp = inputdata_dna()[inputdata_dna()$split >= input$dna_split_bed & inputdata_dna()$span >= input$dna_span_bed, ];
 			#// use distance of two SVs as control for filtering (translocs PASS)
 			dis_bed = apply(tmp, 1, function(x){
 				y=as.numeric(x[6]) - as.numeric(x[2]); 
@@ -423,7 +429,7 @@ options(ucscChromosomeNames=FALSE)
 		#/////////////////////////////////////////////////////////////////////////////////////////////////////
 		#// 'input_twoway_dna_bedpe' has one element: 'dnabedpe' - a data.frame class for bedpe format
 		dnabedpe_tmp <- reactive({
-			tmp = inputdata_dna()[inputdata_dna()$split > input$dna_split_bedpe & inputdata_dna()$span > input$dna_span_bedpe, ];
+			tmp = inputdata_dna()[inputdata_dna()$split >= input$dna_split_bedpe & inputdata_dna()$span >= input$dna_span_bedpe, ];
 			tmp = tmp[tmp$type != 'BND', ]; # remove translocs due to no support for IGV
 			#// use distance of two SVs as control for filtering (no translocs events included)
 			dis = apply(tmp, 1, function(x){
@@ -470,7 +476,7 @@ options(ucscChromosomeNames=FALSE)
 		#//////////////////////////////////////////////////////////////////////////////////////////////
 		#// 'input_twoway_dna_seg' has one element: 'dnaseg' - a data.frame class for segment format 
 		dnaseg_tmp <- reactive({ 
-			tmp = inputdata_dna()[inputdata_dna()$split > input$dna_split_seg & inputdata_dna()$span > input$dna_span_seg, ];
+			tmp = inputdata_dna()[inputdata_dna()$split >= input$dna_split_seg & inputdata_dna()$span >= input$dna_span_seg, ];
 			tmp = tmp[which(tmp$type %in% c('DUP','DEL')), ];
 			return(tmp);
 		})
@@ -794,7 +800,12 @@ options(ucscChromosomeNames=FALSE)
 			}
 			if ( length(unique(as.character(overview_tmp()$gene1))) == 1 ) {
 				choice_geneA = unique(as.character(overview_tmp()$gene1))
-				ens_A = names(symbol_ensem[symbol_ensem == choice_geneA])
+				ens_A = NULL;
+				if ( grepl("ENSG00", choice_geneA) ) {
+					ens_A = database$ensembl_id[database$ensembl_id == choice_geneA];
+				} else {
+					ens_A = names(symbol_ensem[symbol_ensem == choice_geneA])
+				}
 				if ( length(ens_A) == 1 ) { #// if gene symbol matches to ensembl_id
 					object_over_A$value <- FuSViz::get_annotation_db_extend(ens_A, database$txdb, database$grTrack, database$whole_txdb)
 					if ( is.null(object_over_A$value) ) {
@@ -822,7 +833,12 @@ options(ucscChromosomeNames=FALSE)
 			}
 			if ( length(unique(as.character(overview_tmp()$gene2))) == 1 ) {
 				choice_geneB = unique(as.character(overview_tmp()$gene2))
-				ens_B = names(symbol_ensem[symbol_ensem == choice_geneB])
+				ens_B = NULL;
+				if ( grepl("ENSG00", choice_geneB) ) {
+					ens_B = database$ensembl_id[database$ensembl_id == choice_geneB];
+				} else {
+					ens_B = names(symbol_ensem[symbol_ensem == choice_geneB])
+				}
 				if ( length(ens_B) == 1 ) {
 					object_over_B$value <- FuSViz::get_annotation_db_extend(ens_B, database$txdb, database$grTrack, database$whole_txdb)
 					if ( is.null(object_over_B$value) ) {
@@ -946,7 +962,7 @@ options(ucscChromosomeNames=FALSE)
 		object_individual_B <- reactiveValues(value=NULL) #// 'object_individual_B$value' is list class with five elements:
 		individualAB <- reactiveValues(geneA=NULL, symbol_A=NULL, geneB=NULL, symbol_B=NULL, breakpoint_set=NULL)
 		individual_1 <- callModule(module = selectizeGroupServer, id = "individual1", data = inputdata, vars = c("gene1", "gene2"))
-		individual_data <- callModule(module = selectizeGroupServer, id = "individual2", data = individual_1, vars = c("pos1", "pos2", "name"))
+		individual_data <- callModule(module = selectizeGroupServer, id = "individual2", data = individual_1, vars = c("pos1", "pos2", "name", "strand1", "strand2"))
 		#// when input[['individual1-gene1']] NOT null, assign 'object_individual_A$value' using FUNCTION "get_annotation_db"
 		observeEvent(input[['individual1-gene1']], {
 			if ( is.null(database$txdb) || is.null(database$grTrack) ) {
@@ -957,7 +973,12 @@ options(ucscChromosomeNames=FALSE)
 			}
 			if ( length(unique(as.character(individual_1()$gene1))) == 1 ) {
 				choice_geneA = unique(as.character(individual_1()$gene1))
-				ens_A = names(symbol_ensem[symbol_ensem == choice_geneA])
+				ens_A = NULL;
+				if ( grepl("ENSG00", choice_geneA) ) {
+					ens_A = database$ensembl_id[database$ensembl_id == choice_geneA];
+				} else {
+					ens_A = names(symbol_ensem[symbol_ensem == choice_geneA])
+				}
 				if ( length(ens_A) == 1 ) { #// if gene symbol matches to ensembl_id
 					object_individual_A$value <- FuSViz::get_annotation_db(ens_A, database$txdb, database$grTrack)
 					if ( is.null(object_individual_A$value) ) {
@@ -985,7 +1006,12 @@ options(ucscChromosomeNames=FALSE)
 			}
 			if ( length(unique(as.character(individual_1()$gene2))) == 1 ) {
 				choice_geneB = unique(as.character(individual_1()$gene2))
-				ens_B = names(symbol_ensem[symbol_ensem == choice_geneB])
+				ens_B = NULL;
+				if ( grepl("ENSG00", choice_geneB) ) {
+					ens_B = database$ensembl_id[database$ensembl_id == choice_geneB];
+				} else {
+					ens_B = names(symbol_ensem[symbol_ensem == choice_geneB])
+				}
 				if ( length(ens_B) == 1 ) { #// if gene symbol matches to ensembl_id
 					object_individual_B$value <- FuSViz::get_annotation_db(ens_B, database$txdb, database$grTrack)
 					if ( is.null(object_individual_B$value) ) {
@@ -1015,7 +1041,7 @@ options(ucscChromosomeNames=FALSE)
 					symbol_A = individual_data()[1,]$gene1
 					symbol_B = individual_data()[1,]$gene2
 					breakpoint_set = data.frame(breakpoint_A=individual_data()[1,]$pos1, breakpoint_B=individual_data()[1,]$pos2, 
-										split=individual_data()[1,]$split, span=individual_data()[1,]$span, stringsAsFactors=FALSE)
+							split=individual_data()[1,]$split, span=individual_data()[1,]$span, strand_A=individual_data()[1,]$strand1, strand_B=individual_data()[1,]$strand2, stringsAsFactors=FALSE)
 					
 					mytmp_A = list(); #// a subset of 'object_individual_A' as input for FUNCTION gene_trans_ex
 					mytmp_A$value$txTr_f = object_individual_A$value$txTr_f; 
@@ -1052,11 +1078,11 @@ options(ucscChromosomeNames=FALSE)
 					} else {
 						showModal(modalDialog(title = "Warning message", "No breakpoints within geneB, and plot stops (please check coordinates!)")); req(NULL)
 					}
-					individualAB$geneA=geneA;	individualAB$symbol_A=symbol_A
-					individualAB$geneB=geneB;	individualAB$symbol_B=symbol_B
-					individualAB$breakpoint_set=breakpoint_set	
+					individualAB$geneA=geneA;	individualAB$symbol_A=symbol_A;
+					individualAB$geneB=geneB;	individualAB$symbol_B=symbol_B;
+					individualAB$breakpoint_set=breakpoint_set;
 				} else {
-					showModal(modalDialog(title = "Warning message", "Multiple-sample selection is not allowed (please choose one sample!)")); req(NULL)
+					showModal(modalDialog(title = "Warning message", "Multiple entries are not allowed (please choose one sample, one gene partner pair, one breakpoint combination and one strand combination!)")); req(NULL)
 				}
 			} else {
 				showModal(modalDialog(title = "Warning message", "No gene symbols selected for fusion partners (please choose gene symbol first!)")); req(NULL)
@@ -1113,7 +1139,12 @@ options(ucscChromosomeNames=FALSE)
 				showModal(modalDialog(title = "Warning message", "Please only select one symbol name (if mulitple available, only the first one valid!)"))
 			} else if ( length(input[['domain1-gene1']]) == 1 ) {
 				control_break_AB$A = NULL; control_break_AB$B = NULL; domain_plotA$geneA = NULL;
-				ens_A = names(symbol_ensem[symbol_ensem == input[['domain1-gene1']]])
+				ens_A = NULL;
+				if ( grepl("ENSG00", input[['domain1-gene1']]) ) {
+					ens_A = database$ensembl_id[database$ensembl_id == input[['domain1-gene1']]];
+				} else {
+					ens_A = names(symbol_ensem[symbol_ensem == input[['domain1-gene1']]])
+				}
 			}
 		})
 		#// if gene symbol is selected in input[['domain1-gene2']], set 'control_break_AB$A', 'control_break_AB$B' and 'domain_plotB$geneB' as NULL when only one symbol selected
@@ -1125,14 +1156,24 @@ options(ucscChromosomeNames=FALSE)
 				showModal(modalDialog(title = "Warning message", "Please only select one symbol name (if multiple available, only the first one valid!)"))
 			} else if ( length(input[['domain1-gene2']]) == 1 ) {
 				control_break_AB$A = NULL; control_break_AB$B = NULL; domain_plotB$geneB = NULL;
-				ens_B = names(symbol_ensem[symbol_ensem == input[['domain1-gene2']]])
+				ens_B = NULL;
+				if ( grepl("ENSG00", input[['domain1-gene2']]) ) {
+					ens_B = database$ensembl_id[database$ensembl_id == input[['domain1-gene2']]];
+				} else {
+					ens_B = names(symbol_ensem[symbol_ensem == input[['domain1-gene2']]])
+				}
 			}
 		})
 
 		observe({ #// when input[['domain1-gene1']] activates
 			if ( length(unique(as.character(domain_1()$gene1))) == 1 ) { #// make sure only one symbol of geneA selected
 				choice_geneA = unique(as.character(domain_1()$gene1))
-				ens_A = names(symbol_ensem[symbol_ensem == choice_geneA])
+				ens_A = NULL;
+				if ( grepl("ENSG00", choice_geneA) ) {
+					ens_A = database$ensembl_id[database$ensembl_id == choice_geneA];
+				} else {
+					ens_A = names(symbol_ensem[symbol_ensem == choice_geneA])
+				}
 				if ( length(ens_A) == 1 ) { #// if gene symbol matches to ensembl_id
 					object_domain_A$value <- FuSViz::get_annotation_db(ens_A, database$txdb, database$grTrack)
 					if ( is.null(object_domain_A$value) ) {
@@ -1175,7 +1216,12 @@ options(ucscChromosomeNames=FALSE)
 		observe({ #// when input[['domain1-gene2']] activates
 			if ( length(unique(as.character(domain_1()$gene2))) == 1 ) { #// make sure only one symbol of geneB selected
 				choice_geneB = unique(as.character(domain_1()$gene2))
-				ens_B = names(symbol_ensem[symbol_ensem == choice_geneB])
+				ens_B = NULL;
+				if ( grepl("ENSG00", choice_geneB) ) {
+					ens_B = database$ensembl_id[database$ensembl_id == choice_geneB];
+				} else {
+					ens_B = names(symbol_ensem[symbol_ensem == choice_geneB])
+				}
 				if ( length(ens_B) == 1 ) { #// if gene symbol matches to ensembl_id
 					object_domain_B$value <- FuSViz::get_annotation_db(ens_B, database$txdb, database$grTrack)
 					if ( is.null(object_domain_B$value) ) {
@@ -1236,7 +1282,7 @@ options(ucscChromosomeNames=FALSE)
 			breakpoint_set = unique(domain_1()$pos1)
 			for (i in 1:length(breakpoint_set)) { # print(paste("start domain A loop: ", i))
 				if (! exists(as.character(breakpoint_set[i]), where=geneA) ) {
-					geneA[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_A$value, database$whole_txdb, "upstream", 5) #// For geneA
+					geneA[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_A$value, database$whole_txdb, "upstream", offset=5) #// For geneA
 				}
 			}
 			#// remove the elements in the list where breakpoint outside transcript region of geneA
@@ -1251,7 +1297,7 @@ options(ucscChromosomeNames=FALSE)
 		#// select transcript_id of geneB
 		observeEvent(input$domainB, {
 			domain_plot_link$B1_xy = NULL;
-			if ( is.null(object_domain_B$value) || input$domainB == "" ) { #// if 'object_domain_A$value' is NULL, set 'domain_plotA$geneA, $symbol_A, $domainA, $motifA' as NULL
+			if ( is.null(object_domain_B$value) || input$domainB == "" ) { #// if 'object_domain_B$value' is NULL, set 'domain_plotB$geneB, $symbol_B, $domainB, $motifB' as NULL
 				domain_plotB$geneB = NULL; domain_plotB$symbol_B = NULL; domain_plotB$domainB = NULL; domain_plotB$motifB = NULL; return(); 
 			}
 			name_domainB = input$domainB;	name_domainB = gsub('-', '', name_domainB);
@@ -1269,7 +1315,7 @@ options(ucscChromosomeNames=FALSE)
 			breakpoint_set = unique(domain_1()$pos2)
 			for (i in 1:length(breakpoint_set)) { # print(paste("start domain B loop: ", i))
 				if (! exists(as.character(breakpoint_set[i]), where=geneB) ) {
-					geneB[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_B$value, database$whole_txdb, "downstream", 5) #// For geneB
+					geneB[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_B$value, database$whole_txdb, "downstream", offset=5) #// For geneB
 				}
 			}
 			#// remove the elements in the list where breakpoint outside transcript region of geneB
@@ -1654,11 +1700,24 @@ options(ucscChromosomeNames=FALSE)
 		observe({
 			if ( is.null(input$genome) || input$genome == "" ) {
 			} else {
-				output$FuSViz <- FuSViz::renderFuSViz(
-					FuSViz::FuSViz(genomeName=input$genome, displayMode="EXPANDED", trackHeight=200)
-				)
+				if ( input$genome == "hg19" || input$genome == "hg38" ) {
+					output$FuSViz <- FuSViz::renderFuSViz(
+						FuSViz::FuSViz(genomeName=input$genome, displayMode="EXPANDED", trackHeight=200)
+					)
+				}
 			}
 		})
+		#// load gene annotation file in offline mode
+		observeEvent(input$offlineTrackButton, {
+			if ( input$genome == "hg19_offline" ) {
+				FuSViz::Trackoffline(session, "hg19", name="RefSeq [hg19 offline]")
+			} else if ( input$genome == "hg38_offline" ) {
+				FuSViz::Trackoffline(session, "hg38", name="RefSeq [hg38 offline]")
+			} else {
+				showModal(modalDialog(title = "Warning message", "Load gene track in offline mode not available!")); req(NULL);
+			}
+		})
+
 		#// Get genomic coordinate
 		observeEvent(input$GetPos, {
 			FuSViz::Coordinate(session, "GetPosCoord");
