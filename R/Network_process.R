@@ -14,7 +14,8 @@
 #'
 #' @export
 network_process <- function(tmp, type, color_onco, color_supp, color_rela, color_inter, color_other) {
-	tmp = tmp[! (tmp$gene1 == '*' & tmp$gene2 == '*'), ];
+	tmp = tmp[! (tmp$gene1 == '*' & tmp$gene2 == '*'), ]; #// remove the entry with both breakpoints at integenic region
+	tmp = tmp[! (grepl("ENSG00", tmp$gene1) & grepl("ENSG00", tmp$gene2)), ]; #// remove the entry with both partners as ensembl_id
 	geneset = c(names(oncogenes), names(tumorsupress), names(related)); #// merge pre-defined geneset
 
 	#// only keep gene pairs if either gene1 or gene2 (at least one of them) is in pre-defined geneset

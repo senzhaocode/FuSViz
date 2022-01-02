@@ -17,33 +17,38 @@
 		
 	if ( is.null(upstream_flag[[as.character(break_A)]]) || is.null(downstream_flag[[as.character(break_B)]]) ) { return(NULL) }
 
-	exon_xy_A1 = Gviz::coords(upstream_xy$GeneRegionTrack); #// coordinates of all exons in geneA plotting
-	exon_xy_B1 = Gviz::coords(downstream_xy$GeneRegionTrack); #// coordinates of all exons in geneB plotting 	
-	#// extract exon_id harboring/close to breakpoint of geneA
-	exon_match_A1 = grep(paste(upstream_flag[[as.character(break_A)]]$transcript$exon, collapse='|'), rownames(exon_xy_A1), value=T);
-	exon_match_pos_A1 = exon_xy_A1[exon_match_A1, ,drop=FALSE]; #// get coordinates of extracted exon_id for geneA
-	#// extract exon_id harboring/close to breakpoint of geneB
-	exon_match_B1 = grep(paste(downstream_flag[[as.character(break_B)]]$transcript$exon, collapse='|'), rownames(exon_xy_B1), value=T); 
-	exon_match_pos_B1 = exon_xy_B1[exon_match_B1, ,drop=FALSE]; #// get coordinates of extracted exon_id for geneB
-
 	#// process exon coordinates for geneA
-	y_pos_gene_upstream = min(exon_match_pos_A1[, 2]); #// get coordinates of extracted exon_id at the top of plotting for geneA
-	target_exon_A1 = rownames(subset(exon_match_pos_A1, exon_match_pos_A1[,2] %in% y_pos_gene_upstream)); #// get name of the exon_id at the top of plotting for geneA
-	target_exon_rename_A1 = sub("\\.[0-9]+", "", target_exon_A1, ignore.case=T); #// select core regular expression part (remove .d) of exon_id
+	exon_xy_A1 = Gviz::coords(upstream_xy$GeneRegionTrack); #// coordinates of all exons in geneA plotting
+	#// extract exon_id harboring/close to breakpoint of geneA (only one transcript) 
 	exon_tx_A1 = names(upstream_xy$GeneRegionTrack@imageMap@tags$origExonId); #// 'exon_tx_A1' is a vector of all exon_id
 	names(exon_tx_A1) = upstream_xy$GeneRegionTrack@imageMap@tags$title; #// assign transcript_id to the name of each element in 'exon_tx_A1'
-			
-	tx_A1 = exon_tx_A1[exon_tx_A1 %in% target_exon_A1[1]]; #// get transcript_id at the top of plotting (if more than one transcripts on the top, please select first one)
-	tx_exon_A1 = exon_tx_A1[names(exon_tx_A1) %in% names(tx_A1)]; #// select all exon_id of the transcript at the top of plotting
-	#// select the exon_id (one exon may be selected twice due to split of utr-cds) related to the breakpoint in the vector 'tx_exon_A1'
-	tx_exon_select_A1 = grep(target_exon_rename_A1[1], tx_exon_A1, value=T);
+	#// extract exon_id harboring/close to breakpoint of geneA (one/two [due to split to utr-cds] exon per one transcript) 
+	trans_exon_A = data.frame("TXNAME"=upstream_flag[[as.character(break_A)]]$transcript$TXNAME, "exon"=upstream_flag[[as.character(break_A)]]$transcript$exon, stringsAsFactors=FALSE)
+	exon_match_A1 = c();
+	for (i in 1:nrow(trans_exon_A)) {
+		exon_match_A1 = c(exon_match_A1, exon_tx_A1[names(exon_tx_A1) %in% trans_exon_A[i,]$TXNAME & grepl(trans_exon_A[i,]$exon, exon_tx_A1)])
+	}
+	exon_match_pos_A1 = exon_xy_A1[exon_match_A1, ,drop=FALSE]; #// get coordinates of extracted exon_id for geneA
+
+	#// select one transcript id (always the 1st one of all transcript isoforms)
+	trans_target_A1 = NULL; # unique(names(exon_match_A1))[1];
+	tmp_A = upstream_flag[[as.character(break_A)]]$transcript; 
+	if ( length(tmp_A[tmp_A$Judge==1 | tmp_A$Judge==2 | tmp_A$Judge==3, ]$TXNAME) > 0 ) {
+		trans_target_A1 = tmp_A[tmp_A$Judge==1 | tmp_A$Judge==2 | tmp_A$Judge==3, ]$TXNAME[1]; #// select one transcript_id if Judge == 1, 2 or 3
+	} else {
+		trans_target_A1 = tmp_A[rev(order(tmp_A$Trans_length)), ]$TXNAME[1]; #// select one transcript_id if Judge == 4
+	}
+	exon_target_A1 = exon_tx_A1[names(exon_tx_A1) %in% trans_target_A1]; #// get all exon_id of the transcript $trans_target_A1
+	#// select exon_id.x (one or two elements may be selected due to split of utr-cds) related to the breakpoint for the $trans_target_A
+	tx_exon_select_A1 = exon_match_A1[names(exon_match_A1) %in% trans_target_A1];
+	#// get coordinates (x1, y1, x2, y2) of the selected exon_id (one or two elements due to split of utr-cds) related to the breakpoint	
+	exon_coord_A1 = subset(exon_match_pos_A1, rownames(exon_match_pos_A1) %in% tx_exon_select_A1); 
 	#// 0 <= fract_A1 <= 1
-	fract_A1 = upstream_flag[[as.character(break_A)]]$transcript[upstream_flag[[as.character(break_A)]]$transcript$TXNAME==names(tx_A1),]$Prop;
-	exon_coord_A1 = subset(exon_match_pos_A1, rownames(exon_match_pos_A1) %in% tx_exon_select_A1); #// get coordinates of selected exon_id in 'tx_exon_select_A1'
+	fract_A1 = tmp_A[tmp_A$TXNAME==trans_target_A1, ]$Prop;
 	#// upstream_type = 1, 2, 3, or 4 (outside transcript)
-	upstream_type = upstream_flag[[as.character(break_A)]]$transcript[upstream_flag[[as.character(break_A)]]$transcript$TXNAME==names(tx_A1),]$Judge; 
+	upstream_type = tmp_A[tmp_A$TXNAME==trans_target_A1, ]$Judge;
 	#// Exon_pos = "1_0" or "0_1" (only valid when breakpoint outside transcript)
-	Exon_pos = upstream_flag[[as.character(break_A)]]$transcript[upstream_flag[[as.character(break_A)]]$transcript$TXNAME==names(tx_A1),]$Exon_pos; 
+	Exon_pos = tmp_A[tmp_A$TXNAME==trans_target_A1, ]$Exon_pos;
 		
 	#// calculate the x-coordinates of breakpoint for geneA
 	if ( upstream_type == 1 || upstream_type == 2 ) { #// breakpoint at exon boundary or falls within exon
@@ -57,53 +62,68 @@
 	} else if ( upstream_type == 3 ) { #// breakpoint within intron
 		if ( exon_coord_A1[,"x1"][1] > exon_coord_A1[,"x2"][1] ) { #// negative strand
 			x1 = max(exon_coord_A1[,"x1"]);
-			sub_A1 = subset(exon_xy_A1[tx_exon_A1,], exon_xy_A1[tx_exon_A1,][,"x1"] > x1); 
+			sub_A1 = subset(exon_xy_A1[exon_target_A1,], exon_xy_A1[exon_target_A1,][,"x1"] > x1); 
 			sub_A1 = sub_A1[order(sub_A1[,"x1"]), , drop=F][1,];
 			x2 = sub_A1["x2"];		
 			x_pos_gene_upstream = fract_A1*(x2 - x1) + x1;
 		} else {
 			x2 = max(exon_coord_A1[,"x2"]); 
-			sub_A1 = subset(exon_xy_A1[tx_exon_A1,], exon_xy_A1[tx_exon_A1,][,"x2"] > x2);	  
+			sub_A1 = subset(exon_xy_A1[exon_target_A1,], exon_xy_A1[exon_target_A1,][,"x2"] > x2);	  
 			sub_A1 = sub_A1[order(sub_A1[,"x2"]), , drop=F][1,];
 			x1 = sub_A1["x1"];	
 			x_pos_gene_upstream = fract_A1*(x1 - x2) + x2;
 		}
-	} else { #// breakpoint outside of transcript
+	} else { #// breakpoint outside transcript
+		sub_A1 = subset(exon_xy_A1[exon_target_A1,])
 		if ( exon_coord_A1[,"x1"][1] > exon_coord_A1[,"x2"][1] ) { #// negative strand
-			x2 = min(exon_coord_A1[,"x2"]); x1 = max(exon_coord_A1[,"x1"])
-			if ( Exon_pos == "1_0") { # // breakpoint < transcript_start
+			x2 = min(sub_A1[,"x2"]); x1 = max(sub_A1[,"x1"])
+			if ( Exon_pos == "1_0") { #// breakpoint < transcript_start
 				x_pos_gene_upstream = (x2 - fract_A1*x1)/(1 - fract_A1)
-			} else { # // breakpoint > transcript_end
+			} else { #// breakpoint > transcript_end
 				x_pos_gene_upstream = (x1 - fract_A1*x2)/(1 - fract_A1)
 			}
 		} else { #// positive strand
-			x2 = max(exon_coord_A1[,"x2"]); x1 = min(exon_coord_A1[,"x1"])
-			if ( Exon_pos == "0_1") { # // breakpoint < transcript_start
+			x2 = max(sub_A1[,"x2"]); x1 = min(sub_A1[,"x1"])
+			if ( Exon_pos == "0_1") { #// breakpoint < transcript_start
 				x_pos_gene_upstream = (x1 - fract_A1*x2)/(1 - fract_A1)
-			} else { # // breakpoint > transcript_end
+			} else { #// breakpoint > transcript_end
 				x_pos_gene_upstream = (x2 - fract_A1*x1)/(1 - fract_A1)
 			}
-		}	
+		}
 	}
-										
+									
 	#// process exon coordinates for geneB
-	y_pos_gene_downstream = min(exon_match_pos_B1[, 2]); #// get coordinates of extracted exon_id at the top of plotting for geneB
-	target_exon_B1 = rownames(subset(exon_match_pos_B1, exon_match_pos_B1[,2] %in% y_pos_gene_downstream)); #// get name of the exon_id at the top of plotting for geneB
-	target_exon_rename_B1 = sub("\\.[0-9]+", "", target_exon_B1, ignore.case=T); #// select core regular expression part (remove .d) of exon_id			
+	exon_xy_B1 = Gviz::coords(downstream_xy$GeneRegionTrack); #// coordinates of all exons in geneB plotting
+	#// extract exon_id harboring/close to breakpoint of geneB (only one transcript) 
 	exon_tx_B1 = names(downstream_xy$GeneRegionTrack@imageMap@tags$origExonId); #// 'exon_tx_B1' is a vector of all exon_id
 	names(exon_tx_B1) = downstream_xy$GeneRegionTrack@imageMap@tags$title; #// assign transcript_id to the name of each element in 'exon_tx_B1'
-			
-	tx_B1 = exon_tx_B1[exon_tx_B1 %in% target_exon_B1[1]]; #// get transcript_id at the top of plotting (if more than one transcripts on the top, please select first one)
-	tx_exon_B1 = exon_tx_B1[names(exon_tx_B1) %in% names(tx_B1)]; #// select all exon_id of the transcript at the top of plotting
-	#// select the exon_id (one exon may be selected twice due to split of utr-cds) related to the breakpoint in the vector 'tx_exon_B1'
-	tx_exon_select_B1 = grep(target_exon_rename_B1[1], tx_exon_B1, value=T); 
-	#// 0 <= fract_B1 <= 1
-	fract_B1 = downstream_flag[[as.character(break_B)]]$transcript[downstream_flag[[as.character(break_B)]]$transcript$TXNAME==names(tx_B1),]$Prop;
-	exon_coord_B1 = subset(exon_match_pos_B1, rownames(exon_match_pos_B1) %in% tx_exon_select_B1); #// get coordinates of selected exon_id in 'tx_exon_select_B1'
+	#// extract exon_id harboring/close to breakpoint of geneB (one exon per one transcript) 
+	trans_exon_B = data.frame("TXNAME"=downstream_flag[[as.character(break_B)]]$transcript$TXNAME, "exon"=downstream_flag[[as.character(break_B)]]$transcript$exon, stringsAsFactors=FALSE)
+	exon_match_B1 = c();
+	for (i in 1:nrow(trans_exon_B)) {
+		exon_match_B1 = c(exon_match_B1, exon_tx_B1[names(exon_tx_B1) %in% trans_exon_B[i,]$TXNAME & grepl(trans_exon_B[i,]$exon, exon_tx_B1)])
+	}
+	exon_match_pos_B1 = exon_xy_B1[exon_match_B1, ,drop=FALSE]; #// get coordinates of extracted exon_id for geneB
+	
+	#// select one transcript id (always the 1st one of all transcript isoforms)
+	trans_target_B1 = NULL; # unique(names(exon_match_B1))[1];
+	tmp_B = downstream_flag[[as.character(break_B)]]$transcript;
+	if ( length(tmp_B[tmp_B$Judge==1 | tmp_B$Judge==2 | tmp_B$Judge==3, ]$TXNAME) > 0 ) {
+		trans_target_B1 = tmp_B[tmp_B$Judge==1 | tmp_B$Judge==2 | tmp_B$Judge==3, ]$TXNAME[1]; #// select one transcript_id if Judge == 1, 2 or 3
+	} else {
+		trans_target_B1 = tmp_B[rev(order(tmp_B$Trans_length)), ]$TXNAME[1]; #// select one transcript_id if Judge == 4
+	}
+	exon_target_B1 = exon_tx_B1[names(exon_tx_B1) %in% trans_target_B1]; #// get all exon_id of the transcript $trans_target_B1
+	#// select exon_id.x (one or two elements may be selected due to split of utr-cds) related to the breakpoint for the $trans_target_B
+	tx_exon_select_B1 = exon_match_B1[names(exon_match_B1) %in% trans_target_B1];
+	#// get coordinates (x1, y1, x2, y2) of the selected exon_id (one or two elements due to split of utr-cds) related to the breakpoint	
+	exon_coord_B1 = subset(exon_match_pos_B1, rownames(exon_match_pos_B1) %in% tx_exon_select_B1); 
+	#// 0 <= fract_B1 <= 1	
+	fract_B1 = tmp_B[tmp_B$TXNAME==trans_target_B1, ]$Prop;
 	#// upstream_type = 1, 2, 3, or 4 (outside transcript)
-	downstream_type = downstream_flag[[as.character(break_B)]]$transcript[downstream_flag[[as.character(break_B)]]$transcript$TXNAME==names(tx_B1),]$Judge; 
+	downstream_type = tmp_B[tmp_B$TXNAME==trans_target_B1, ]$Judge;
 	#// Exon_pos = "1_0" or "0_1" (only valid when breakpoint outside transcript)
-	Exon_pos = downstream_flag[[as.character(break_B)]]$transcript[downstream_flag[[as.character(break_B)]]$transcript$TXNAME==names(tx_B1),]$Exon_pos;
+	Exon_pos = tmp_B[tmp_B$TXNAME==trans_target_B1, ]$Exon_pos;
 
 	#// calculate the x-coordinates of breakpoint for geneB
 	if ( downstream_type == 1 || downstream_type == 2 ) { #// breakpoint at exon boundary or falls within exon
@@ -117,27 +137,28 @@
 	} else if ( downstream_type == 3 ) { #// breakpoint within intron
 		if ( exon_coord_B1[,"x1"][1] > exon_coord_B1[,"x2"][1] ) { #// negative strand
 			x1 = max(exon_coord_B1[,"x1"]);
-			sub_B1 = subset(exon_xy_B1[tx_exon_B1,], exon_xy_B1[tx_exon_B1,][,"x1"] > x1); 
+			sub_B1 = subset(exon_xy_B1[exon_target_B1,], exon_xy_B1[exon_target_B1,][,"x1"] > x1); 
 			sub_B1 = sub_B1[order(sub_B1[,"x1"]), , drop=F][1,];
 			x2 = sub_B1["x2"];	
 			x_pos_gene_downstream = fract_B1*(x2 - x1) + x1;
 		} else {
 			x2 = max(exon_coord_B1[,"x2"]); 
-			sub_B1 = subset(exon_xy_B1[tx_exon_B1,], exon_xy_B1[tx_exon_B1,][,"x2"] > x2);			
+			sub_B1 = subset(exon_xy_B1[exon_target_B1,], exon_xy_B1[exon_target_B1,][,"x2"] > x2);			
 			sub_B1 = sub_B1[order(sub_B1[,"x2"]), , drop=F][1,];
 			x1 = sub_B1["x1"];	
 			x_pos_gene_downstream = fract_B1*(x1 - x2) + x2;
 		}
 	} else { #// breakpoint outside transcript
+		sub_B1 = subset(exon_xy_B1[exon_target_B1,])
 		if ( exon_coord_B1[,"x1"][1] > exon_coord_B1[,"x2"][1] ) { #// negative strand
-			x2 = min(exon_coord_B1[,"x2"]); x1 = max(exon_coord_B1[,"x1"])
+			x2 = min(sub_B1[,"x2"]); x1 = max(sub_B1[,"x1"])
 			if ( Exon_pos == "1_0") { #// breakpoint < transcript_start
 				x_pos_gene_downstream = (x2 - fract_B1*x1)/(1 - fract_B1)
 			} else { #// breakpoint > transcript_end
 				x_pos_gene_downstream = (x1 - fract_B1*x2)/(1 - fract_B1)
 			}
 		} else { #// positive strand
-			x2 = max(exon_coord_B1[,"x2"]); x1 = min(exon_coord_B1[,"x1"])
+			x2 = max(sub_B1[,"x2"]); x1 = min(sub_B1[,"x1"])
 			if ( Exon_pos == "0_1") { #// breakpoint < transcript_start
 				x_pos_gene_downstream = (x1 - fract_B1*x2)/(1 - fract_B1)
 			} else { #// breakpoint > transcript_end
@@ -146,7 +167,7 @@
 		}				
 	}
 		
-	#// Choose y position closest to the top of the plot. That is the lowest y value of the two, since the y axis is flipped
+	#// Choose y-coordinates closest to the top of the plot. That is the lowest y value of the two ('exon_xy_A1' and 'exon_xy_B1'), since the y axis is flipped
 	y_pos = min(exon_xy_A1[,2], exon_xy_B1[,2]);
 	coordinate = c(x_pos_gene_upstream, x_pos_gene_downstream, y_pos); names(coordinate) = c("x_pos_gene_upstream", "x_pos_gene_downstream", "y_pos");
 	return(coordinate);
@@ -165,15 +186,19 @@
 #'        (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.
 #' @param second_name A string - symbol name of geneB (e.g. 'ERG').
 #' @param breakpoint A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA; \code{'breakpoint[i,2]'} - breakpoint pos in geneB;
-#'        \code{'breakpoint[i,3]'} and \code{'breakpoint[i,4]'} are the number of split and span reads supporting this fusion).
+#'        \code{'breakpoint[i,3]'} and \code{'breakpoint[i,4]'} are the number of split and span reads supporting this fusion;
+#'        \code{'breakpoint[i,5]'} and \code{'breakpoint[i,6]'} are the strand directions of fusion sequence for geneA and geneB, respectively).
 #' @param cytoband A GRange object for plotting cytoband of chromosome ideogram.
+#' @param offset A numeric value - extend the partner gene region (default: 2000, e.g. [start-offset, end+offset]).
 #'
 #' @return NULL
 #'
 #' @export
-plot_separate_individual <- function(first, first_name, second, second_name, breakpoint, cytoband) {
+plot_separate_individual <- function(first, first_name, second, second_name, breakpoint, cytoband, offset=2000) {
 	first_break=breakpoint[,1] #// only one row
 	second_break=breakpoint[,2] #// only one row
+	first_strand=breakpoint[,5] #// only one row
+	second_strand=breakpoint[,6] #// only one row
 	chrom_f = first[[1]]$transcript$Chrom[1] #// chromosome name of first: Ensembl
 	chrom_s = second[[1]]$transcript$Chrom[1] #// chromosome name of second: Ensembl
 
@@ -203,7 +228,7 @@ plot_separate_individual <- function(first, first_name, second, second_name, bre
 	} else if ( length(first[[1]]$transcript$TXNAME) > 25 &&  length(first[[1]]$transcript$TXNAME) <= 30 ) {
 		grTrack_f@dp@pars$fontsize.group = 8;
 	} else {
-		grTrack_f@dp@pars$fontsize.group = 5;
+		grTrack_f@dp@pars$fontsize.group = 6;
 	}
 	if ( length(second[[1]]$transcript$TXNAME) > 0 &&  length(second[[1]]$transcript$TXNAME) <= 5 ) { 
 		grTrack_s@dp@pars$fontsize.group = 12; 
@@ -216,7 +241,7 @@ plot_separate_individual <- function(first, first_name, second, second_name, bre
 	} else if ( length(second[[1]]$transcript$TXNAME) > 25 &&  length(second[[1]]$transcript$TXNAME) <= 30 ) {
 		grTrack_s@dp@pars$fontsize.group = 8;
 	} else {
-		grTrack_s@dp@pars$fontsize.group = 5;
+		grTrack_s@dp@pars$fontsize.group = 6;
 	}
 
 	#// set the chromosome axis coordinate
@@ -224,25 +249,45 @@ plot_separate_individual <- function(first, first_name, second, second_name, bre
 		fontsize=15, col="black", distFromAxis=0.4, lwd=1.4, lwd.border=1, min.width=0.1, min.height=3, min.distance=0); 
 
 	#// add the highlightTrack box to fusion section
-	if ( first[[1]]$transcript$Strand[1] == "+" ) { #// For gene A
-		grTrack_fh = Gviz::HighlightTrack(trackList=grTrack_f, start=first_vis_s, end=first_break, chromosome=chrom_f, fill="lightgrey", col.line="lightgrey",
-			fontsize=5, lty=0, lwd=0.1, cex=0.6, min.width=0.1, min.height=3, min.distance=0);
+	if ( first[[1]]$transcript$Strand[1] == "+" ) { #// For gene A strand direction
+		if ( first_strand == "+" ) { #// gene strand == fusion strand for A
+			grTrack_fh = Gviz::HighlightTrack(trackList=grTrack_f, start=first_vis_s, end=first_break, chromosome=chrom_f, fill="lightgrey", col.line="lightgrey",
+				fontsize=5, lty=0, lwd=0.1, cex=0.6, min.width=0.1, min.height=3, min.distance=0);
+		} else { #// gene strand != fusion strand for A
+			grTrack_fh = Gviz::HighlightTrack(trackList=grTrack_f, start=first_break, end=first_vis_e, chromosome=chrom_f, fill="lightgrey", col.line="lightgrey",
+				fontsize=5, lty=0, lwd=0.1, cex=0.6, min.width=0.1, min.height=3, min.distance=0);
+		}
 	} else if ( first[[1]]$transcript$Strand[1] == "-" ) { #// Note: start and end position follow the positive strand coordinate
-		grTrack_fh = Gviz::HighlightTrack(trackList=grTrack_f, start=first_break, end=first_vis_e, chromosome=chrom_f, fill="lightgrey", col.line="lightgrey",
-			fontsize=5, lty=0, lwd=0.1, cex=0.6, min.width=0.1, min.height=3, min.distance=0);
+		if ( first_strand == "-" ) { #// gene strand == fusion strand for A
+			grTrack_fh = Gviz::HighlightTrack(trackList=grTrack_f, start=first_break, end=first_vis_e, chromosome=chrom_f, fill="lightgrey", col.line="lightgrey",
+				fontsize=5, lty=0, lwd=0.1, cex=0.6, min.width=0.1, min.height=3, min.distance=0);
+		} else { #// gene strand != fusion strand for A
+			grTrack_fh = Gviz::HighlightTrack(trackList=grTrack_f, start=first_vis_s, end=first_break, chromosome=chrom_f, fill="lightgrey", col.line="lightgrey",
+				fontsize=5, lty=0, lwd=0.1, cex=0.6, min.width=0.1, min.height=3, min.distance=0);
+		}
 	}
 	if ( second[[1]]$transcript$Strand[1] == "+" ) { #// For gene B 
-		grTrack_sh = Gviz::HighlightTrack(trackList=grTrack_s, start=second_break, end=second_vis_e, chromosome=chrom_s, fill="lightgrey", col.line="lightgrey",
-			fontsize=5, lty=0, lwd=0.1, cex=0.6, min.width=0.1, min.height=3, min.distance=0);
+		if ( second_strand == "+" ) { #// gene strand == fusion strand for B
+			grTrack_sh = Gviz::HighlightTrack(trackList=grTrack_s, start=second_break, end=second_vis_e, chromosome=chrom_s, fill="lightgrey", col.line="lightgrey",
+				fontsize=5, lty=0, lwd=0.1, cex=0.6, min.width=0.1, min.height=3, min.distance=0);
+		} else { #// gene strand != fusion strand for B
+			grTrack_sh = Gviz::HighlightTrack(trackList=grTrack_s, start=second_vis_s, end=second_break, chromosome=chrom_s, fill="lightgrey", col.line="lightgrey",
+				fontsize=5, lty=0, lwd=0.1, cex=0.6, min.width=0.1, min.height=3, min.distance=0);
+		}
 	} else if ( second[[1]]$transcript$Strand[1] == "-" ) { #// Note: start and end position follow the positive strand coordinate
-		grTrack_sh = Gviz::HighlightTrack(trackList=grTrack_s, start=second_vis_s, end=second_break, chromosome=chrom_s, fill="lightgrey", col.line="lightgrey",
-			fontsize=5, lty=0, lwd=0.1, cex=0.6, min.width=0.1, min.height=3, min.distance=0);
+		if ( second_strand == "-" ) { #// gene strand == fusion strand for B
+			grTrack_sh = Gviz::HighlightTrack(trackList=grTrack_s, start=second_vis_s, end=second_break, chromosome=chrom_s, fill="lightgrey", col.line="lightgrey",
+				fontsize=5, lty=0, lwd=0.1, cex=0.6, min.width=0.1, min.height=3, min.distance=0);
+		} else {
+			grTrack_sh = Gviz::HighlightTrack(trackList=grTrack_s, start=second_break, end=second_vis_e, chromosome=chrom_s, fill="lightgrey", col.line="lightgrey",
+				fontsize=5, lty=0, lwd=0.1, cex=0.6, min.width=0.1, min.height=3, min.distance=0);
+		}
 	}
 
 	#//////////////////////////////////////////////////////////////////////
 	#// perform the plot ('chromosome', 'title' and 'gene+axis' tracks)	 //
 	#//////////////////////////////////////////////////////////////////////
-	offset = 2000; #// define plot region [start-offset, end+offset]
+	#// define plot region [start-offset, end+offset]
 	#// plot 'chromosome', 'title' and 'gene+axis' tracks in proportion as 1 : 0.5 : 8 (can be adjusted)
 	nf = grid::grid.layout(nrow=4, ncol=2, widths=grid::unit(c(1, 1), "null"), heights = grid::unit(c(0.8, 0.2, 0.4, 10), "null"))
 	grid::grid.newpage(); #// start a new page

@@ -21,7 +21,7 @@ configure <- NULL
 FuSViz <- function(genomeName, trackHeight=300, displayMode="EXPANDED", initialLocus=NULL, width=NULL, height=NULL, elementId=NULL) {
 	# parameters "genomeName, trackHeight, displayMode and initialLocus" are related to setting in igv.js
 	print("Loading parameters from FuSViz class.");
-	stopifnot(genomeName == 'hg38' || genomeName == 'hg19' || genomeName == 'hg19_offline' || genomeName == 'hg38_offline');
+	stopifnot(genomeName == 'hg38' || genomeName == 'hg19');
 
 	# create a list 
 	x <- list(genomeName=genomeName, displayMode=displayMode, trackHeight=trackHeight);
@@ -240,30 +240,27 @@ TrackinBAM <- function(session, bam, bamindex, trackHeight=200) {
 	session$sendCustomMessage("TrackinBAM", connect.igvjs)
 }
 
-#' Load local userdefined file
+#' Load gene track in offline mode
 #'
-#' @description Load local userdefined file (only three types - vcf, bed and gtf are supported)
+#' @description Load gene track in offline mode (only for hg19_offline or hg38_offline)
 #'
 #' @param session An environment object that can be used to access information and functionality by shiny.
-#' @param fileobj A string shows a raw path of upload file in shiny.
+#' @param version A string shows genome reference version (either 'hg19' or 'hg38')
+#' @param name Initial height of track viewport in pixels (e.g. \code{100}).
 #' @param trackHeight Initial height of track viewport in pixels (e.g. \code{100}).
+#' @param displayMode Annotation track display mode (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
+#' @param SameNameDel A logical value controls whether to add a track if its name has been existed (e.g. \code{FALSE} or \code{TRUE}).
 #'
 #' @export
-TrackinFile <- function(session, fileobj, trackHeight=100) {
-	print("load user-defined file directly");
-	# set new path that is hosted by server
-	newpath = apply(fileobj, 1, function(x) {
-		element = setdiff(strsplit(as.character(x[4]),"/|\\\\")[[1]], "");
-		element = tail(element, 2);
-		element = file.path("tmp", element[1], element[2]);
-		return(element);
-	})
-	fileobj = cbind(fileobj, newpath)
-	#// print(fileobj);
-	#// apply(fileobj, 1, function(x) { file.copy(as.character(x[4]), as.character(x[5]), overwrite = TRUE) })
+Trackoffline <- function(session, version, name, trackHeight=200, displayMode="EXPANDED", SameNameDel=TRUE) {
+	print("load gene track in offline mode")
+	if ( SameNameDel ) { #// if userdefined track has been loaded, please remove the previous one
+		DuplicateTrackRemove(session, name)
+	}
+	configure <- unique(c(configure, name))
 
-	connect.igvjs <- list(fileobj=jsonlite::toJSON(fileobj), trackHeight=trackHeight)
-	session$sendCustomMessage("TrackinFile", connect.igvjs)
+	connect.igvjs <- list(version=version, name=name, trackHeight=trackHeight, displayMode=displayMode) # 
+	session$sendCustomMessage("Trackoffline", connect.igvjs)
 }
 
 #' Genomic coordinate retrieve

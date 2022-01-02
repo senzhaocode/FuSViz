@@ -12,7 +12,7 @@
 #' @return A list with three data.frame elements (i.e. \code{transcript}, \code{select_region} and \code{breakpoint_collect}) with transcript and breakpoint annotations of partner genes
 #'
 #' @export
-gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset) {
+gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset=5) {
 	# For testing: breakpoint = breakpoint_set[2,2]; object; whole_tx = whole_txdb; AB_order = "upstream" or "downstream"; offset = 5 (defalut) for breakpoint deviation
 	dataset = object$dataset
 	start = object$start

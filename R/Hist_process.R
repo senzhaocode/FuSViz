@@ -10,7 +10,7 @@
 histgram_process <- function(hist) {
 	
 	size = length(hist);
-	average_num = round(size/4, 0);
+	average_num = floor(size/4);
 	yushu = size %% 4;
 
 	section1 = NULL;	section2 = NULL;	section3 = NULL;	section4 = NULL; 
@@ -28,14 +28,14 @@ histgram_process <- function(hist) {
 		}
 	} else if ( yushu == 2 ) {
 		if ( average_num == 0 ) {
-			section1 = hist[1]; section1 = hist[2];
+			section1 = hist[1]; section2 = hist[2];
 		} else {
 			section1 = hist[1:(average_num+1)]; section2 = hist[(average_num+2):(average_num*2+2)];
 			section3 = hist[(average_num*2+3):(average_num*3+2)]; section4 = hist[(average_num*3+3):(average_num*4+2)];
 		}
 	} else if ( yushu == 3 ) {
 		if ( average_num == 0 ) {
-			section1 = hist[1]; section1 = hist[2]; section1 = hist[3];
+			section1 = hist[1]; section2 = hist[2]; section3 = hist[3];
 		} else {
 			section1 = hist[1:(average_num+1)]; section2 = hist[(average_num+2):(average_num*2+2)];
 			section3 = hist[(average_num*2+3):(average_num*3+3)]; section4 = hist[(average_num*3+4):(average_num*4+3)];

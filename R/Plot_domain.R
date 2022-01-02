@@ -181,11 +181,12 @@
 #'        \code{'first_domain\$Domain_name'}: domain name abbreviation).
 #' @param first_motif A data.frame for collecting motif annotation (e.g. \code{'first_motif\$Start'}: motif start; \code{'first_motif\$End'}: motif end; 
 #'        \code{'first_motif\$Domain_name'}: motif name abbreviation).
+#' @param offset A numeric value - extend the partner gene region (default: 0, e.g. [start-offset, end+offset]).
 #'
 #' @return A data.frame (i.e. \code{'A1_xy'}) that contains exon coordinates in the plot layout.
 #'
 #' @export
-plot_separate_domain_geneA <- function(first, first_name, first_domain, first_motif) {
+plot_separate_domain_geneA <- function(first, first_name, first_domain, first_motif, offset=0) {
 	# For testing: first=geneA; first_name=symbol_A; first_domain=domain_geneA; first_motif=motif_geneA
 	chrom_f = first[[1]]$transcript$Chrom[1] #// chromosome name of first: Ensembl
 		
@@ -219,7 +220,7 @@ plot_separate_domain_geneA <- function(first, first_name, first_domain, first_mo
 	#////////////////////////////////////////////////////////////////////
 	#// perform the plot ('motif', 'domain', 'axis' and 'gene' tracks) //
 	#////////////////////////////////////////////////////////////////////
-	offset = 0; #// define plot region [start-offset, end+offset]
+	#// define plot region [start-offset, end+offset]
 	nf = grid::grid.layout(nrow=1, ncol = 1)
 	grid::grid.newpage(); #// start a new page
 	grid::pushViewport(grid::viewport(layout = nf)); #// divide the page to different section (nf specifies the section composite)
@@ -249,11 +250,12 @@ plot_separate_domain_geneA <- function(first, first_name, first_domain, first_mo
 #'        \code{'second_domain\$Domain_name'}: domain name abbreviation).
 #' @param second_motif A data.frame for collecting motif annotation (e.g. \code{'second_motif\$Start'}: motif start; \code{'secondt_motif\$End'}: motif end;
 #'        \code{'second_motif\$Domain_name'}: motif name abbreviation).
+#' @param offset A numeric value - extend the partner gene region (default: 0, e.g. [start-offset, end+offset]).
 #'
 #' @return A data.frame (i.e. \code{'B1_xy'}) that contains exon coordinates in the plot layout.
 #'
 #' @export
-plot_separate_domain_geneB <- function(second, second_name, second_domain, second_motif) {
+plot_separate_domain_geneB <- function(second, second_name, second_domain, second_motif, offset=0) {
 	# For testing: second=geneB; second_name=symbol_B; second_domain=domain_geneB; second_motif=motif_geneB; cytoband=chrTrack
 	chrom_s = second[[1]]$transcript$Chrom[1] #// chromosome name of second: Ensembl
 
@@ -287,7 +289,7 @@ plot_separate_domain_geneB <- function(second, second_name, second_domain, secon
 	#////////////////////////////////////////////////////////////////////
 	#// perform the plot ('gene', 'axis', 'domain' and 'motif' tracks) //
 	#////////////////////////////////////////////////////////////////////
-	offset = 0; #// define axis plot region [start-offset, end+offset]
+	#// define axis plot region [start-offset, end+offset]
 	nf = grid::grid.layout(nrow=1, ncol = 1)
 	grid::grid.newpage(); #// start a new page
 	grid::pushViewport(grid::viewport(layout = nf)); #// divide the page to different section (nf specifies the section composite)
@@ -393,9 +395,10 @@ plot_separate_domain_arrow <- function(A1_xy, B1_xy, first, second, breakpoint) 
 #' @param second_motif A data.frame for collecting motif annotation (e.g. \code{'second_motif\$Start'}: motif start; \code{'secondt_motif\$End'}: motif end;
 #'        \code{'second_motif\$Domain_name'}: motif name abbreviation).
 #' @param breakpoint A data.frame with two columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos in geneB transcript).
+#' @param offset A numeric value - extend the partner gene region (default: 0, e.g. [start-offset, end+offset]).
 #'
 #' @export
-plot_separate_domain_download <- function(first, first_name, first_domain, first_motif, second, second_name, second_domain, second_motif, breakpoint) {
+plot_separate_domain_download <- function(first, first_name, first_domain, first_motif, second, second_name, second_domain, second_motif, breakpoint, offset=0) {
 
 	chrom_f = first[[1]]$transcript$Chrom[1] #// chromosome name of first: Ensembl
 	#// Set plotting tracks for geneA after reducing intron
@@ -450,7 +453,7 @@ plot_separate_domain_download <- function(first, first_name, first_domain, first
 		fontsize=14, col="black", distFromAxis=0.1, lwd=1, lwd.border=1, min.width=0.1, min.height=2, min.distance=0);
 
 	#// plot domain and fusion events
-	offset = 0; #// define plot region [start-offset, end+offset]
+	#// define plot region [start-offset, end+offset]
 	nf = grid::grid.layout(nrow=3, ncol=2, widths=grid::unit(c(1, 1), "null"), heights = grid::unit(c(36, 1, 36), "null"))
 	grid::grid.newpage(); #// start a new page
 	grid::pushViewport(grid::viewport(layout = nf)); #// divide the page to different sections (nf specifies the section composite)

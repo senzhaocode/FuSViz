@@ -27,7 +27,7 @@ check_input_format <- function(inputdf, type) {
 
 	#// check whether there are NA or "" for specific column for RNA SV input
 	if ( type == "RNA" ) {
-		#// NOTE: column1-10 (chrom1, pos1, gene1, chrom2, pos2, gene2, name, split, span, evidence) - no NA accepted.
+		#// NOTE: column1-11 (chrom1, pos1, gene1, chrom2, pos2, gene2, name, split, span, strand1, strand2) - no NA accepted.
 		if ( any(is.na(inputdf$chrom1)) == T || any(inputdf$chrom1 == "") == T ) { stop("chrom1 has empty or NA value for RNA SVs!"); }
 		if ( any(is.na(inputdf$pos1)) == T || any(inputdf$pos1 <= 0) == T ) { stop("pos1 has empty, NA value or not numeric type for RNA SVs!"); }
 		if ( any(is.na(inputdf$gene1)) == T || any(inputdf$gene1 == "") == T ) { stop("gene1 has empty or NA value for RNA SVs!"); }
@@ -35,9 +35,10 @@ check_input_format <- function(inputdf, type) {
 		if ( any(is.na(inputdf$pos2)) == T || any(inputdf$pos2 <= 0) == T ) { stop("pos2 has empty, NA value or not numeric type for RNA SVs!"); }
 		if ( any(is.na(inputdf$gene2)) == T || any(inputdf$gene2 == "") == T ) { stop("gene2 has empty or NA value for RNA SVs!"); }
 		if ( any(is.na(inputdf$name)) == T || any(inputdf$name == "") == T ) { stop("name has empty or NA value for RNA SVs!"); }
-		if ( any(is.na(inputdf$split)) == T || any(inputdf$split <= 0) == T ) { stop("split has empty, NA value or not numeric type for RNA SVs!"); }
+		if ( any(is.na(inputdf$split)) == T || any(inputdf$split < 0) == T ) { stop("split has empty, NA value or not numeric type for RNA SVs!"); }
 		if ( any(is.na(inputdf$span)) == T || any(inputdf$sapn < 0) == T ) { stop("span has empty, NA value or not numeric type for RNA SVs!"); }
-		if ( any(is.na(inputdf$evidence)) == T || any(inputdf$evidence == "") == T ) { stop("evidence has empty or NA value for RNA SVs!"); }
+		if ( any(is.na(inputdf$strand1)) == T || any(inputdf$strand1 == "") == T ) { stop("strand1 has empty or NA value for RNA SVs!"); }
+		if ( any(is.na(inputdf$strand2)) == T || any(inputdf$strand2 == "") == T ) { stop("strand2 has empty or NA value for RNA SVs!"); }
 	} else if ( type == "DNA" ) {
 		#// NOTE: column1-12 (chrom1, start1, end1, chrom2, start2, end2, name, type, split, span, gene1 and gene2) - no NA accepted.
 		if ( any(is.na(inputdf$chrom1)) == T || any(inputdf$chrom1 == "") == T ) { stop("chrom1 has empty or NA value for DNA SVs!"); }
@@ -48,7 +49,7 @@ check_input_format <- function(inputdf, type) {
 		if ( any(is.na(inputdf$end2)) == T || any(inputdf$end1 <= 0) == T ) { stop("end2 has empty, NA value or not numeric type for DNA SVs!"); }
 		if ( any(is.na(inputdf$name)) == T || any(inputdf$name == "") == T ) { stop("name has empty or NA value for DNA SVs!"); }
 		if ( any(is.na(inputdf$type)) == T || any(inputdf$type == "") == T ) { stop("type has empty or NA value for DNA SVs!"); }
-		if ( any(is.na(inputdf$split)) == T || any(inputdf$split <= 0) == T ) { stop("split has empty, NA value or not numeric type for DNA SVs!"); }
+		if ( any(is.na(inputdf$split)) == T || any(inputdf$split < 0) == T ) { stop("split has empty, NA value or not numeric type for DNA SVs!"); }
 		if ( any(is.na(inputdf$span)) == T || any(inputdf$sapn < 0) == T ) { stop("span has empty, NA value or not numeric type for DNA SVs!"); }
 		if ( any(is.na(inputdf$gene1)) == T || any(inputdf$gene1 == "") == T ) { stop("gene1 has empty or NA value for DNA SVs!"); }
 		if ( any(is.na(inputdf$gene2)) == T || any(inputdf$gene2 == "") == T ) { stop("gene2 has empty or NA value for DNA SVs!"); }

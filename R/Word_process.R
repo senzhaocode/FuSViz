@@ -20,7 +20,10 @@ wordcloud_processs <- function(word, gene_freq, type, onco_color, supp_color, re
 		# assemble new data.frame with 'name' and 'gene'
 		word = data.frame(name=c(as.character(word$name), as.character(word$name)), gene=c(as.character(word$gene1), as.character(word$gene2)), stringsAsFactors = F);
 	}
-	word = unique(word);    word = word$gene;   word = table(word);
+	#// remove intergenic annotation (*) / gene with ensembl_id (ENSGXXXXX)
+	word = word[! word$gene == '*', ];
+	word = word[! grepl("ENSG00", word$gene), ];
+	word = unique(word);	word = word$gene;	word = table(word);
 	#// control the frequency
 	word = word[word >= gene_freq];
 	word_onco = word[names(word) %in% names(oncogenes)];

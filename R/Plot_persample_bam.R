@@ -55,10 +55,11 @@ chrom_name_function <- function(file, selection) {
 #' @param breakpoint_B A number - genomic coordinate of breakpoint in geneB.
 #' @param rna_bam_path A string - path of alignment file from RNA-seq (BAM format).
 #' @param dna_bam_path A string - path of alignment file from DNA-seq (BAM format), default value: NULL.
+#' @param version A string - genomic annotation version (either 'hg38' or 'hg19', default: 'hg38')
 #' @param chrom_notation_rna A boolean type - if TRUE (default value) chromosome name in RNA-seq alignment denotes like 'chrX'; if FALSE chromosome denotes like 'X'.
 #' @param chrom_notation_dna A boolean type - if TRUE (default value) chromosome name in DNA-seq alignment denotes like 'chrX'; if FALSE chromosome denotes like 'X'.
-#' @param coverage_plot_trans A boolean type - if TRUE, RNA read coverage calculated by reads mapped to selected transcripts of geneA and geneB; otherwise (default: FALSE) RNA read coverage calculated by reads mapped to genomic regions of geneA and geneB. coverage_plot_trans is only valid for RNA-seq alignment.
-#' @param offset A number - the value (default: 5) indicates how many bases are extended from 5'-end and 3'-end of geneA and geneB in plotting.
+#' @param coverage_plot_trans A boolean type - if TRUE, RNA read coverage is plotted by reads mapped to exons and related introns of geneA and geneB transcripts; otherwise (default: FALSE) RNA read coverage is plotted by reads mapped to full genomic regions of geneA and geneB. coverage_plot_trans is only valid for RNA-seq alignment.
+#' @param offset A number - the value (default: 2000) indicates how many bases are extended from 5'-end and 3'-end of geneA and geneB in plotting.
 #' @param split A number - split reads support (default: NULL).
 #' @param span A number - discordant spanning read pair support (default: NULL).
 #' @param transcriptA A vector of string - selected transcripts (ensembl id) of geneA for plotting (default: NULL).
@@ -75,14 +76,14 @@ chrom_name_function <- function(file, selection) {
 #' @return NULL
 #' 
 #' @export
-plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, breakpoint_B, rna_bam_path, dna_bam_path=NULL, coverage_plot_trans=F, offset=5, chrom_notation_rna=T,
-	chrom_notation_dna=T, duplicate=F, unmappedmate=NA, notpassQC=F, properpair=NA, split=NULL, span=NULL, transcriptA=NULL, transcriptB=NULL, fusion_strandA=NULL, fusion_strandB=NULL, coverage_max_A=NULL, coverage_max_B=NULL) {
+plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, breakpoint_B, rna_bam_path, dna_bam_path=NULL, version='hg38', coverage_plot_trans=F, offset=2000, chrom_notation_rna=T, chrom_notation_dna=T, duplicate=F, unmappedmate=NA, notpassQC=F, properpair=NA, split=NULL, span=NULL, transcriptA=NULL, transcriptB=NULL, fusion_strandA=NULL, fusion_strandB=NULL, coverage_max_A=NULL, coverage_max_B=NULL) {
 
 	stopifnot(is(first_name, "character")); 
 	stopifnot(is(second_name, "character"));
 	stopifnot(is(breakpoint_A, "numeric"));
 	stopifnot(is(breakpoint_B, "numeric"));
 	stopifnot(is(rna_bam_path, "character"));
+	stopifnot( version == 'hg19' || version == 'hg38' );
 	stopifnot(is(offset, "numeric"));
 	stopifnot(is.logical(coverage_plot_trans));
 	stopifnot(is.logical(chrom_notation_rna));
@@ -102,8 +103,34 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	if (! is.null(coverage_max_A) ) { stopifnot(is(coverage_max_A, "numeric")); }
 	if (! is.null(coverage_max_B) ) { stopifnot(is(coverage_max_B, "numeric")); }
 
-	ens_A = names(symbol_ensem[symbol_ensem==first_name])
-	ens_B = names(symbol_ensem[symbol_ensem==second_name])
+	# Load genomic annotation data
+	system_path = path.package("FuSViz");
+	extdata = system.file("extdata", package = "FuSViz")
+	#// assign the ensembl_id to gene symbol
+	load(file=file.path(extdata, "ensembl_symbol.Rd"));
+	symbol_ensem = gene_id$Gene_name;
+	names(symbol_ensem) = gene_id$Gene_ID;
+	#// load genomic annotation file
+	txdb <- suppressWarnings(suppressPackageStartupMessages(AnnotationDbi::loadDb(file=file.path(extdata, paste("gencode.annotation.", version, ".sqlite", sep="")))));
+	load(file=file.path(extdata, paste("grTrack.", version, ".Rd", sep="")));
+	load(file=file.path(extdata, paste("cytoband.", version, ".Rd", sep="")));
+	whole_txdb <- GenomicFeatures::exonsBy(txdb, by = "tx", use.names=TRUE); # group exons by transcript_id
+	#// obtain ensembl_id
+	gene_range = as.data.frame(genes(txdb), stringsAsFactors=F);
+	names(gene_range)[6] = "Gene_ID";
+	ensembl_id = unique(gene_range$Gene_ID);
+
+	ens_A = NULL;	ens_B = NULL;
+	if ( grepl("ENSG00", first_name) ) {	
+		ens_A = ensembl_id[ensembl_id == first_name];
+	} else {
+		ens_A = names(symbol_ensem[symbol_ensem == first_name])
+	}
+	if ( grepl("ENSG00", second_name) ) {
+		ens_B = ensembl_id[ensembl_id == second_name];
+	} else {
+		ens_B = names(symbol_ensem[symbol_ensem == second_name])
+	}
 	if ( length(ens_A) > 0 ) { 
 		object_individual_A <- get_annotation_db(ens_A, txdb, grTrack)
 	} else { #// if symbol_A invalid
@@ -172,6 +199,45 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 		#// collapse exon interval - using union mode
 		for ( id in first_trans ) { collapse_trans_A = GenomicRanges::union(collapse_trans_A, df_A[df_A@elementMetadata$transcript==id, ]); }
 	}
+	# extend an interval if breakpoint at intron / out of genic region for upstream partner
+	first_len = length(collapse_trans_A);
+	if ( first_len == 1 ) { # only one interval
+		if ( breakpoint_A < start(collapse_trans_A[1]) ) { # < gene start
+			if ( breakpoint_A > first_vis_s - offset + 200 ) {
+				start(collapse_trans_A[1]) = breakpoint_A - 200;
+			} else {
+				start(collapse_trans_A[1]) = first_vis_s - offset;
+			}
+		} else if ( breakpoint_A > end(collapse_trans_A[1]) ) { # > gene end
+			if ( breakpoint_A < first_vis_e + offset - 200 ) {
+				end(collapse_trans_A[1]) = breakpoint_A + 200;
+			} else {
+				end(collapse_trans_A[1]) = first_vis_e + offset;
+			}
+		}
+	} else {
+		if ( breakpoint_A < start(collapse_trans_A[1]) ) { # < gene start
+			if ( breakpoint_A > first_vis_s - offset + 200 ) {
+				start(collapse_trans_A[1]) = breakpoint_A - 200;
+			} else {
+				start(collapse_trans_A[1]) = first_vis_s - offset;
+			}
+		} else if ( breakpoint_A > end(collapse_trans_A[first_len]) ) { # > gene end
+			if ( breakpoint_A < first_vis_e + offset - 200 ) {
+				end(collapse_trans_A[first_len]) = breakpoint_A + 200;
+			} else {
+				end(collapse_trans_A[first_len]) = first_vis_e + offset;
+			}
+		} else {
+			y = first_len - 1;
+			for (z in 1:y) {
+				if ( breakpoint_A > end(collapse_trans_A[z]) && breakpoint_A < start(collapse_trans_A[z+1]) ) { # within intron
+					start(collapse_trans_A[z+1]) = end(collapse_trans_A[z]) + 1;
+					break;
+				}
+			}
+		}
+	}
 	if ( chrom_notation_rna != T ) { # ensembl chromosome name like '1'
 		chrname = as.character(collapse_trans_A@seqnames@values)
 		chrname = sub("chr", "", chrname)
@@ -211,6 +277,45 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 		#// collapse exon interval - using union mode
 		for ( id in second_trans ) { collapse_trans_B = GenomicRanges::union(collapse_trans_B, df_B[df_B@elementMetadata$transcript==id, ]); }
 	}
+	# extend an interval if breakpoint at intron / out of genic region for downstram partner
+	second_len = length(collapse_trans_B);
+	if ( second_len == 1 ) { # only one interval
+		if ( breakpoint_B < start(collapse_trans_B[1]) ) { # < gene start
+			if ( breakpoint_B > second_vis_s - offset + 200 ) {
+				start(collapse_trans_B[1]) = breakpoint_B - 200;
+			} else {
+				start(collapse_trans_B[1]) = second_vis_s - offset;
+			}
+		} else if ( breakpoint_B > end(collapse_trans_B[1]) ) { # > gene end
+			if ( breakpoint_B < second_vis_e + offset - 200 ) {
+				end(collapse_trans_B[1]) = breakpoint_B + 200;
+			} else {
+				end(collapse_trans_B[1]) = second_vis_e + offset;
+			}
+		}
+	} else {
+		if ( breakpoint_B < start(collapse_trans_B[1]) ) {
+			if ( breakpoint_B > second_vis_s - offset + 200 ) { # < gene start
+				start(collapse_trans_B[1]) = breakpoint_B - 200;
+			} else {
+				start(collapse_trans_B[1]) = second_vis_s - offset;
+			}
+		} else if ( breakpoint_B > end(collapse_trans_B[second_len]) ) { # > gene end
+			if ( breakpoint_B < second_vis_e + offset - 200 ) {
+				end(collapse_trans_B[second_len]) = breakpoint_B + 200;
+			} else {
+				end(collapse_trans_B[second_len]) = second_vis_e + offset;
+			}
+		} else {
+			y = second_len - 1;
+			for (z in 1:y) {
+				if ( breakpoint_B > end(collapse_trans_B[z]) && breakpoint_B < start(collapse_trans_B[z+1]) ) { # within intron
+					start(collapse_trans_B[z+1]) = end(collapse_trans_B[z]) + 1;
+					break;
+				}
+			}
+		}
+	}
 	if ( chrom_notation_rna != T ) { # ensembl chromosome name like '1'
 		chrname = as.character(collapse_trans_B@seqnames@values)
 		chrname = sub("chr", "", chrname)
@@ -219,7 +324,7 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	#// calculate the coverage
 	cov_B = GenomicAlignments::coverage(rna_bam_path, param = Rsamtools::ScanBamParam(flag = flag, tag = "MD", which = collapse_trans_B))
 	cov_B = cov_B[collapse_trans_B]
-	#// convert object collapse_trans_A from a GRange to a data.frame
+	#// convert object collapse_trans_B from a GRange to a data.frame
 	collapse_trans_B = as.data.frame(collapse_trans_B)
 	bedgraph_B = NULL;
 	if ( nrow(collapse_trans_B) == length(cov_B) ) {
