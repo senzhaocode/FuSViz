@@ -21,9 +21,16 @@ function load() {
 	var vcf = {}; // annotation in VCF format
 	var bed = {}; // annotation in BED format
 	var gtf = {}; // annotation in GTF format
+	var localref = {}; // reference sequence in FASTA format
 
 	for (let one of elements) {
-		if ( one.name.endsWith(".cram") ) {
+		if ( one.name.endsWith(".fasta") ) {
+			localref["file"] = one;
+		} else if ( one.name.endsWith(".fai") ) {
+			localref["index"] = one;
+		} else if ( one.name.startsWith("cytoBand") ) {
+			localref["cytoband"] = one;
+		} else if ( one.name.startsWith(".cram") ) {
 			if ( one.name in cram ) {
 				cram[one.name]["file"] = one;
 			} else {
@@ -103,6 +110,31 @@ function load() {
 		}
 	}
 
+	var options = undefined;
+	// set reference genome sequence configuration
+	if ( Object.keys(localref).length !== 0 ) {
+		if ( 'file' in localref && 'index' in localref && 'cytoband' in localref ) {
+			if ( localref['file'].name.startsWith('hg19') ) {
+				options = {
+					loadDefaultGenomes: false,
+					flanking: 1000,
+					minimumBases: 5,
+					showRuler: true,
+					reference: { id: "hg19", name: "local", fastaURL: localref['file'], indexURL: localref['index'], cytobandURL: localref['cytoband'] }}
+			} else if ( localref['file'].name.startsWith('hg38') ) {
+				options = { 
+					loadDefaultGenomes: false,
+					flanking: 1000,
+					minimumBases: 5,
+					showRuler: true,
+					reference: { id: "hg38", name: "local", fastaURL: localref['file'], indexURL: localref['index'], cytobandURL: localref['cytoband'] }}
+			} else {
+				alert("Genome reference version not available!!!");
+			}
+		} else {
+			alert("FASTA, fai index and cytoband files is absent!!!");
+		}
+	}
 	var uploadtrack = [];
 	// set BAM format configuration
 	for (let one in bam) {
@@ -161,8 +193,40 @@ function load() {
 	}
 
 	// Load tracks to igv widget
-	var igvFuSViz = document.getElementById('FuSViz').igvFuSViz;
-	if ( uploadtrack.length > 0 ) {
-		igvFuSViz.loadTrackList(uploadtrack);
+	if ( options !== undefined ) {
+		const div = document.getElementById("FuSViz");
+		igv.removeAllBrowsers()
+		igv.createBrowser(div, options).
+			then(function (browser) {
+				igv.browser = browser;
+				document.getElementById("FuSViz").igvFuSViz = browser;
+
+				igv.browser.on('trackclick', function (track, popoverData) {
+					console.log("popoverData contents: "  + popoverData);
+					var markup = "<table class=\"igv-popover-table\">";
+					// Do not show a pop-over when there's no data (click region without object)
+					if (!popoverData || !popoverData.length) { return false; }
+					popoverData.forEach(function (element) {
+						if (element.name) {
+							var value = element.name.toLowerCase() === 'name' ? '<a href="https://www.genecards.org/Search/Keyword?queryString=' + element.value + '" target="_blank">' + element.value + '</a>' : element.value;
+							markup += "<tr><td class=\"igv-popover-td\">"
+									+ "<div class=\"igv-popover-name-value\">"
+									+ "<span class=\"igv-popover-name\">" + element.name + "</span>"
+									+ "<span class=\"igv-popover-value\">" + value + "</span>"
+									+ "</div>" + "</td></tr>";
+						} else {
+							markup += "<tr><td>" + element.toString() + "</td></tr>";
+						}
+					})
+					markup += "</table>";
+					// By returning a string from the trackclick handler we're asking IGV to use our custom HTML in its pop-over.
+					return markup;
+				})
+			})
+	} else {
+		var igvFuSViz = document.getElementById('FuSViz').igvFuSViz;	
+		if ( uploadtrack.length > 0 ) {
+			igvFuSViz.loadTrackList(uploadtrack);
+		}
 	}
 }
