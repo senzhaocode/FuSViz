@@ -250,9 +250,11 @@ function selectIGVoptions(genomeName, initialLocus, displayMode, trackHeight) {
 		tracks: [
 			{
 				name: 'RefSeq Genes (hg19)',
-				url: "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz",
-				indexURL: "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz.tbi",
+				format: "refgene",
+				url: "https://s3.amazonaws.com/igv.org.genomes/hg19/ncbiRefSeq.sorted.txt.gz",
+				indexURL: "https://s3.amazonaws.com/igv.org.genomes/hg19/ncbiRefSeq.sorted.txt.gz.tbi",
 				visibilityWindow: -1,
+				removable: true,
 				height: trackHeight,
 				displayMode: displayMode
 			}
@@ -273,9 +275,11 @@ function selectIGVoptions(genomeName, initialLocus, displayMode, trackHeight) {
 		tracks: [
 			{
 				name: 'RefSeq Genes (hg38)',
-				url: "https://s3.amazonaws.com/igv.org.genomes/hg38/refGene.sorted.txt.gz",
-				indexURL: "https://s3.amazonaws.com/igv.org.genomes/hg38/refGene.sorted.txt.gz.tbi",
+				format: "refgene",
+				url: "https://s3.amazonaws.com/igv.org.genomes/hg38/ncbiRefSeq.sorted.txt.gz",
+				indexURL: "https://s3.amazonaws.com/igv.org.genomes/hg38/ncbiRefSeq.sorted.txt.gz.tbi",
 				visibilityWindow: -1,
+				removable: true,
 				height: trackHeight,
 				displayMode: displayMode
 			}
