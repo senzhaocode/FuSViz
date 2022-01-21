@@ -19,12 +19,12 @@ TrackinBedPe(
 )
 }
 \arguments{
-\item{session}{An environment object that can be used to access information and functionality by shiny.}
+\item{session}{An environment object that is used to access information and functionality by shiny.}
 
 \item{datastr}{A data.frame with nine columns, e.g. \code{chr1}, \code{start1}, \code{end1}, \code{chr2}, \code{start2}, \code{end2},
 \code{name}(multiple samples separated by ";"), \code{score}(number of samples), \code{type}.}
 
-\item{name}{A string of track name (e.g. \code{DNA bedpe track}).}
+\item{name}{A string - track name (e.g. \code{DNA bedpe track}).}
 
 \item{color}{CSS color value for track feature (e.g. \code{#ff0000} or \code{rgb(100,0,100)}).}
 
@@ -38,7 +38,7 @@ TrackinBedPe(
 
 \item{min}{A number represents minimum value of y-axis.}
 
-\item{displayMode}{Annotation track display mode (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).}
+\item{displayMode}{Display mode of annotation track (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).}
 
 \item{SameNameDel}{A logical value controls whether to add track if its name has been existed (e.g. \code{FALSE} or \code{TRUE}).}
 }

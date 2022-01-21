@@ -10,16 +10,16 @@ plot_arrow_overview(collect, first, second, breakpoint, zoom)
 \item{collect}{A list that is a return object in FUNCTION "plot_separate_overview" with two elements (i.e. \code{'collect\$A1_xy\$GeneRegionTrack'} and
 \code{'collect\$B1_xy\$GeneRegionTrack'}) - exon coordinates(x1, y1, x2, y2) of geneA and geneB transcripts.}
 
-\item{first}{A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneA); \code{'first\$pos\$transcript'} is a data.frame object
-(only one row) that collects evaluation of breakpoint pos in geneA transcript; \code{'first\$pos\$select_region'} is a data.frame object
+\item{first}{A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneA); \code{'first\$pos\$transcript'} is a data.frame object
+(only one row) that collects evaluation of breakpoint pos for geneA transcripts; \code{'first\$pos\$select_region'} is a data.frame object
 (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.}
 
-\item{second}{A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneB); \code{'second\$pos\$transcript'} is a data.frame object
-(only one row) that collects evaluation of breakpoint pos in geneB transcript; \code{'second\$pos\$select_region'} is a data.frame object
+\item{second}{A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneB); \code{'second\$pos\$transcript'} is a data.frame object
+(only one row) that collects evaluation of breakpoint pos for geneB transcript; \code{'second\$pos\$select_region'} is a data.frame object
 (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.}
 
-\item{breakpoint}{A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA; \code{'breakpoint[i,2]'} - breakpoint pos in geneB;
-\code{'breakpoint[i,3]'} is the number of samples with such fusion).}
+\item{breakpoint}{A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos of geneA; \code{'breakpoint[i,2]'} - breakpoint pos of geneB;
+\code{'breakpoint[i,3]'} is the number of samples with such a fusion).}
 
 \item{zoom}{A numeric value indicates zoom degree of plotting.}
 }

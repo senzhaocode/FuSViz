@@ -18,11 +18,11 @@ TrackinBedGraph(
 )
 }
 \arguments{
-\item{session}{An environment object that can be used to access information and functionality by shiny.}
+\item{session}{An environment object that is used to access information and functionality by shiny.}
 
 \item{datastr}{A data.frame with four columns (e.g. \code{chr}, \code{start} and \code{value}).}
 
-\item{name}{A string of track name (e.g. \code{RNA breakpoint freq track}).}
+\item{name}{A string - track name (e.g. \code{RNA breakpoint freq track}).}
 
 \item{color}{CSS color value for track feature (e.g. \code{#ff0000} or \code{rgb(100,0,100)}).}
 
@@ -34,7 +34,7 @@ TrackinBedGraph(
 
 \item{max}{A number represents maximum value of y-axis.}
 
-\item{displayMode}{Annotation track display mode (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).}
+\item{displayMode}{Display mode of annotation track (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).}
 
 \item{SameNameDel}{A logical value controls whether to add track if its name has been existed (e.g. \code{FALSE} or \code{TRUE}).}
 }

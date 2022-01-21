@@ -21,7 +21,7 @@
 
 \item{downstream_flag}{A list (i.e. the same object \code{'second'} used in FUNCTION "plot_separate_individual"; \code{'second\$pos\$transcript'} is a one-row data.frame).}
 
-\item{breakpoint_xy}{A data.frame with one row (i.e. \code{'breakpoint_xy[i,1]'} - breakpoint pos in geneA; \code{'breakpoint_xy[i,2]'} - breakpoint pos in geneB).}
+\item{breakpoint_xy}{A data.frame with one row record (i.e. \code{'breakpoint_xy[i,1]'} - breakpoint pos of geneA; \code{'breakpoint_xy[i,2]'} - breakpoint pos of geneB).}
 }
 \value{
 A data.frame with three columns (i.e. \code{'x_pos_gene_upstream'}, \code{'x_pos_gene_downstream'}, \code{'y_pos'})

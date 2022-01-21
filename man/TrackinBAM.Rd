@@ -7,11 +7,11 @@
 TrackinBAM(session, bam, bamindex, trackHeight = 200)
 }
 \arguments{
-\item{session}{An environment object that can be used to access information and functionality by shiny.}
+\item{session}{An environment object that is used to access information and functionality by shiny.}
 
-\item{bam}{An url link of BAM file}
+\item{bam}{An url link of BAM file.}
 
-\item{bamindex}{An url link of BAM index file}
+\item{bamindex}{An url link of BAM index file.}
 
 \item{trackHeight}{Initial height of track viewport in pixels (e.g. \code{200}).}
 }

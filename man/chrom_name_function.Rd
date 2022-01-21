@@ -15,5 +15,5 @@ chrom_name_function(file, selection)
 A GRanges object with read alignment in the selection region.
 }
 \description{
-This function it to convert chromosome notation in import bam file, which meets requirement of Gviz::AlignmentsTrack function
+This function is to convert chromosome notation in import bam file and meet requirement of Gviz::AlignmentsTrack function
 }

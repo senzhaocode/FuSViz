@@ -16,19 +16,19 @@
 \item{upstream_xy}{A data.frame (i.e. a returned object \code{'A1_xy'} in FUNCTION "plot_separate_domain_geneA" - exon coordinates(x1, y1, x2, y2) of intron-reduced transcripts).}
 
 \item{upstream_flag}{A list (i.e. the same object \code{'first'} used in FUNCTION "plot_separate_domain_geneA")
-with two elements (e.g. \code{'first\$pos\$transcript'} and \code{'first\$pos\$select_region'}, in which introns were reduced in the transcript).}
+with two elements (e.g. \code{'first\$pos\$transcript'} and \code{'first\$pos\$select_region'}, in which introns were reduced for the transcript).}
 
 \item{downstream_xy}{A data.frame (i.e. a returned object \code{'B1_xy'} in FUNCTION "plot_separate_domain_geneB" - exon coordinates(x1, y1, x2, y2) of intron-reduced transcripts).}
 
 \item{downstream_flag}{A list (i.e. the same object \code{'second'} used in FUNCTION "plot_separate_domain_geneB")
-with two elements (e.g. \code{'second\$pos\$transcript'} and \code{'second\$pos\$select_region'}, in which introns were reduced in the transcript).}
+with two elements (e.g. \code{'second\$pos\$transcript'} and \code{'second\$pos\$select_region'}, in which introns were reduced for the transcript).}
 
-\item{breakpoint_xy}{A data.frame with one row (e.g. \code{'breakpoint_xy[i,1]'} - breakpoint pos in geneA transcript; \code{'breakpoint_xy[i,2]'} - breakpoint pos in geneB transcript).
+\item{breakpoint_xy}{A data.frame with one row (e.g. \code{'breakpoint_xy[i,1]'} - breakpoint pos of geneA transcript; \code{'breakpoint_xy[i,2]'} - breakpoint pos of geneB transcript).
 NOTE: breakpoint coordinates are adjusted by reducing introns.}
 }
 \value{
 A data.frame with five columns (i.e. \code{'x_pos_gene_upstream'}, \code{'x_pos_gene_downstream'}, \code{'y_pos_gene_upstream'}, \code{'y_pos_gene_downstream'}, \code{'tag'}).
-NOTE: \code{'tag'} suggests different biological consequences of fusion with four categories (e.g. 1:Unknown, 2:Inframe, 3:Outframe, 4:Truncate-loss)
+NOTE: \code{'tag'} suggests different biological consequences of fusion protein with four categories (e.g. 1:Unknown, 2:Inframe, 3:Outframe, 4:Truncate-loss)
 }
 \description{
 Plot straight lines to link breakpoints of geneA and geneB transcripts (reducing introns) in 'domain' tab-panel

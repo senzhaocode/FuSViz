@@ -2,7 +2,7 @@
 % Please edit documentation in R/Network_process.R
 \name{network_process}
 \alias{network_process}
-\title{Create the input format for visNetwork package}
+\title{Create input format for visNetwork package}
 \usage{
 network_process(
   tmp,
@@ -33,5 +33,5 @@ network_process(
 A list with three data.frame elements (i.e. \code{'nodes'}, \code{'edges'} and \code{'degree_score'}).
 }
 \description{
-Create the input format of DNA and RNA SVs for visNetwork visualization
+Create input format of DNA and RNA SVs for visNetwork visualization
 }

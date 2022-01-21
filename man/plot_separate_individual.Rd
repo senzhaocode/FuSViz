@@ -10,26 +10,30 @@ plot_separate_individual(
   second,
   second_name,
   breakpoint,
-  cytoband
+  cytoband,
+  offset = 2000
 )
 }
 \arguments{
-\item{first}{A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneA); \code{'first\$pos\$transcript'} is a data.frame object
-(only one row) that collects evaluation of breakpoint pos in geneA transcript; \code{'first\$pos\$select_region'} is a data.frame object
+\item{first}{A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneA); \code{'first\$pos\$transcript'} is a data.frame object
+(only one row) that collects evaluation of breakpoint pos for geneA transcripts; \code{'first\$pos\$select_region'} is a data.frame object
 (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.}
 
 \item{first_name}{A string - symbol name of geneA (e.g. 'TMPRSS2').}
 
-\item{second}{A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneB); \code{'second\$pos\$transcript'} is a data.frame object
-(only one row) that collects evaluation of breakpoint pos in geneB transcript; \code{'second\$pos\$select_region'} is a data.frame object
+\item{second}{A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneB); \code{'second\$pos\$transcript'} is a data.frame object
+(only one row) that collects evaluation of breakpoint pos for geneB transcripts; \code{'second\$pos\$select_region'} is a data.frame object
 (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.}
 
 \item{second_name}{A string - symbol name of geneB (e.g. 'ERG').}
 
-\item{breakpoint}{A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA; \code{'breakpoint[i,2]'} - breakpoint pos in geneB;
-\code{'breakpoint[i,3]'} and \code{'breakpoint[i,4]'} are the number of split and span reads supporting this fusion).}
+\item{breakpoint}{A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos of geneA; \code{'breakpoint[i,2]'} - breakpoint pos of geneB;
+\code{'breakpoint[i,3]'} and \code{'breakpoint[i,4]'} are the number of split and span reads supporting this fusion;
+\code{'breakpoint[i,5]'} and \code{'breakpoint[i,6]'} are the strand directions of fusion sequence for geneA and geneB, respectively).}
 
 \item{cytoband}{A GRange object for plotting cytoband of chromosome ideogram.}
+
+\item{offset}{A numeric value - extend the partner gene interval (default: 2000, e.g. \link{start-offset, end+offset}).}
 }
 \description{
 Plot transcript-model and chromosome ideogram of partner genes in 'per_sample' tab-panel (for downloading version as well)

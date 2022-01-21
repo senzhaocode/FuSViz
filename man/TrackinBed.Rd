@@ -15,11 +15,11 @@ TrackinBed(
 )
 }
 \arguments{
-\item{session}{An environment object that can be used to access information and functionality by shiny.}
+\item{session}{An environment object that is used to access information and functionality by shiny.}
 
 \item{datastr}{A data.frame with at least three columns (e.g. \code{chr}, \code{start}, \code{end}, from the fourth to the last column is not essential).}
 
-\item{name}{A string of track name (e.g. \code{RNA breakpoint track}).}
+\item{name}{A string - track name (e.g. \code{RNA breakpoint track}).}
 
 \item{color}{CSS color value for track feature (e.g. \code{#ff0000} or \code{rgb(100,0,100)}).}
 

@@ -13,12 +13,13 @@ plot_separate_domain_download(
   second_name,
   second_domain,
   second_motif,
-  breakpoint
+  breakpoint,
+  offset = 0
 )
 }
 \arguments{
-\item{first}{A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneA); \code{'first\$pos\$transcript'} is a data.frame object
-that collects evaluation of breakpoint pos in geneA transcripts after reducing intron; \code{'first\$pos\$select_region'} is a data.frame object
+\item{first}{A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneA); \code{'first\$pos\$transcript'} is a data.frame object
+that collects evaluation of breakpoint pos for geneA transcript after reducing intron; \code{'first\$pos\$select_region'} is a data.frame object
 (5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.}
 
 \item{first_name}{A string - symbol name of geneA (e.g. 'TMPRSS2').}
@@ -29,8 +30,8 @@ that collects evaluation of breakpoint pos in geneA transcripts after reducing i
 \item{first_motif}{A data.frame for collecting motif annotation (e.g. \code{'first_motif\$Start'}: motif start; \code{'first_motif\$End'}: motif end;
 \code{'first_motif\$Domain_name'}: motif name abbreviation).}
 
-\item{second}{A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneB); \code{'second\$pos\$transcript'} is a data.frame object
-that collects evaluation of breakpoint pos in geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
+\item{second}{A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneB); \code{'second\$pos\$transcript'} is a data.frame object
+that collects evaluation of breakpoint pos for geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
 (5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.}
 
 \item{second_name}{A string - symbol name of geneB (e.g. 'ERG').}
@@ -41,7 +42,9 @@ that collects evaluation of breakpoint pos in geneB transcript after reducing in
 \item{second_motif}{A data.frame for collecting motif annotation (e.g. \code{'second_motif\$Start'}: motif start; \code{'secondt_motif\$End'}: motif end;
 \code{'second_motif\$Domain_name'}: motif name abbreviation).}
 
-\item{breakpoint}{A data.frame with two columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos in geneB transcript).}
+\item{breakpoint}{A data.frame with two columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos of geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos of geneB transcript).}
+
+\item{offset}{A numeric value - extend the partner gene interval (default: 0, e.g. \link{start-offset, end+offset}).}
 }
 \description{
 Plot transcript-model(reducing introns), domain, motif and multiple straight lines that link breakpoints of geneA and geneB transcripts together.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Hist_process.R
 \name{histgram_process}
 \alias{histgram_process}
-\title{Divide the sample number to four equal parts}
+\title{Divide sample size to four parts}
 \usage{
 histgram_process(hist)
 }
@@ -10,8 +10,8 @@ histgram_process(hist)
 \item{hist}{A numeric vector contains SV number counted per sample (named by sample id).}
 }
 \value{
-A list with four element (i.e. \code{'section1'}, \code{'section2'}, \code{'section3'} and \code{'section4'} - each represents a SV distribution in one fourth of the sample number)
+A list with four elements (i.e. \code{'section1'}, \code{'section2'}, \code{'section3'} and \code{'section4'} - each represents a SV distribution in one-fourth of samples)
 }
 \description{
-Divide the sample number to four equal parts for histgram plotting the SV distribution
+Divide sample size to four equal parts for histgram plotting the SV distribution
 }

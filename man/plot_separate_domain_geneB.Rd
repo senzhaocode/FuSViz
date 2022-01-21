@@ -4,11 +4,17 @@
 \alias{plot_separate_domain_geneB}
 \title{Plot transcript-model(reducing introns), domain and motif}
 \usage{
-plot_separate_domain_geneB(second, second_name, second_domain, second_motif)
+plot_separate_domain_geneB(
+  second,
+  second_name,
+  second_domain,
+  second_motif,
+  offset = 0
+)
 }
 \arguments{
-\item{second}{A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneB); \code{'second\$pos\$transcript'} is a data.frame object
-that collects evaluation of breakpoint pos in geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
+\item{second}{A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneB); \code{'second\$pos\$transcript'} is a data.frame object
+that collects evaluation of breakpoint pos for geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
 (5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.}
 
 \item{second_name}{A string - symbol name of geneB (e.g. 'ERG').}
@@ -18,6 +24,8 @@ that collects evaluation of breakpoint pos in geneB transcript after reducing in
 
 \item{second_motif}{A data.frame for collecting motif annotation (e.g. \code{'second_motif\$Start'}: motif start; \code{'secondt_motif\$End'}: motif end;
 \code{'second_motif\$Domain_name'}: motif name abbreviation).}
+
+\item{offset}{A numeric value - extend the partner gene interval (default: 0, e.g. \link{start-offset, end+offset}).}
 }
 \value{
 A data.frame (i.e. \code{'B1_xy'}) that contains exon coordinates in the plot layout.

@@ -7,25 +7,25 @@
 plot_separate_domain_arrow(A1_xy, B1_xy, first, second, breakpoint)
 }
 \arguments{
-\item{A1_xy}{A data.frame: \code{'A1_xy\$GeneRegionTrack'} - exon coordinates(x1, y1, x2, y2) of intron-reduced transcripts,
+\item{A1_xy}{A data.frame - \code{'A1_xy\$GeneRegionTrack'} contains exon coordinates(x1, y1, x2, y2) of intron-reduced transcripts,
 \code{'A1_xy'} is the return object of FUNCTION "plot_separate_domain_geneA".}
 
-\item{B1_xy}{A data.frame: \code{'B1_xy\$GeneRegionTrack'} - exon coordinates(x1, y1, x2, y2) of intron-reduced transcripts,
+\item{B1_xy}{A data.frame - \code{'B1_xy\$GeneRegionTrack'} contains exon coordinates(x1, y1, x2, y2) of intron-reduced transcripts,
 \code{'B1_xy'} is the return object of FUNCTION "plot_separate_domain_geneB".}
 
-\item{first}{A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneA); \code{'first\$pos\$transcript'} is a data.frame object
-that collects evaluation of breakpoint pos in geneA transcript after reducing intron; \code{'first\$pos\$select_region'} is a data.frame object
+\item{first}{A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneA); \code{'first\$pos\$transcript'} is a data.frame object
+that collects evaluation of breakpoint pos for geneA transcript after reducing intron; \code{'first\$pos\$select_region'} is a data.frame object
 (5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.}
 
-\item{second}{A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneB); \code{'second\$pos\$transcript'} is a data.frame object
-that collects evaluation of breakpoint pos in geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
+\item{second}{A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneB); \code{'second\$pos\$transcript'} is a data.frame object
+that collects evaluation of breakpoint pos for geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
 (5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.}
 
-\item{breakpoint}{A data.frame with two columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos in geneB transcript).}
+\item{breakpoint}{A data.frame with two columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos of geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos of geneB transcript).}
 }
 \value{
 NULL
-NOTE: In terms of biological consequences of fusion line, there are four corresponding colors (i.e. black - Unknown, blue - Inframe, red - Outframe and '#008080' - Truncate-loss).
+NOTE: In terms of translation consequence of fusion line, there are four corresponding colors (i.e. black - Unknown, blue - Inframe, red - Outframe and '#008080' - Truncate-loss).
 }
 \description{
 Plot multiple straight lines that link breakpoints of geneA and geneB transcripts (reducing introns) in 'domain' tab-panel

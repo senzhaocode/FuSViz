@@ -11,8 +11,9 @@ plot_separate_individual_bam(
   breakpoint_B,
   rna_bam_path,
   dna_bam_path = NULL,
+  version = "hg38",
   coverage_plot_trans = F,
-  offset = 5,
+  offset = 2000,
   chrom_notation_rna = T,
   chrom_notation_dna = T,
   duplicate = F,
@@ -42,9 +43,11 @@ plot_separate_individual_bam(
 
 \item{dna_bam_path}{A string - path of alignment file from DNA-seq (BAM format), default value: NULL.}
 
-\item{coverage_plot_trans}{A boolean type - if TRUE, RNA read coverage calculated by reads mapped to selected transcripts of geneA and geneB; otherwise (default: FALSE) RNA read coverage calculated by reads mapped to genomic regions of geneA and geneB. coverage_plot_trans is only valid for RNA-seq alignment.}
+\item{version}{A string - genomic annotation version (either 'hg38' or 'hg19', default: 'hg38')}
 
-\item{offset}{A number - the value (default: 5) indicates how many bases are extended from 5'-end and 3'-end of geneA and geneB in plotting.}
+\item{coverage_plot_trans}{A boolean type - if TRUE, RNA read coverage is plotted by reads mapped to exons and related introns of geneA and geneB transcripts; otherwise (default: FALSE) RNA read coverage is plotted by reads mapped to full genomic regions of geneA and geneB. coverage_plot_trans is only valid for RNA-seq alignment.}
+
+\item{offset}{A number - the value (default: 2000) indicates how many bases are extended from 5'-end and 3'-end of geneA and geneB in plotting.}
 
 \item{chrom_notation_rna}{A boolean type - if TRUE (default value) chromosome name in RNA-seq alignment denotes like 'chrX'; if FALSE chromosome denotes like 'X'.}
 
@@ -62,17 +65,17 @@ plot_separate_individual_bam(
 
 \item{span}{A number - discordant spanning read pair support (default: NULL).}
 
-\item{transcriptA}{A vector of string - selected transcripts (ensembl id) of geneA for plotting (default: NULL).}
+\item{transcriptA}{A string - selected transcripts (ensembl id) of geneA for plotting (default: NULL; "id1 id2 id3" if multiple ensembl id available).}
 
-\item{transcriptB}{A vector of string - selected transcripts (ensembl id) of geneB for plotting (default: NULL).}
+\item{transcriptB}{A string - selected transcripts (ensembl id) of geneB for plotting (default: NULL; "id1 id2 id3" if multiple ensembl id available).}
 
 \item{fusion_strandA}{A string - the strand direction of geneA in transcribed fusion (default: NULL; options: '+' or '-').}
 
 \item{fusion_strandB}{A string - the strand direction of geneB in transcribed fusion (default: NULL; options: '+' or '-').}
 
-\item{coverage_max_A}{A number - the range of y-axis (RNA-seq read coverage) scale for geneA (default: NULL).}
+\item{coverage_max_A}{A number - the max value of y-axis (RNA-seq read coverage) scale for geneA (default: NULL).}
 
-\item{coverage_max_B}{A number - the range of y-axis (RNA-seq read coverage) scale for geneB (default: NULL).}
+\item{coverage_max_B}{A number - the max value of y-axis (RNA-seq read coverage) scale for geneB (default: NULL).}
 }
 \description{
 Plot curved lines to link breakpoints of fusion transcripts in context of gene annotation and read coverage

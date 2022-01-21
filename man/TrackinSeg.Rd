@@ -15,17 +15,17 @@ TrackinSeg(
 )
 }
 \arguments{
-\item{session}{An environment object that can be used to access information and functionality by shiny.}
+\item{session}{An environment object that is used to access information and functionality by shiny.}
 
 \item{datastr}{A data.frame with five columns (e.g. \code{chr}, \code{start}, \code{end}, \code{value} and \code{sample}).}
 
-\item{name}{A string of track name (e.g. \code{DNA seg track}).}
+\item{name}{A string - track name (e.g. \code{DNA seg track}).}
 
 \item{trackHeight}{Initial height of track viewport in pixels (e.g. \code{100}).}
 
 \item{isLog}{A logical value (e.g. \code{FALSE} or \code{TRUE} - if segment values are 2*log2(copyNumber/2)).}
 
-\item{displayMode}{Annotation display mode (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).}
+\item{displayMode}{Display mode of annotation track (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).}
 
 \item{SameNameDel}{A logical value controls whether to add track if its name has been existed (e.g. \code{FALSE} or \code{TRUE}).}
 }

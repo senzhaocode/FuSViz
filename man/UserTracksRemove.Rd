@@ -7,7 +7,7 @@
 UserTracksRemove(session)
 }
 \arguments{
-\item{session}{An environment object that can be used to access information and functionality by shiny.}
+\item{session}{An environment object that is used to access information and functionality by shiny.}
 }
 \description{
 Remove track added by users

@@ -9,8 +9,8 @@ check_input_format(inputdf, type)
 \arguments{
 \item{inputdf}{A data.table object for RNA-seq SVs, DNA-seq SVs or mutation profile.}
 
-\item{type}{Uploading file source (e.g. RNA SVs, DNA SVs, mutations).}
+\item{type}{A character string (e.g. 'RNA', 'DNA' or 'Mut').}
 }
 \description{
-Check the input format of upload files.
+Input format QC of upload files.
 }

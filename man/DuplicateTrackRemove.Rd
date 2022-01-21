@@ -7,9 +7,9 @@
 DuplicateTrackRemove(session, name)
 }
 \arguments{
-\item{session}{An environment object that can be used to access information and functionality by shiny.}
+\item{session}{An environment object that is used to access information and functionality by shiny.}
 
-\item{name}{A character vector represents track names.}
+\item{name}{A character vector represents track name.}
 }
 \description{
 Remove track with replicate names
