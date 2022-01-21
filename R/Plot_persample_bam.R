@@ -62,8 +62,8 @@ chrom_name_function <- function(file, selection) {
 #' @param offset A number - the value (default: 2000) indicates how many bases are extended from 5'-end and 3'-end of geneA and geneB in plotting.
 #' @param split A number - split reads support (default: NULL).
 #' @param span A number - discordant spanning read pair support (default: NULL).
-#' @param transcriptA A vector of string - selected transcripts (ensembl id) of geneA for plotting (default: NULL).
-#' @param transcriptB A vector of string - selected transcripts (ensembl id) of geneB for plotting (default: NULL).
+#' @param transcriptA A string - selected transcripts (ensembl id) of geneA for plotting (default: NULL; "id1 id2 id3" if multiple ensembl id available).
+#' @param transcriptB A string - selected transcripts (ensembl id) of geneB for plotting (default: NULL; "id1 id2 id3" if multiple ensembl id available).
 #' @param fusion_strandA A string - the strand direction of geneA in transcribed fusion (default: NULL; options: '+' or '-').
 #' @param fusion_strandB A string - the strand direction of geneB in transcribed fusion (default: NULL; options: '+' or '-').
 #' @param coverage_max_A A number - the range of y-axis (RNA-seq read coverage) scale for geneA (default: NULL).
@@ -145,7 +145,8 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	first = list(); second = list(); # // geneA and geneB are list structure
 	# select transcript for geneA
 	if (! is.null(transcriptA) ) {
-		object_individual_A$dataset = object_individual_A$dataset[object_individual_A$dataset$TXNAME %in% transcriptA, ]
+		transcriptA_vector = unlist(strsplit(transcriptA, " "))
+		object_individual_A$dataset = object_individual_A$dataset[object_individual_A$dataset$TXNAME %in% transcriptA_vector, ]
 		if ( nrow(object_individual_A$dataset) == 0 ) {
 			stop(paste(transcriptA, " not present in annotation database!"));
 		}
@@ -153,7 +154,8 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	first[[as.character(breakpoint_A)]] <- gene_trans_ex(breakpoint_A, object_individual_A, whole_txdb)
 	# select transcript for geneB
 	if (! is.null(transcriptB) ) {
-		object_individual_B$dataset = object_individual_B$dataset[object_individual_B$dataset$TXNAME %in% transcriptB, ]
+		transcriptB_vector = unlist(strsplit(transcriptB, " "))
+		object_individual_B$dataset = object_individual_B$dataset[object_individual_B$dataset$TXNAME %in% transcriptB_vector, ]
 		if ( nrow(object_individual_B$dataset) == 0 ) {
 			stop(paste(transcriptB, " not present in annotation database!"));
 		}
@@ -378,7 +380,7 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	} else if ( length(first[[1]]$transcript$TXNAME) > 20 &&  length(first[[1]]$transcript$TXNAME) <= 25 ) {
 		grTrack_f@dp@pars$fontsize.group = 6;
 	} else {
-		grTrack_f@dp@pars$fontsize.group = 4;
+		grTrack_f@dp@pars$fontsize.group = 5;
 	}
 	if ( length(second[[1]]$transcript$TXNAME) > 0 &&  length(second[[1]]$transcript$TXNAME) <= 5 ) { 
 		grTrack_s@dp@pars$fontsize.group = 11; 
@@ -391,7 +393,7 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	} else if ( length(second[[1]]$transcript$TXNAME) > 20 &&  length(second[[1]]$transcript$TXNAME) <= 25 ) {
 		grTrack_s@dp@pars$fontsize.group = 6;
 	} else {
-		grTrack_s@dp@pars$fontsize.group = 4;
+		grTrack_s@dp@pars$fontsize.group = 5;
 	}
 
 	#// set the chromosome axis coordinate
