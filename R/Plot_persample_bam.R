@@ -1,6 +1,6 @@
 #' Convert chromome notation (e.g. '1' to 'chr1') 
 #'
-#' This function it to convert chromosome notation in import bam file, which meets requirement of Gviz::AlignmentsTrack function
+#' This function is to convert chromosome notation in import bam file and meet requirement of Gviz::AlignmentsTrack function
 #'
 #' @param file path of read alignment (BAM format).
 #' @param selection A GRanges object defines a region for coverage plotting using the bamfile.
@@ -66,8 +66,8 @@ chrom_name_function <- function(file, selection) {
 #' @param transcriptB A string - selected transcripts (ensembl id) of geneB for plotting (default: NULL; "id1 id2 id3" if multiple ensembl id available).
 #' @param fusion_strandA A string - the strand direction of geneA in transcribed fusion (default: NULL; options: '+' or '-').
 #' @param fusion_strandB A string - the strand direction of geneB in transcribed fusion (default: NULL; options: '+' or '-').
-#' @param coverage_max_A A number - the range of y-axis (RNA-seq read coverage) scale for geneA (default: NULL).
-#' @param coverage_max_B A number - the range of y-axis (RNA-seq read coverage) scale for geneB (default: NULL).
+#' @param coverage_max_A A number - the max value of y-axis (RNA-seq read coverage) scale for geneA (default: NULL).
+#' @param coverage_max_B A number - the max value of y-axis (RNA-seq read coverage) scale for geneB (default: NULL).
 #' @param duplicate A boolean type - a logical value indicating that un-duplicated (FALSE), duplicated (TRUE), or any (NA) reads should be returned (default: F).
 #' @param properpair A boolean type - a logical value indicating whether improperly paired (FALSE), properly paired (TRUE), or any (NA) reads should be returned (default: NA).
 #' @param unmappedmate A boolean type - a logical value indicating whether reads with mapped (FALSE), unmapped (TRUE), or any (NA) mate should be returned (default: NA).

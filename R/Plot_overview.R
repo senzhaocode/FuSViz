@@ -2,16 +2,16 @@
 #'
 #' @description Plot transcript-model and chromosome ideogram of partner genes in 'overview' tab-panel
 #'
-#' @param first A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneA); \code{'first\$pos\$transcript'} is a data.frame object
-#'        (only one row) that collects evaluation of breakpoint pos in geneA transcript; \code{'first\$pos\$select_region'} is a data.frame object
+#' @param first A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneA); \code{'first\$pos\$transcript'} is a data.frame object
+#'        (only one row) that collects evaluation of breakpoint pos for geneA transcripts; \code{'first\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.
 #' @param first_name A string - symbol name of geneA (e.g. 'TMPRSS2').
-#' @param second A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneB); \code{'second\$pos\$transcript'} is a data.frame object
-#'        (only one row) that collects evaluation of breakpoint pos in geneB transcript; \code{'second\$pos\$select_region'} is a data.frame object
+#' @param second A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneB); \code{'second\$pos\$transcript'} is a data.frame object
+#'        (only one row) that collects evaluation of breakpoint pos for geneB transcripts; \code{'second\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.
 #' @param second_name A string - symbol name of geneB (e.g. 'ERG').
 #' @param cytoband A GRange object for plotting cytoband of chromosome ideogram.
-#' @param offset A numeric value - extend the partner gene region (default: 2000, e.g. [start-offset, end+offset]).
+#' @param offset A numeric value - extend the partner gene interval (default: 2000, e.g. [start-offset, end+offset]).
 #'
 #' @return A list with two data.frame elements (i.e. \code{'A1_xy'} and \code{'B1_xy'}) that contain exon coordinates in the plot layout.
 #'
@@ -151,14 +151,14 @@ plot_separate_overview <- function(first, first_name, second, second_name, cytob
 #'
 #' @param collect A list that is a return object in FUNCTION "plot_separate_overview" with two elements (i.e. \code{'collect\$A1_xy\$GeneRegionTrack'} and 
 #'        \code{'collect\$B1_xy\$GeneRegionTrack'}) - exon coordinates(x1, y1, x2, y2) of geneA and geneB transcripts.
-#' @param first A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneA); \code{'first\$pos\$transcript'} is a data.frame object
-#'        (only one row) that collects evaluation of breakpoint pos in geneA transcript; \code{'first\$pos\$select_region'} is a data.frame object
+#' @param first A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneA); \code{'first\$pos\$transcript'} is a data.frame object
+#'        (only one row) that collects evaluation of breakpoint pos for geneA transcripts; \code{'first\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.
-#' @param second A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneB); \code{'second\$pos\$transcript'} is a data.frame object
-#'        (only one row) that collects evaluation of breakpoint pos in geneB transcript; \code{'second\$pos\$select_region'} is a data.frame object
+#' @param second A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneB); \code{'second\$pos\$transcript'} is a data.frame object
+#'        (only one row) that collects evaluation of breakpoint pos for geneB transcript; \code{'second\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.
-#' @param breakpoint A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA; \code{'breakpoint[i,2]'} - breakpoint pos in geneB; 
-#'        \code{'breakpoint[i,3]'} is the number of samples with such fusion).
+#' @param breakpoint A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos of geneA; \code{'breakpoint[i,2]'} - breakpoint pos of geneB; 
+#'        \code{'breakpoint[i,3]'} is the number of samples with such a fusion).
 #' @param zoom A numeric value indicates zoom degree of plotting.
 #'
 #' @return NULL
@@ -202,17 +202,17 @@ plot_arrow_overview <- function(collect, first, second, breakpoint, zoom) {
 #'
 #' @description Plot transcript-model, chromosome ideogram and multiple curved lines that link breakpoints of geneA and geneB transcripts together in 'overview' tab-panel
 #'
-#' @param first A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneA); \code{'first\$pos\$transcript'} is a data.frame object
-#'        (only one row) that collects evaluation of breakpoint pos in geneA transcript; \code{'first\$pos\$select_region'} is a data.frame object
+#' @param first A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneA); \code{'first\$pos\$transcript'} is a data.frame object
+#'        (only one row) that collects evaluation of breakpoint pos for geneA transcripts; \code{'first\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.
 #' @param first_name A string - symbol name of geneA (e.g. 'TMPRSS2').
-#' @param second A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneB); \code{'second\$pos\$transcript'} is a data.frame object
-#'        (only one row) that collects evaluation of breakpoint pos in geneB transcript; \code{'second\$pos\$select_region'} is a data.frame object
+#' @param second A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneB); \code{'second\$pos\$transcript'} is a data.frame object
+#'        (only one row) that collects evaluation of breakpoint pos for geneB transcripts; \code{'second\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation) for plotting and it is a constant variable for different \code{'\$pos'} values.
 #' @param second_name A string - symbol name of geneB (e.g. 'ERG').
 #' @param cytoband A GRange object for plotting cytoband of chromosome ideogram.
-#' @param breakpoint A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA; \code{'breakpoint[i,2]'} - breakpoint pos in geneB;
-#' @param offset A numeric value - extend the partner gene region (default: 2000, e.g. [start-offset, end+offset]).
+#' @param breakpoint A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos of geneA; \code{'breakpoint[i,2]'} - breakpoint pos of geneB;
+#' @param offset A numeric value - extend the partner gene interval (default: 2000, e.g. [start-offset, end+offset]).
 #'
 #' @export
 plot_separate_overview_download <- function(first, first_name, second, second_name, cytoband, breakpoint, offset=2000) {

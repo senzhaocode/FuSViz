@@ -1,6 +1,6 @@
-#' Create the input format for visNetwork package 
+#' Create input format for visNetwork package 
 #'
-#' @description Create the input format of DNA and RNA SVs for visNetwork visualization
+#' @description Create input format of DNA and RNA SVs for visNetwork visualization
 #'
 #' @param tmp A data.frame with three columns (i.e. \code{'gene1'}, \code{'gene2'}, \code{'name'}).
 #' @param type A string (e.g. \code{'DNA'} or \code{'RNA'}).

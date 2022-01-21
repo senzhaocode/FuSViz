@@ -1,10 +1,10 @@
-#' Divide the sample number to four equal parts
+#' Divide sample size to four parts
 #'
-#' @description Divide the sample number to four equal parts for histgram plotting the SV distribution
+#' @description Divide sample size to four equal parts for histgram plotting the SV distribution
 #'
 #' @param hist A numeric vector contains SV number counted per sample (named by sample id).
 #'
-#' @return A list with four element (i.e. \code{'section1'}, \code{'section2'}, \code{'section3'} and \code{'section4'} - each represents a SV distribution in one fourth of the sample number)
+#' @return A list with four elements (i.e. \code{'section1'}, \code{'section2'}, \code{'section3'} and \code{'section4'} - each represents a SV distribution in one-fourth of samples)
 #'
 #' @export
 histgram_process <- function(hist) {

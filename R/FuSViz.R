@@ -62,8 +62,8 @@ renderFuSViz <- function(expr, env = parent.frame(), quoted = FALSE) {
 #'
 #' @description Remove track with replicate names
 #'
-#' @param session An environment object that can be used to access information and functionality by shiny.
-#' @param name A character vector represents track names.
+#' @param session An environment object that is used to access information and functionality by shiny.
+#' @param name A character vector represents track name.
 #'
 #' @export
 DuplicateTrackRemove <- function(session, name) {
@@ -75,7 +75,7 @@ DuplicateTrackRemove <- function(session, name) {
 #'
 #' @description Remove track added by users
 #'
-#' @param session An environment object that can be used to access information and functionality by shiny.
+#' @param session An environment object that is used to access information and functionality by shiny.
 #'
 #' @export
 UserTracksRemove <- function(session) {
@@ -87,9 +87,9 @@ UserTracksRemove <- function(session) {
 #'
 #' @description Load a bed format track representing SV breakpoint interval
 #'
-#' @param session An environment object that can be used to access information and functionality by shiny.
+#' @param session An environment object that is used to access information and functionality by shiny.
 #' @param datastr A data.frame with at least three columns (e.g. \code{chr}, \code{start}, \code{end}, from the fourth to the last column is not essential).
-#' @param name A string of track name (e.g. \code{RNA breakpoint track}).
+#' @param name A string - track name (e.g. \code{RNA breakpoint track}).
 #' @param color CSS color value for track feature (e.g. \code{#ff0000} or \code{rgb(100,0,100)}).
 #' @param trackHeight Initial height of track viewport in pixels (e.g. \code{100}).
 #' @param displayMode Annotation track display mode (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
@@ -117,15 +117,15 @@ TrackinBed <- function(session, datastr, name, color="gray", trackHeight=100, di
 #'
 #' @description Load a bedgraph format track - count the freq of SV breakpoints
 #'
-#' @param session An environment object that can be used to access information and functionality by shiny.
+#' @param session An environment object that is used to access information and functionality by shiny.
 #' @param datastr A data.frame with four columns (e.g. \code{chr}, \code{start} and \code{value}).
-#' @param name A string of track name (e.g. \code{RNA breakpoint freq track}).
+#' @param name A string - track name (e.g. \code{RNA breakpoint freq track}).
 #' @param color CSS color value for track feature (e.g. \code{#ff0000} or \code{rgb(100,0,100)}).
 #' @param trackHeight Initial height of track viewport in pixels (e.g. \code{100}).
 #' @param autoscale A logical value of y-axis scale (e.g. \code{FALSE} or \code{TRUE}).
 #' @param min A number represents minimum value of y-axis.
 #' @param max A number represents maximum value of y-axis.
-#' @param displayMode Annotation track display mode (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
+#' @param displayMode Display mode of annotation track (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
 #' @param SameNameDel A logical value controls whether to add track if its name has been existed (e.g. \code{FALSE} or \code{TRUE}).
 #'
 #' @export
@@ -153,17 +153,17 @@ TrackinBedGraph <- function(session, datastr, name, color="gray", trackHeight=50
 #'
 #' @description Load a bedpe format track - count the distribution of SVs (type including: DEL, DUP, INS and INV; BND is not shown due to translocation)
 #'
-#' @param session An environment object that can be used to access information and functionality by shiny.
+#' @param session An environment object that is used to access information and functionality by shiny.
 #' @param datastr A data.frame with nine columns, e.g. \code{chr1}, \code{start1}, \code{end1}, \code{chr2}, \code{start2}, \code{end2}, 
 #'        \code{name}(multiple samples separated by ";"), \code{score}(number of samples), \code{type}.
-#' @param name A string of track name (e.g. \code{DNA bedpe track}).
+#' @param name A string - track name (e.g. \code{DNA bedpe track}).
 #' @param color CSS color value for track feature (e.g. \code{#ff0000} or \code{rgb(100,0,100)}).
 #' @param thickness A number represents thickness of curve (e.g. \code{0.5}).
 #' @param trackHeight Initial height of track viewport in pixels (e.g. \code{100}).
 #' @param logScale A logical value (e.g. \code{FALSE} or \code{TRUE}).
 #' @param alpha A number (0-1) that controls arc of curve (e.g. \code{0}).
 #' @param min A number represents minimum value of y-axis.
-#' @param displayMode Annotation track display mode (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
+#' @param displayMode Display mode of annotation track (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
 #' @param SameNameDel A logical value controls whether to add track if its name has been existed (e.g. \code{FALSE} or \code{TRUE}).
 #'
 #' @export
@@ -195,12 +195,12 @@ TrackinBedPe <- function(session, datastr, name, color="blue", thickness=0.5, tr
 #'
 #' @description Load a seg format track - count the DEL and DUP events of DNA SVs (small copy number variations)
 #'
-#' @param session An environment object that can be used to access information and functionality by shiny.
+#' @param session An environment object that is used to access information and functionality by shiny.
 #' @param datastr A data.frame with five columns (e.g. \code{chr}, \code{start}, \code{end}, \code{value} and \code{sample}).
-#' @param name A string of track name (e.g. \code{DNA seg track}).
+#' @param name A string - track name (e.g. \code{DNA seg track}).
 #' @param trackHeight Initial height of track viewport in pixels (e.g. \code{100}).
 #' @param isLog A logical value (e.g. \code{FALSE} or \code{TRUE} - if segment values are 2*log2(copyNumber/2)).
-#' @param displayMode Annotation display mode (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
+#' @param displayMode Display mode of annotation track (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
 #' @param SameNameDel A logical value controls whether to add track if its name has been existed (e.g. \code{FALSE} or \code{TRUE}).
 #'
 #' @export
@@ -244,11 +244,11 @@ TrackinBAM <- function(session, bam, bamindex, trackHeight=200) {
 #'
 #' @description Load gene track in offline mode (only for hg19_offline or hg38_offline)
 #'
-#' @param session An environment object that can be used to access information and functionality by shiny.
+#' @param session An environment object that is used to access information and functionality by shiny.
 #' @param version A string shows genome reference version (either 'hg19' or 'hg38')
 #' @param name Initial height of track viewport in pixels (e.g. \code{100}).
 #' @param trackHeight Initial height of track viewport in pixels (e.g. \code{100}).
-#' @param displayMode Annotation track display mode (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
+#' @param displayMode Display mode of annotation track (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
 #' @param SameNameDel A logical value controls whether to add a track if its name has been existed (e.g. \code{FALSE} or \code{TRUE}).
 #'
 #' @export
@@ -267,7 +267,7 @@ Trackoffline <- function(session, version, name, trackHeight=200, displayMode="E
 #'
 #' @description Obtain genomic coordinate of a zoom region
 #'
-#' @param session An environment object that can be used to access information and functionality by shiny.
+#' @param session An environment object that is used to access information and functionality by shiny.
 #' @param inputid A string represents the name of DOM element (inputId) defined in ui.R (e.g. \code{textInput(inputId, label, value = "")}).
 #'
 #' @export

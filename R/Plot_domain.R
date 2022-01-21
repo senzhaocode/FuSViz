@@ -4,15 +4,15 @@
 #'
 #' @param upstream_xy A data.frame (i.e. a returned object \code{'A1_xy'} in FUNCTION "plot_separate_domain_geneA" - exon coordinates(x1, y1, x2, y2) of intron-reduced transcripts).
 #' @param upstream_flag A list (i.e. the same object \code{'first'} used in FUNCTION "plot_separate_domain_geneA")
-#'        with two elements (e.g. \code{'first\$pos\$transcript'} and \code{'first\$pos\$select_region'}, in which introns were reduced in the transcript).
+#'        with two elements (e.g. \code{'first\$pos\$transcript'} and \code{'first\$pos\$select_region'}, in which introns were reduced for the transcript).
 #' @param downstream_xy A data.frame (i.e. a returned object \code{'B1_xy'} in FUNCTION "plot_separate_domain_geneB" - exon coordinates(x1, y1, x2, y2) of intron-reduced transcripts).
 #' @param downstream_flag A list (i.e. the same object \code{'second'} used in FUNCTION "plot_separate_domain_geneB")
-#'        with two elements (e.g. \code{'second\$pos\$transcript'} and \code{'second\$pos\$select_region'}, in which introns were reduced in the transcript).
-#' @param breakpoint_xy A data.frame with one row (e.g. \code{'breakpoint_xy[i,1]'} - breakpoint pos in geneA transcript; \code{'breakpoint_xy[i,2]'} - breakpoint pos in geneB transcript).
+#'        with two elements (e.g. \code{'second\$pos\$transcript'} and \code{'second\$pos\$select_region'}, in which introns were reduced for the transcript).
+#' @param breakpoint_xy A data.frame with one row (e.g. \code{'breakpoint_xy[i,1]'} - breakpoint pos of geneA transcript; \code{'breakpoint_xy[i,2]'} - breakpoint pos of geneB transcript).
 #'        NOTE: breakpoint coordinates are adjusted by reducing introns.
 #'
 #' @return A data.frame with five columns (i.e. \code{'x_pos_gene_upstream'}, \code{'x_pos_gene_downstream'}, \code{'y_pos_gene_upstream'}, \code{'y_pos_gene_downstream'}, \code{'tag'}).
-#'         NOTE: \code{'tag'} suggests different biological consequences of fusion with four categories (e.g. 1:Unknown, 2:Inframe, 3:Outframe, 4:Truncate-loss)
+#'         NOTE: \code{'tag'} suggests different biological consequences of fusion protein with four categories (e.g. 1:Unknown, 2:Inframe, 3:Outframe, 4:Truncate-loss)
 #'
 .plot_curve_reduce <- function(upstream_xy, upstream_flag, downstream_xy, downstream_flag, breakpoint_xy) {
 	# For testing: upstream_xy=A1_xy; upstream_flag=first; downstream_xy=B1_xy; downstream_flag=second
@@ -173,15 +173,15 @@
 #'
 #' @description Plot transcript-model(reducing introns), domain and motif of geneA in 'domain' tab-panel
 #'
-#' @param first A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneA); \code{'first\$pos\$transcript'} is a data.frame object
-#'        that collects evaluation of breakpoint pos in geneA transcripts after reducing intron; \code{'first\$pos\$select_region'} is a data.frame object
+#' @param first A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos in geneA); \code{'first\$pos\$transcript'} is a data.frame object
+#'        that collects evaluation of breakpoint pos for geneA transcript after reducing intron; \code{'first\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.
 #' @param first_name A string - symbol name of geneA (e.g. 'TMPRSS2').
 #' @param first_domain A data.frame for collecting domain annotation (e.g. \code{'first_domain\$Start'}: domain start; \code{'first_domain\$End'}: domain end; 
 #'        \code{'first_domain\$Domain_name'}: domain name abbreviation).
 #' @param first_motif A data.frame for collecting motif annotation (e.g. \code{'first_motif\$Start'}: motif start; \code{'first_motif\$End'}: motif end; 
 #'        \code{'first_motif\$Domain_name'}: motif name abbreviation).
-#' @param offset A numeric value - extend the partner gene region (default: 0, e.g. [start-offset, end+offset]).
+#' @param offset A numeric value - extend the partner gene interval (default: 0, e.g. [start-offset, end+offset]).
 #'
 #' @return A data.frame (i.e. \code{'A1_xy'}) that contains exon coordinates in the plot layout.
 #'
@@ -242,15 +242,15 @@ plot_separate_domain_geneA <- function(first, first_name, first_domain, first_mo
 #'
 #' @description Plot transcript-model(reducing introns), domain and motif of geneB in 'domain' tab-panel
 #'
-#' @param second A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneB); \code{'second\$pos\$transcript'} is a data.frame object
-#'        that collects evaluation of breakpoint pos in geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
+#' @param second A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneB); \code{'second\$pos\$transcript'} is a data.frame object
+#'        that collects evaluation of breakpoint pos for geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.
 #' @param second_name A string - symbol name of geneB (e.g. 'ERG').
 #' @param second_domain A data.frame for collecting domain annotation (e.g. \code{'second_domain\$Start'}: domain start; \code{'second_domain\$End'}: domain end; 
 #'        \code{'second_domain\$Domain_name'}: domain name abbreviation).
 #' @param second_motif A data.frame for collecting motif annotation (e.g. \code{'second_motif\$Start'}: motif start; \code{'secondt_motif\$End'}: motif end;
 #'        \code{'second_motif\$Domain_name'}: motif name abbreviation).
-#' @param offset A numeric value - extend the partner gene region (default: 0, e.g. [start-offset, end+offset]).
+#' @param offset A numeric value - extend the partner gene interval (default: 0, e.g. [start-offset, end+offset]).
 #'
 #' @return A data.frame (i.e. \code{'B1_xy'}) that contains exon coordinates in the plot layout.
 #'
@@ -311,20 +311,20 @@ plot_separate_domain_geneB <- function(second, second_name, second_domain, secon
 #'
 #' @description Plot multiple straight lines that link breakpoints of geneA and geneB transcripts (reducing introns) in 'domain' tab-panel
 #'
-#' @param A1_xy A data.frame: \code{'A1_xy\$GeneRegionTrack'} - exon coordinates(x1, y1, x2, y2) of intron-reduced transcripts,
+#' @param A1_xy A data.frame - \code{'A1_xy\$GeneRegionTrack'} contains exon coordinates(x1, y1, x2, y2) of intron-reduced transcripts,
 #'        \code{'A1_xy'} is the return object of FUNCTION "plot_separate_domain_geneA".
-#' @param B1_xy A data.frame: \code{'B1_xy\$GeneRegionTrack'} - exon coordinates(x1, y1, x2, y2) of intron-reduced transcripts,
+#' @param B1_xy A data.frame - \code{'B1_xy\$GeneRegionTrack'} contains exon coordinates(x1, y1, x2, y2) of intron-reduced transcripts,
 #'        \code{'B1_xy'} is the return object of FUNCTION "plot_separate_domain_geneB".
-#' @param first A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneA); \code{'first\$pos\$transcript'} is a data.frame object
-#'        that collects evaluation of breakpoint pos in geneA transcript after reducing intron; \code{'first\$pos\$select_region'} is a data.frame object
+#' @param first A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneA); \code{'first\$pos\$transcript'} is a data.frame object
+#'        that collects evaluation of breakpoint pos for geneA transcript after reducing intron; \code{'first\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.
-#' @param second A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneB); \code{'second\$pos\$transcript'} is a data.frame object
-#'        that collects evaluation of breakpoint pos in geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
+#' @param second A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneB); \code{'second\$pos\$transcript'} is a data.frame object
+#'        that collects evaluation of breakpoint pos for geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.
-#' @param breakpoint A data.frame with two columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos in geneB transcript).
+#' @param breakpoint A data.frame with two columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos of geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos of geneB transcript).
 #'
 #' @return NULL
-#'         NOTE: In terms of biological consequences of fusion line, there are four corresponding colors (i.e. black - Unknown, blue - Inframe, red - Outframe and '#008080' - Truncate-loss).
+#'         NOTE: In terms of translation consequence of fusion line, there are four corresponding colors (i.e. black - Unknown, blue - Inframe, red - Outframe and '#008080' - Truncate-loss).
 #'
 #' @export
 plot_separate_domain_arrow <- function(A1_xy, B1_xy, first, second, breakpoint) {
@@ -378,24 +378,24 @@ plot_separate_domain_arrow <- function(A1_xy, B1_xy, first, second, breakpoint) 
 #'
 #' @description Plot transcript-model(reducing introns), domain, motif and multiple straight lines that link breakpoints of geneA and geneB transcripts together.
 #'
-#' @param first A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneA); \code{'first\$pos\$transcript'} is a data.frame object
-#'        that collects evaluation of breakpoint pos in geneA transcripts after reducing intron; \code{'first\$pos\$select_region'} is a data.frame object
+#' @param first A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneA); \code{'first\$pos\$transcript'} is a data.frame object
+#'        that collects evaluation of breakpoint pos for geneA transcript after reducing intron; \code{'first\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.
 #' @param first_name A string - symbol name of geneA (e.g. 'TMPRSS2').
 #' @param first_domain A data.frame for collecting domain annotation (e.g. \code{'first_domain\$Start'}: domain start; \code{'first_domain\$End'}: domain end;
 #'        \code{'first_domain\$Domain_name'}: domain name abbreviation).
 #' @param first_motif A data.frame for collecting motif annotation (e.g. \code{'first_motif\$Start'}: motif start; \code{'first_motif\$End'}: motif end;
 #'        \code{'first_motif\$Domain_name'}: motif name abbreviation).
-#' @param second A list: \strong{'key'} is a string \code{'\$pos'} (i.e. breakpoint pos in geneB); \code{'second\$pos\$transcript'} is a data.frame object
-#'        that collects evaluation of breakpoint pos in geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
+#' @param second A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneB); \code{'second\$pos\$transcript'} is a data.frame object
+#'        that collects evaluation of breakpoint pos for geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.
 #' @param second_name A string - symbol name of geneB (e.g. 'ERG').
 #' @param second_domain A data.frame for collecting domain annotation (e.g. \code{'second_domain\$Start'}: domain start; \code{'second_domain\$End'}: domain end;
 #'        \code{'second_domain\$Domain_name'}: domain name abbreviation).
 #' @param second_motif A data.frame for collecting motif annotation (e.g. \code{'second_motif\$Start'}: motif start; \code{'secondt_motif\$End'}: motif end;
 #'        \code{'second_motif\$Domain_name'}: motif name abbreviation).
-#' @param breakpoint A data.frame with two columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos in geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos in geneB transcript).
-#' @param offset A numeric value - extend the partner gene region (default: 0, e.g. [start-offset, end+offset]).
+#' @param breakpoint A data.frame with two columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos of geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos of geneB transcript).
+#' @param offset A numeric value - extend the partner gene interval (default: 0, e.g. [start-offset, end+offset]).
 #'
 #' @export
 plot_separate_domain_download <- function(first, first_name, first_domain, first_motif, second, second_name, second_domain, second_motif, breakpoint, offset=0) {

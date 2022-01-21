@@ -16,10 +16,10 @@ FuSViz_app <- function(data = NULL) {
 
 #' Input format control on uploading files
 #'
-#' @description Check the input format of upload files.
+#' @description Input format QC of upload files.
 #'
 #' @param inputdf A data.table object for RNA-seq SVs, DNA-seq SVs or mutation profile.
-#' @param type Uploading file source (e.g. RNA SVs, DNA SVs, mutations).
+#' @param type A character string (e.g. 'RNA', 'DNA' or 'Mut').
 #'
 #' @export
 check_input_format <- function(inputdf, type) {
