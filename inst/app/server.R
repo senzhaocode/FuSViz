@@ -102,7 +102,20 @@ options(ucscChromosomeNames=FALSE)
 			req(input$file_rna_data);  #// Avoid 'input$file_rna_data' infinite problem when no file loading; the req() basically aborts the rest of the block 
 			#// Upload and read inputfile of RNA SVs (11 columns)
 			tumordata = read.csv(input$file_rna_data$datapath, header=TRUE, sep=input$sep_rna_file, quote="");
-			tumordata = FuSViz::check_input_format(tumordata, "RNA");
+			col_num_rna = colnames(tumordata);
+			if ( length(col_num_rna) < 11 ) { showModal(modalDialog(title = "Error message", "Column number (11) of RNA input file does not meet requirement!")); req(NULL); }
+			#// NOTE: column1-11 (chrom1, pos1, gene1, chrom2, pos2, gene2, name, split, span, strand1, strand2) - no NA accepted.
+			if ( col_num_rna[1] != "chrom1" || any(is.na(tumordata$chrom1)) == T || any(tumordata$chrom1 == "") == T ) { showModal(modalDialog(title = "Error message", "'chrom1' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[2] != "pos1" || any(is.na(tumordata$pos1)) == T || any(tumordata$pos1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'pos1' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[3] != "gene1" || any(is.na(tumordata$gene1)) == T || any(tumordata$gene1 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene1' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[4] != "chrom2" || any(is.na(tumordata$chrom2)) == T || any(tumordata$chrom2 == "") == T ) { showModal(modalDialog(title = "Error message", "'chrom2' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[5] != "pos2" || any(is.na(tumordata$pos2)) == T || any(tumordata$pos2 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'pos2' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[6] != "gene2" || any(is.na(tumordata$gene2)) == T || any(tumordata$gene2 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene2' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[7] != "name" || any(is.na(tumordata$name)) == T || any(tumordata$name == "") == T ) { showModal(modalDialog(title = "Error message", "'name' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[8] != "split" || any(is.na(tumordata$split)) == T || any(tumordata$split < 0) == T ) { showModal(modalDialog(title = "Error message", "'split' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[9] != "span" || any(is.na(tumordata$span)) == T || any(tumordata$sapn < 0) == T ) { showModal(modalDialog(title = "Error message", "'span' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[10] != "strand1" || any(is.na(tumordata$strand1)) == T || any(tumordata$strand1 == "") == T ) { showModal(modalDialog(title = "Error message", "'strand1' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[11] != "strand2" || any(is.na(tumordata$strand2)) == T || any(tumordata$strand2 == "") == T ) { showModal(modalDialog(title = "Error message", "'strand2' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
 			return(tumordata);
 		})
 		#/////////////////////////////////////////////////////////////
@@ -115,7 +128,21 @@ options(ucscChromosomeNames=FALSE)
 			#// Upload and read inputfile of DNA SVs (12 columns)
 			dnadata = data.table::fread(input$file_dna_data$datapath, sep=input$sep_dna_file, stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE,
 						header = TRUE, fill = TRUE, quote = "");
-			dnadata = FuSViz::check_input_format(dnadata, "DNA");
+			col_num_dna = colnames(dnadata);
+			if ( length(col_num_dna) < 12 ) { showModal(modalDialog(title = "Error message", "Column number (12) of DNA input file does not meet requirement!")); req(NULL); }
+			#// NOTE: column1-12 (chrom1, start1, end1, chrom2, start2, end2, name, type, split, span, gene1 and gene2) - no NA accepted.
+			if ( col_num_dna[1] != "chrom1" || any(is.na(dnadata$chrom1)) == T || any(dnadata$chrom1 == "") == T ) { showModal(modalDialog(title = "Error message", "'chrom1' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[2] != "start1" || any(is.na(dnadata$start1)) == T || any(dnadata$start1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'start1' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[3] != "end1" || any(is.na(dnadata$end1)) == T || any(dnadata$end1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'end1' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[4] != "chrom2" || any(is.na(dnadata$chrom2)) == T || any(dnadata$chrom2 == "") == T ) { showModal(modalDialog(title = "Error message", "'chrom2' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[5] != "start2" || any(is.na(dnadata$start2)) == T || any(dnadata$start2 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'start2' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[6] != "end2" || any(is.na(dnadata$end2)) == T || any(dnadata$end1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'end2' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[7] != "name" || any(is.na(dnadata$name)) == T || any(dnadata$name == "") == T ) { showModal(modalDialog(title = "Error message", "'name' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[8] != "type" || any(is.na(dnadata$type)) == T || any(dnadata$type == "") == T ) { showModal(modalDialog(title = "Error message", "'type' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[9] != "split" || any(is.na(dnadata$split)) == T || any(dnadata$split < 0) == T ) { showModal(modalDialog(title = "Error message", "'split' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[10] != "span" || any(is.na(dnadata$span)) == T || any(dnadata$sapn < 0) == T ) { showModal(modalDialog(title = "Error message", "'span' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[11] != "gene1" || any(is.na(dnadata$gene1)) == T || any(dnadata$gene1 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene1' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[12] != "gene2" || any(is.na(dnadata$gene2)) == T || any(dnadata$gene2 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene2' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
 			return(dnadata);
 		})
 		#//////////////////////////////////
@@ -154,6 +181,17 @@ options(ucscChromosomeNames=FALSE)
 			mutdata = data.table::fread(input$file_maf_data$datapath, sep = "\t", stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE, 
 					showProgress = TRUE, header = TRUE, fill = TRUE, skip = "Hugo_Symbol", quote = "", 
 					select = c('Hugo_Symbol','Chromosome','Start_Position','End_Position','Reference_Allele','Tumor_Seq_Allele2','Variant_Classification','Tumor_Sample_Barcode'));
+			col_num_mut = colnames(mutdata);
+			if ( length(col_num_mut) != 8 ) { showModal(modalDialog(title = "Error message", "Eight required columns (i.e. 'Hugo_Symbol', 'Chromosome', 'Start_Position', 'End_Position', 'Reference_Allele', 'Tumor_Seq_Allele2', 'Variant_Classification' and 'Tumor_Sample_Barcode') of Mutation MAF file fail to be met!")); req(NULL); }
+			#// NOTE: column1-8 (Hugo_Symbol, Chromosome, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Variant_Classification, Tumor_Sample_Barcode) - no NA accepted.
+			if ( any(is.na(mutdata$Chromosome)) == T || any(mutdata$Chromosome == "") == T ) { showModal(modalDialog(title = "Error message", "'Chromosome' column has incorrect name or empty/NA value for mutation profile!")); req(NULL); }
+			if ( any(is.na(mutdata$Start_Position)) == T || any(mutdata$Start_Position <= 0) == T ) { showModal(modalDialog(title = "Error message", "'Start_Position' column has incorrect name or empty/NA value for mutation profile!")); req(NULL); }
+			if ( any(is.na(mutdata$End_Position)) == T || any(mutdata$End_Position <= 0) == T ) { showModal(modalDialog(title = "Error message", "'End_Position' column has incorrect name or empty/NA value for mutation profile!")); req(NULL); }
+			if ( any(is.na(mutdata$Reference_Allele)) == T || any(mutdata$Reference_Allele == "") == T ) { showModal(modalDialog(title = "Error message", "'Reference_Allele' column has incorrect name or empty/NA value for mutation profile!")); req(NULL); }
+			if ( any(is.na(mutdata$Tumor_Seq_Allele2)) == T || any(mutdata$Tumor_Seq_Allele2 == "") == T ) { showModal(modalDialog(title = "Error message", "'Tumor_Seq_Allele2' column has incorrect name or empty/NA value for mutation profile!")); req(NULL); }
+			if ( any(is.na(mutdata$Variant_Classification)) == T || any(mutdata$Variant_Classification == "") == T ) { showModal(modalDialog(title = "Error message", "'Variant_Classification' column has incorrect name or empty/NA value for mutation profile!")); req(NULL); }
+			if ( any(is.na(mutdata$Tumor_Sample_Barcode)) == T || any(mutdata$Tumor_Sample_Barcode == "") == T ) { showModal(modalDialog(title = "Error message", "'Tumor_Sample_Barcode' column has incorrect name or empty/NA value for mutation profile!")); req(NULL); }
+
 			if ( is.null(input$file_rna_data) ) { # dna_sv file not load
 				if ( is.null(input$file_dna_data) ) { # rna_sv file not load
 					shiny::showModal(modalDialog(title = "Warning message", "Before load mutation data, please load SV data first!!!"));	req(NULL);
@@ -167,7 +205,27 @@ options(ucscChromosomeNames=FALSE)
 					mutdata = mutdata[Tumor_Sample_Barcode %in% unique(c(as.character(inputdata_dna()$name), as.character(inputdata()$name)))];
 				}
 			}
-			mutdata = FuSViz::check_input_format(mutdata, "Mut");
+			#// remove duplication in mutation data
+			mutdata = mutdata[, variantId := paste(Chromosome, Start_Position, Tumor_Sample_Barcode, Reference_Allele, Tumor_Seq_Allele2, sep = ':')];
+			if(nrow(mutdata[duplicated(variantId)]) > 0) {
+				cat("--Removed",  nrow(mutdata[duplicated(variantId)]) ,"duplicated variants\n");
+				mutdata = mutdata[!duplicated(variantId)];
+			}
+			mutdata[,variantId := NULL];
+			#// check empty value present in Hugo_Symbol (if yes assign 'UnknownGene')
+			if(nrow(mutdata[Hugo_Symbol %in% ""]) > 0) {
+				cat('--Found ', nrow(mutdata[Hugo_Symbol %in% ""]), ' variants with no Gene Symbols\n');
+				mutdata$Hugo_Symbol = ifelse(test = mutdata$Hugo_Symbol == "", yes = 'UnknownGene', no = mutdata$Hugo_Symbol);
+			}
+			#// check NA present in Hugo_Symbol (if yes assign 'UnknownGene')
+			if(nrow(mutdata[is.na(Hugo_Symbol)]) > 0) {
+				cat('--Found ', nrow(mutdata[is.na(Hugo_Symbol) > 0]), ' variants with no Gene Symbols\n');
+				mutdata$Hugo_Symbol = ifelse(test = is.na(mutdata$Hugo_Symbol), yes = 'UnknownGene', no = mutdata$Hugo_Symbol);
+			}
+			#// combine allele to Variant_Class
+			mutdata = mutdata[, anno := as.character(paste(Reference_Allele, '>', Tumor_Seq_Allele2, '(', Variant_Classification, ')', sep = ''))];
+			#// convert data.table to data.frame, and count freq of 'Hugo_Symbol-anno-Turmo_Sample_Barcode' per 'Chrom-Position'
+			mutdata = mutdata[, c("Hugo_Symbol", "Chromosome", "Start_Position", "End_Position", "Tumor_Sample_Barcode", "anno")];
 			#// chromosome control not including 'chrM'
 			mutdata = mutdata[mutdata$Chromosome %in% chrom_cir, ]; # chromosome control, not including 'chrM'
 			return(mutdata);
