@@ -35,9 +35,7 @@ RUN curl -L https://github.com/samtools/htslib/releases/download/${htsversion}/h
     curl -L https://github.com/samtools/samtools/releases/download/${htsversion}/samtools-${htsversion}.tar.bz2 | tar xj && \
     (cd samtools-${htsversion} && ./configure --with-htslib=system && make install) && \
     curl -L https://github.com/samtools/bcftools/releases/download/${htsversion}/bcftools-${htsversion}.tar.bz2 | tar xj && \
-    (cd bcftools-${htsversion} && ./configure --enable-libgsl --enable-perl-filters --with-htslib=system && make install) && \
-    git clone --depth 1 git://github.com/samtools/htslib-plugins && \
-    (cd htslib-plugins && make PLUGINS='hfile_cip.so hfile_mmap.so' install)
+    (cd bcftools-${htsversion} && ./configure --enable-libgsl --enable-perl-filters --with-htslib=system && make install)
 
 RUN install2.r -e remotes
 RUN install2.r -e devtools
