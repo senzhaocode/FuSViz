@@ -361,10 +361,10 @@
 						box(status="warning", width=9,
 							tabBox(id = "fusion_plot_page", height = "100%", width = "100%",
 								tabPanel("RNA_SV_circular_plot",
-									shinycssloaders::withSpinner(BioCircos::BioCircosOutput("circle_1", height=600), type = 5, size = 0.7)
+									shinycssloaders::withSpinner(BioCircos::BioCircosOutput("circle_1", height=700), type = 5, size = 0.7)
 								),
 								tabPanel("DNA_SV_circular_plot",
-									shinycssloaders::withSpinner(BioCircos::BioCircosOutput("circle_2", height=600), type = 5, size = 0.7)
+									shinycssloaders::withSpinner(BioCircos::BioCircosOutput("circle_2", height=700), type = 5, size = 0.7)
 								)
 							)
 						)
