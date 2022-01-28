@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
 	zlib1g-dev \
 	libgsl0-dev \
 	liblzma-dev \
+	libglpk-dev \
 	libncurses5-dev \
 	libperl-dev \
 	zlib1g-dev \
@@ -26,6 +27,9 @@ RUN apt-get update && apt-get install -y \
 	libssl-dev \
 	libssh2-1-dev \
     && rm -rf /var/lib/apt/lists/*
+
+ENV LIBRARY_PATH=$LIBRARY_PATH:/usr/local/lib/R/lib/
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/R/lib/
 
 WORKDIR /tmp
 ARG htsversion=1.13
