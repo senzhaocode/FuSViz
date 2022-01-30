@@ -142,7 +142,7 @@ function load() {
 		var index = bam[one]["index"];
 
 		if ( file !== undefined && index !== undefined ) {
-			uploadtrack.push({ name: one, type: "alignment", format: "bam", url: file, indexURL: index, alleleFreqThreshold: 0.05, order: Number.MAX_VALUE });
+			uploadtrack.push({ name: one, type: "alignment", format: "bam", url: file, indexURL: index, alleleFreqThreshold: 0.05, samplingDepth: 2000, alignmentRowHeight: 10, height: 800, visibilityWindow: 10000, order: Number.MAX_VALUE });
 		} else {
 			alert("BAM and index files not match: " + one);
 		}
@@ -153,7 +153,7 @@ function load() {
 		var index = cram[one]["index"];
 
 		if ( file !== undefined && index !== undefined ) {
-			uploadtrack.push({ name: one, type: "alignment", format: "cram", url: file, indexURL: index, alleleFreqThreshold: 0.05, order: Number.MAX_VALUE });
+			uploadtrack.push({ name: one, type: "alignment", format: "cram", url: file, indexURL: index, alleleFreqThreshold: 0.05, samplingDepth: 2000, alignmentRowHeight: 10, height: 800, visibilityWindow: 10000, order: Number.MAX_VALUE });
 		} else {
 			alert("CRAM and index files not match: " + one);
 		}
