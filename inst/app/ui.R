@@ -11,13 +11,13 @@
 	manual <- dashboardSidebar(
 		width = 150,
 		sidebarMenu(
-			menuItem("Introduction", tabName = "main", icon = icon("mortar-board")),
-			menuItem("Table", tabName = "table", icon = icon("file-text-o")),
-			menuItem("Circle", tabName = "cir", icon = icon("venus-mars")),
-			menuItem("Linear", tabName = "igv", icon = icon("bar-chart")),
-			menuItem("Two-way", tabName = "fusion", icon = icon("line-chart")),
-			menuItem("Network", tabName = "net", icon = icon("th")),
-			menuItem("Document", tabName = "doc", icon = icon("map-o"))
+			menuItem("Introduction", tabName = "main", icon = icon("mortar-board", verify_fa = FALSE)),
+			menuItem("Table", tabName = "table", icon = icon("file-text-o", verify_fa = FALSE)),
+			menuItem("Circle", tabName = "cir", icon = icon("venus-mars", verify_fa = FALSE)),
+			menuItem("Linear", tabName = "igv", icon = icon("bar-chart", verify_fa = FALSE)),
+			menuItem("Two-way", tabName = "fusion", icon = icon("line-chart", verify_fa = FALSE)),
+			menuItem("Network", tabName = "net", icon = icon("th", verify_fa = FALSE)),
+			menuItem("Document", tabName = "doc", icon = icon("map-o", verify_fa = FALSE))
 		)
 	)
 	

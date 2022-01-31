@@ -5,16 +5,16 @@ options(ucscChromosomeNames=FALSE)
 		#/////////////////////////////////
 		# message menu report in header //
 		#/////////////////////////////////
-		icon_g <- icon("github")
+		icon_g <- icon("github", verify_fa = FALSE)
 		icon_g[["attribs"]][["class"]] <- "fa fa-github"
 		output$messageMenu <- renderMenu({
 			dropdownMenu(type = "messages",
 				#// 1st option
 				messageItem(from = "FuSViz in Github", message = "Code, Source, Documentation", icon = icon_g, href = "https://github.com/senzhaocode"),
 				#// 2nd option
-				messageItem(from = "Issues", message = "Report issues and bugs", icon = icon("exclamation-circle"), href = "https://github.com/senzhaocode"),
+				messageItem(from = "Issues", message = "Report issues and bugs", icon = icon("exclamation-circle", verify_fa = FALSE), href = "https://github.com/senzhaocode"),
 				badgeStatus = NULL,
-				icon = icon("info-circle fa-lg"),
+				icon = icon("info-circle fa-lg", verify_fa = FALSE),
 				headerText = "App Information")
 		})
 
