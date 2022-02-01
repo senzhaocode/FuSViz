@@ -11,7 +11,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 ### Getting a quick start
 
-#### Deploy with docker
+#### <ins>Deploy with docker</ins>
 
 ##### Pull pre-built FuSViz image (release version) from docker hub
 
