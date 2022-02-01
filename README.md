@@ -104,7 +104,7 @@ Run `docker run --rm -p 4000:3838 senzhao/fusviz_shiny_app:1.0`; then open web b
     * Download [the latest release](https://github.com/gagolews/stringi/releases) **stringi** in \*.tar.gz format locally, and run `R CMD INSTALL *.tar.gz`
     * **OR** users could install an earlier release (e.g. **v1.5.3**): `install.packages("https://cran.r-project.org/src/contrib/Archive/stringi/stringi_1.5.3.tar.gz", repos=NULL, type="source")`
 
-#### Launch FuSViz App
+##### Launch FuSViz App
 
     source(file.path(system.file("app", package = "FuSViz"), "global.R"), local = TRUE, chdir = TRUE)
     FuSViz_app()
