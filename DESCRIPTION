@@ -1,6 +1,6 @@
 Package: FuSViz
 Title: Visualization tool for structure variations (SVs) and fusion genes/transcripts.
-Version: 1.0.0
+Version: 1.0
 Date: 2020-06-04
 Author: Sen ZHAO
 Maintainer: Sen ZHAO <t.cytotoxic@gmail.com>
