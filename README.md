@@ -23,7 +23,7 @@ Optional: if user would like to build FuSViz image (developmental version), just
 
 Run `docker run --rm -p 4000:3838 senzhao/fusviz_shiny_app:1.0`; then open web browser and input address `127.0.0.1:4000`
 
-#### Deploy without docker
+#### <ins>Deploy without docker</ins>
 
 ##### Prerequisite
 
