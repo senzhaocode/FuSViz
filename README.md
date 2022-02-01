@@ -11,17 +11,31 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 ### Getting a quick start
 
-#### Prerequisite
+#### Deploy with docker
+
+##### Pull pre-built FuSViz image (release version) from docker hub
+
+Run `docker pull senzhao/fusviz_shiny_app:1.0`, then check the image by typing `docker images`
+
+Optional: if user would like to build FuSViz image (developmental version), just download soruce code and change to directory `cd ~/FuSViz-master`; then run `docker build --rm -t senzhao/fusviz_shiny_app:latest -f Dockerfile .`.
+
+##### Launch FuSViz app
+
+Run `docker run --rm -p 4000:3838 senzhao/fusviz_shiny_app:1.0`; then open web browser and input address `127.0.0.1:4000`
+
+#### Deploy without docker
+
+##### Prerequisite
 
 * R (>=4.0.0): https://www.r-project.org/; [RStudio](https://rstudio.com/products/rstudio/download/#download) is recommended but not mandatory. 
 * For windows users, if an earlier version of R (< 4.0) is present in the system, please uninstall it firstly and make sure only R >=4.0 is available.
 
-#### Installation
+##### Installation
 
     if (! require('remotes')) install.packages('remotes')
     remotes::install_github('senzhaocode/FuSViz')
 
-#### IMPORTANT NOTE for Linux OS, some libraries need to be installed properly before setup FuSViz.
+##### IMPORTANT NOTE for Linux OS, some libraries need to be installed properly before setup FuSViz.
 
 1. Install software library [OpenSSL](https://www.openssl.org) - a dependency of R package [openssl](https://cran.r-project.org/web/packages/openssl/index.html)
 
