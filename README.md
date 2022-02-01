@@ -109,7 +109,7 @@ Run `docker run --rm -p 4000:3838 senzhao/fusviz_shiny_app:1.0`; then open web b
     source(file.path(system.file("app", package = "FuSViz"), "global.R"), local = TRUE, chdir = TRUE)
     FuSViz_app()
 
-#### Usage & manual
+#### <ins>Usage & manual</ins>
 
 A full description of FuSViz documentation is available: &nbsp;&nbsp; [![Documentation Status](https://readthedocs.org/projects/fusviz-docs/badge/?version=latest)](https://fusviz-docs.readthedocs.io/en/latest/index.html)
 
