@@ -18,6 +18,8 @@
 	# For testing: upstream_xy=A1_xy; upstream_flag=first; downstream_xy=B1_xy; downstream_flag=second
 	break_A=breakpoint_xy[, 1];
 	break_B=breakpoint_xy[, 2];
+	strand_A=breakpoint_xy[, 3];
+	strand_B=breakpoint_xy[, 4];
 	tag = 0;
 
 	exon_xy_A1 = Gviz::coords(upstream_xy$GeneRegionTrack); #// coordinates of all exons in geneA plotting
@@ -98,67 +100,79 @@
 	type_B = type_B[type_B != ""];
 
 	#// assign biological consequence of breakpoint
-	#// tag = 0 (initial - "black"), 1 (Unknown - "black"), 2 (Inframe - "blue"), 3 (Outframe - "red"), 4 (Truncate-loss - "#008080")
-	if ( length(type_A) > 0 && length(type_B) > 0 ) {
-		if ( type_A == "utr5" ) {
-			if ( type_B == "utr5" ) {
-				tag = 2; # "Inframe";
-			} else if ( type_B == "CDS" ) {
-				tag = 4; # "Truncate-loss";
-			} else if ( type_B == "utr3" ) {
-				tag = 4; # "Truncate-loss";
-			} else {
-				tag = 4; # "Truncate-loss";
-			}
-		} else if ( type_A == "CDS" ) {
-			if ( type_B == "utr5" ) {
-				tag = 1; # "Unknown";
-			} else if ( type_B == "CDS" ) {
-				if ( upstream_type == 3 || downstream_type == 3 ) {
-					tag = 1; # "Unknown";
-				} else {
-					if (! is.na(cds_start_A) && ! is.na(cds_start_B) ) {
-						Yushu_A = (domain_breakpoint_A - cds_start_A + 1) %% 3;
-						Yushu_B = (domain_breakpoint_B - cds_start_B + 1) %% 3;
-						if ( Yushu_A == 0 && Yushu_B == 1 ) {
+	#// tag = 0 (initial - "black"), 1 (Unknown - "black"), 2 (Inframe - "blue"), 3 (Outframe - "red"), 4 (Noncoding - "#008080")
+	if ( strand_A == '+' || strand_A == '-' ) {
+		if ( strand_B == '+' || strand_B == '-' ) {
+			if ( upstream_flag[[1]]$transcript$Strand[1] == strand_A && downstream_flag[[1]]$transcript$Strand[1] == strand_B ) {
+				if ( length(type_A) > 0 && length(type_B) > 0 ) {
+					if ( type_A == "utr5" ) {
+						if ( type_B == "utr5" ) {
 							tag = 2; # "Inframe";
-						} else if ( Yushu_A == 1 && Yushu_B == 2 ) {
+						} else if ( type_B == "CDS" ) {
+							tag = 3; # "Outframe";
+						} else if ( type_B == "utr3" ) {
+							tag = 4; # "Noncoding";
+						} else {
+							tag = 4; # "Noncoding";
+						}
+					} else if ( type_A == "CDS" ) {
+						if ( type_B == "utr5" ) {
+							tag = 1; # "Unknown";
+						} else if ( type_B == "CDS" ) {
+							if ( upstream_type == 3 || downstream_type == 3 ) {
+								tag = 1; # "Unknown"; - breakpoint at intronic region
+							} else {
+								if (! is.na(cds_start_A) && ! is.na(cds_start_B) ) {
+									Yushu_A = (domain_breakpoint_A - cds_start_A + 1) %% 3;
+									Yushu_B = (domain_breakpoint_B - cds_start_B + 1) %% 3;
+									if ( Yushu_A == 0 && Yushu_B == 1 ) {
+										tag = 2; # "Inframe";
+									} else if ( Yushu_A == 1 && Yushu_B == 2 ) {
+										tag = 2; # "Inframe";
+									} else if ( Yushu_A == 2 && Yushu_B == 0 ) {
+										tag = 2; # "Inframe";
+									} else {
+										tag = 3; # "Outframe";
+									}
+								} else {
+									stop("CDS annotation is wrong!");
+								}
+							}
+						} else if ( type_B == "utr3" ) {
+							tag = 1; # "Unknown";
+						} else {
+							tag = 1; # "Unknown";
+						}
+					} else if ( type_A == "utr3" ) {
+						if ( type_B == "utr5" ) {
 							tag = 2; # "Inframe";
-						} else if ( Yushu_A == 2 && Yushu_B == 0 ) {
+						} else if ( type_B == "CDS" ) {
+							tag = 3; # "Outframe";
+						} else if ( type_B == "utr3" ) {
 							tag = 2; # "Inframe";
 						} else {
-							tag = 3; # "Outframe";
+							tag = 2; # "Inframe";
 						}
 					} else {
-						stop("CDS annotation is wrong!");
+						if ( type_B == "utr5" ) {
+							tag = 2; # "Inframe";
+						} else if ( type_B == "CDS" ) {
+							tag = 3; # "Outframe";
+						} else if ( type_B == "utr3" ) {
+							tag = 4; # "Noncoding";
+						} else {
+							tag = 1; # "Unknown";
+						}
 					}
 				}
-			} else if ( type_B == "utr3" ) {
-				tag = 4; # "Truncate-loss";
 			} else {
-				tag = 4; # "Truncate-loss";
-			}
-		} else if ( type_A == "utr3" ) {
-			if ( type_B == "utr5" ) {
-				tag = 2; # "Inframe";
-			} else if ( type_B == "CDS" ) {
-				tag = 4; # "Truncate-loss";
-			} else if ( type_B == "utr3" ) {
-				tag = 2; # "Inframe";
-			} else {
-				tag = 2; # "Inframe";
+				tag = 1; # strand info of fusion sequence does not match to these of partner genes
 			}
 		} else {
-			if ( type_B == "utr5" ) {
-				tag = 2; # "Inframe";
-			} else if ( type_B == "CDS" ) {
-				tag = 4; # "Truncate-loss";
-			} else if ( type_B == "utr3" ) {
-				tag = 4; # "Truncate-loss";
-			} else {
-				tag = 1; # "Unknown";
-			}
+			tag = 1; # strand info of fusion sequence is unavailable
 		}
+	} else {
+		tag = 1; # strand info of fusion sequence is unavailable
 	}
 
 	#// Choose y position closest to the top of the plot. That is the lowest y value of the two, since the y axis is flipped
@@ -215,7 +229,7 @@ plot_separate_domain_geneA <- function(first, first_name, first_domain, first_mo
 		
 	#// set the axis coordinate
 	axis = Gviz::GenomeAxisTrack(name="Axis", labelPos="beside", fontcolor="black", littleTicks=F, cex=0.5, cex.id=0.5, cex.axis=0.5, 
-		fontsize=16, col="black", distFromAxis=0.1, lwd=1, lwd.border=1, min.width=0.1, min.height=2, min.distance=0); 
+		fontsize=16, col="black", distFromAxis=0.1, lwd=1, lwd.border=1, min.width=0.1, min.height=2, min.distance=0, add53=T); 
 
 	#////////////////////////////////////////////////////////////////////
 	#// perform the plot ('motif', 'domain', 'axis' and 'gene' tracks) //
@@ -284,7 +298,7 @@ plot_separate_domain_geneB <- function(second, second_name, second_domain, secon
 
 	#// set the axis coordinate
 	axis = Gviz::GenomeAxisTrack(name="Axis", labelPos="beside", fontcolor="black", littleTicks=F, cex=0.5, cex.id=0.5, cex.axis=0.5, 
-		fontsize=16, col="black", distFromAxis=0.1, lwd=1, lwd.border=1, min.width=0.1, min.height=2, min.distance=0); 
+		fontsize=16, col="black", distFromAxis=0.1, lwd=1, lwd.border=1, min.width=0.1, min.height=2, min.distance=0, add53=T); 
 
 	#////////////////////////////////////////////////////////////////////
 	#// perform the plot ('gene', 'axis', 'domain' and 'motif' tracks) //
@@ -343,31 +357,45 @@ plot_separate_domain_arrow <- function(A1_xy, B1_xy, first, second, breakpoint) 
 				curve_coordinate["y_pos_gene_downstream"] = 60;
 				#// Draw the straight lines between the transcripts
 				grid::pushViewport(grid::viewport(xscale = c(0, grDevices::dev.size(units = "px")[1]), yscale = c(grDevices::dev.size(units = "px")[2], 0)));
+				color_set=NULL; # set arrow color
 				if ( curve_coordinate[5] == 1 ) { #// 'Unknown' type
-					grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"], curve_coordinate["x_pos_gene_downstream"]), #// x positions
-						c(curve_coordinate["y_pos_gene_upstream"], curve_coordinate["y_pos_gene_downstream"]), #// y positions
-						default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"), 
-						gp = grid::gpar(col="black", fill="black", lwd=0.8));
+					color_set="black";
 				} else if ( curve_coordinate[5] == 2 ) { #// 'Inframe' type
-					grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"], curve_coordinate["x_pos_gene_downstream"]), #// x positions
-						c(curve_coordinate["y_pos_gene_upstream"], curve_coordinate["y_pos_gene_downstream"]), #// y positions
-						default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"),
-						gp = grid::gpar(col="blue", fill="blue", lwd=0.8));
+					color_set="blue";
 				} else if ( curve_coordinate[5] == 3 ) { #// 'Outframe' type
-					grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"], curve_coordinate["x_pos_gene_downstream"]), #// x positions
-						c(curve_coordinate["y_pos_gene_upstream"], curve_coordinate["y_pos_gene_downstream"]), #// y positions
-						default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"),
-						gp = grid::gpar(col="red", fill="red", lwd=0.8));
-				} else if ( curve_coordinate[5] == 4 ) { #// 'Truncate-loss' type
-					grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"], curve_coordinate["x_pos_gene_downstream"]), #// x positions
-						c(curve_coordinate["y_pos_gene_upstream"], curve_coordinate["y_pos_gene_downstream"]), #// y positions
-						default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"),
-						gp = grid::gpar(col="#008080", fill="#008080", lwd=0.8));
+					color_set="red";
+				} else if ( curve_coordinate[5] == 4 ) { #// 'Noncoding' type
+					color_set="#008080";
 				} else {
-					grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"], curve_coordinate["x_pos_gene_downstream"]), #// x positions
-						c(curve_coordinate["y_pos_gene_upstream"], curve_coordinate["y_pos_gene_downstream"]), #// y positions
-						default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"),
-						gp = grid::gpar(col="black", fill="black", lwd=0.8));
+					color_set="black";
+				}
+				grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"], curve_coordinate["x_pos_gene_downstream"]), #// x positions
+					c(curve_coordinate["y_pos_gene_upstream"], curve_coordinate["y_pos_gene_downstream"]), #// y positions
+					default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"), 
+					gp = grid::gpar(col=color_set, fill=color_set, lwd=0.8));
+				#// Add arrow line showing translation direction of upstream part
+				if ( breakpoint[i,3] == '+' || breakpoint[i,3] == '-' ) { #// breakpoint strand of geneA available
+					if ( first[[1]]$transcript$Strand[1] == breakpoint[i,3] ) {
+						grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"] - 12, curve_coordinate["x_pos_gene_upstream"] - 4), #// x positions - left margin 15
+							c(curve_coordinate["y_pos_gene_upstream"] + 2, curve_coordinate["y_pos_gene_upstream"] + 2), #// y positions
+							default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"), gp = grid::gpar(col=color_set, fill=color_set, lwd=0.8));
+					} else {
+						grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"] + 12, curve_coordinate["x_pos_gene_upstream"] + 4), #// x positions - right margin 255
+							c(curve_coordinate["y_pos_gene_upstream"] + 2, curve_coordinate["y_pos_gene_upstream"] + 2), #// y positions
+							default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"), gp = grid::gpar(col=color_set, fill=color_set, lwd=0.8));				
+					} 
+				}
+				#// Add arrow line showing translation direction of downstream part
+				if ( breakpoint[i,4] == '+' || breakpoint[i,4] == '-' ) { #// breakpoint strand of geneB available
+					if ( second[[1]]$transcript$Strand[1] == breakpoint[i,4] ) {
+						grid::grid.lines(c(curve_coordinate["x_pos_gene_downstream"] + 4, curve_coordinate["x_pos_gene_downstream"] + 12), #// x positions -right margin 501
+							c(curve_coordinate["y_pos_gene_downstream"] - 2, curve_coordinate["y_pos_gene_downstream"] - 2), #// y positions
+							default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"), gp = grid::gpar(col=color_set, fill=color_set, lwd=0.8));
+					} else {
+						grid::grid.lines(c(curve_coordinate["x_pos_gene_downstream"] - 4, curve_coordinate["x_pos_gene_downstream"] - 12), #// x positions - legt margin 285
+							c(curve_coordinate["y_pos_gene_downstream"] - 2, curve_coordinate["y_pos_gene_downstream"] - 2), #// y positions
+							default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"), gp = grid::gpar(col=color_set, fill=color_set, lwd=0.8));
+					}
 				}
 			}
 		}
@@ -483,31 +511,45 @@ plot_separate_domain_download <- function(first, first_name, first_domain, first
 				curve_coordinate["y_pos_gene_upstream"] = curve_coordinate["y_pos_gene_upstream"] + 1;
 				#// Draw the straight lines between the transcripts
 				grid::pushViewport(grid::viewport(xscale = c(0, grDevices::dev.size(units = "px")[1]), yscale = c(grDevices::dev.size(units = "px")[2], 0)));
+				color_set=NULL; # set arrow color
 				if ( curve_coordinate[5] == 1 ) { #// 'Unknown' type
-					grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"], curve_coordinate["x_pos_gene_downstream"]), #// x positions
-								c(curve_coordinate["y_pos_gene_upstream"], curve_coordinate["y_pos_gene_downstream"]), #// y positions
-								default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"),
-								gp = grid::gpar(col="black", fill="black", lwd=0.6));
+					color_set="black";
 				} else if ( curve_coordinate[5] == 2 ) { #// 'Inframe' type
-					grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"], curve_coordinate["x_pos_gene_downstream"]), #// x positions
-								c(curve_coordinate["y_pos_gene_upstream"], curve_coordinate["y_pos_gene_downstream"]), #// y positions
-								default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"),
-								gp = grid::gpar(col="blue", fill="blue", lwd=0.6));
+					color_set="blue";
 				} else if ( curve_coordinate[5] == 3 ) { #// 'Outframe' type
-					grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"], curve_coordinate["x_pos_gene_downstream"]), #// x positions
-								c(curve_coordinate["y_pos_gene_upstream"], curve_coordinate["y_pos_gene_downstream"]), #// y positions
-								default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"),
-								gp = grid::gpar(col="red", fill="red", lwd=0.6));
-				} else if ( curve_coordinate[5] == 4 ) { #// 'Truncate-loss' type
-					grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"], curve_coordinate["x_pos_gene_downstream"]), #// x positions
-								c(curve_coordinate["y_pos_gene_upstream"], curve_coordinate["y_pos_gene_downstream"]), #// y positions
-								default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"), 
-								gp = grid::gpar(col="#008080", fill="#008080", lwd=0.6));
+					color_set="red";
+				} else if ( curve_coordinate[5] == 4 ) { #// 'Noncoding' type
+					color_set="#008080";
 				} else {
-					grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"], curve_coordinate["x_pos_gene_downstream"]), #// x positions
-								c(curve_coordinate["y_pos_gene_upstream"], curve_coordinate["y_pos_gene_downstream"]), #// y positions
-								default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"),
-								gp = grid::gpar(col="black", fill="black", lwd=0.6));
+					color_set="black";
+				}
+				grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"], curve_coordinate["x_pos_gene_downstream"]), #// x positions
+					c(curve_coordinate["y_pos_gene_upstream"], curve_coordinate["y_pos_gene_downstream"]), #// y positions
+					default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"), 
+					gp = grid::gpar(col=color_set, fill=color_set, lwd=0.6));
+				#// Add arrow line showing translation direction of upstream part
+				if ( breakpoint[i,3] == '+' || breakpoint[i,3] == '-' ) { #// breakpoint strand of geneA available
+					if ( first[[1]]$transcript$Strand[1] == breakpoint[i,3] ) {
+						grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"] - 10, curve_coordinate["x_pos_gene_upstream"] - 2), #// x positions - left margin 15
+							c(curve_coordinate["y_pos_gene_upstream"] + 1, curve_coordinate["y_pos_gene_upstream"] + 1), #// y positions
+							default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"), gp = grid::gpar(col=color_set, fill=color_set, lwd=0.6));
+					} else {
+						grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"] + 10, curve_coordinate["x_pos_gene_upstream"] + 2), #// x positions - right margin 255
+							c(curve_coordinate["y_pos_gene_upstream"] + 1, curve_coordinate["y_pos_gene_upstream"] + 1), #// y positions
+							default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"), gp = grid::gpar(col=color_set, fill=color_set, lwd=0.6));				
+					} 
+				}
+				#// Add arrow line showing translation direction of downstream part
+				if ( breakpoint[i,4] == '+' || breakpoint[i,4] == '-' ) { #// breakpoint strand of geneB available
+					if ( second[[1]]$transcript$Strand[1] == breakpoint[i,4] ) {
+						grid::grid.lines(c(curve_coordinate["x_pos_gene_downstream"] + 2, curve_coordinate["x_pos_gene_downstream"] + 10), #// x positions -right margin 501
+							c(curve_coordinate["y_pos_gene_downstream"] - 1, curve_coordinate["y_pos_gene_downstream"] - 1), #// y positions
+							default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"), gp = grid::gpar(col=color_set, fill=color_set, lwd=0.6));
+					} else {
+						grid::grid.lines(c(curve_coordinate["x_pos_gene_downstream"] - 2, curve_coordinate["x_pos_gene_downstream"] - 10), #// x positions - legt margin 285
+							c(curve_coordinate["y_pos_gene_downstream"] - 1, curve_coordinate["y_pos_gene_downstream"] - 1), #// y positions
+							default.units = "native", arrow=grid::arrow(angle=50, length=grid::unit(0.05, "inches"), ends="last", type="closed"), gp = grid::gpar(col=color_set, fill=color_set, lwd=0.6));
+					}
 				}
 			}
 		}
