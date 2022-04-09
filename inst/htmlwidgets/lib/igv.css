@@ -1,3 +1,27 @@
+.igv-center-line {
+
+  display: none;
+
+  pointer-events:none;
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  transform: translateX(-50%);
+
+  z-index: 8;
+
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+
+  border-left-style: dashed;
+  border-left-width: thin;
+  border-right-style: dashed;
+  border-right-width: thin;
+
+}
+
 .igv-color-swatch {
   display: flex;
   flex-flow: row;
