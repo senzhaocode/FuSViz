@@ -58,24 +58,24 @@
 					fluidRow(					 
 						box(title = "Import genomic and transcriptomic annotations", width = 12, status = "info", solidHeader = TRUE,
 							fluidRow(
-								column(3, h5(icon("database"), "Annotation data", style = "font-weight: bold; font-size: 16px;")),
+								column(3, h5(icon("database", verify_fa = FALSE), "Annotation data", style = "font-weight: bold; font-size: 16px;")),
 								column(4, selectizeInput("genome", label = "Genome version", choices = c("hg19", "hg38", "hg19_offline", "hg38_offline"), multiple = F, 
 											options = list(placeholder = 'select', onInitialize = I('function() { this.setValue(""); }')))),
-								column(3, style = "margin-top: 25px;", actionButton("Import_genome_data", "Import", icon = icon("bolt"), width = "100%"))
+								column(3, style = "margin-top: 25px;", actionButton("Import_genome_data", "Import", icon = icon("bolt", verify_fa = FALSE), width = "100%"))
 							)
 						)
 					),
 					fluidRow(
 						box(title = "Upload structural variation file", width = 12, status = "info", solidHeader = TRUE,
 							 fluidRow(
-								column(3, h5(icon("upload"), "SV callings from RNA-seq data", style = "font-weight: bold; font-size: 16px;")),
+								column(3, h5(icon("upload", verify_fa = FALSE), "SV callings from RNA-seq data", style = "font-weight: bold; font-size: 16px;")),
 								column(4, fileInput('file_rna_data', label = "Upload file in txt format", accept = c('text/csv', 'text/comma-separated-values', 
 										'text/tab-separated-values', '.csv', '.tsv', '.txt'), placeholder = "txt, csv or tsv format")),
 								column(4, radioButtons('sep_rna_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/RNA_SV_example.txt" target="_blank">(See and Download an exampale)</a></p>'), choices = c(Comma = ',', Tab = '\t', Semicolon = ';'), selected = '\t', inline = T))
 							),
 							hr(tags$style("border-top: 1px solid #000000; color: black; background-color: white")),
 							fluidRow(
-								column(3, h5(icon("upload"), "SV callings from DNA-seq data", style = "font-weight: bold; font-size: 16px;")),
+								column(3, h5(icon("upload", verify_fa = FALSE), "SV callings from DNA-seq data", style = "font-weight: bold; font-size: 16px;")),
 								column(4, fileInput('file_dna_data', label = "Upload file in bedpe format", accept = c('text/csv', 'text/comma-separated-values', 
 										'text/tab-separated-values', '.csv', '.tsv', '.txt'), placeholder = "bedpe format")),
 								column(4, radioButtons('sep_dna_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/DNA_SV_example.txt" target="_blank">(See and Download an exampale)</a></p>'), choices = c(Comma = ',', Tab = '\t', Semicolon = ';'), selected = '\t', inline = T))
@@ -85,7 +85,7 @@
 					fluidRow(
 						box(title = "Upload mutation profile file (optional)", width = 12, status = "info", solidHeader = TRUE,
 							fluidRow(
-								column(3, h5(icon("upload"), "Mutation variants (SNVs and Indels)", style = "font-weight: bold; font-size: 16px;")),
+								column(3, h5(icon("upload", verify_fa = FALSE), "Mutation variants (SNVs and Indels)", style = "font-weight: bold; font-size: 16px;")),
 								column(4, fileInput('file_maf_data', label = "Upload file in MAF format", accept = c('text/maf', '.maf'), placeholder = "maf format")),
 								column(4, radioButtons('sep_maf_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/TCGA.PRAD.mutect.somatic.maf" target="_blank">(See and Download an exampale)</a></p>'), choices = c(Tab = '\t'), selected = '\t', inline = T))
 							)
@@ -492,6 +492,7 @@
 							)
 						),
 						mainPanel(width = 9,
+							tags$style(HTML(".igv-center-line { display: none; pointer-events:none; position: absolute; top: 0; bottom: 0; transform: translateX(-50%); z-index: 8; user-select: none; -moz-user-select: none; -webkit-user-select: none; border-left-style: dashed; border-left-width: thin; border-right-style: dashed; border-right-width: thin; }")),
 							tags$style(HTML(".igv-popover-name-value { cursor: default; text-wrap: none; white-space: nowrap; max-width: 384px; }")),
 							tags$style(HTML(".igv-popover-name { font-weight: bold; padding-right: 4px; float: left; }")),
 							tags$style(HTML(".igv-popover-value { padding-left: 4px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; 

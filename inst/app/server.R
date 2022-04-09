@@ -1187,7 +1187,7 @@ options(ucscChromosomeNames=FALSE)
 		domain_plot_link <- reactiveValues(A1_xy=NULL, B1_xy=NULL)
 
 		domain_1 <- callModule(module = selectizeGroupServer, id = "domain1", data = inputdata, vars = c("gene1", "gene2"))
-		domain_break <- reactive({ unique(data.frame(pos1=domain_1()$pos1, pos2=domain_1()$pos2, stringsAsFactors=FALSE)) })
+		domain_break <- reactive({ unique(data.frame(pos1=domain_1()$pos1, pos2=domain_1()$pos2, strand1=domain_1()$strand1, strand2=domain_1()$strand2, stringsAsFactors=FALSE)) })
 		#// if gene symbol is selected in input[['domain1-gene1']], set'control_break_AB$A', 'control_break_AB$B' and 'domain_plotA$geneA' as NULL when only one symbol selected
 		observeEvent(input[['domain1-gene1']], {
 			if ( is.null(database$txdb) || is.null(database$grTrack) || is.null(database$domain) || is.null(database$motif) ) { 
@@ -1613,13 +1613,19 @@ options(ucscChromosomeNames=FALSE)
 		output$RNAcontents <- DT::renderDataTable({
 			if ( is.null(input$file_rna_data) ) { return(NULL); }
 			tmp = inputdata();	tmp$name = as.factor(tmp$name);	tmp$gene1 = as.factor(tmp$gene1);	tmp$gene2 = as.factor(tmp$gene2);
-			DT::datatable(tmp, options = list(autoWidth = TRUE, initComplete = JS("function(settings, json) {",
-				"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")), 
-				filter = list(position = 'top', clear = FALSE, plain = TRUE)) %>% DT::formatStyle(names(tmp), fontSize = '11px') %>%
-				DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(oncogenes), rep(onco_color, length(oncogenes)))) %>%
-				DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(tumorsupress), rep(supp_color, length(tumorsupress)))) %>%
-				DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(related), rep(rela_color, length(related))))
+			if ( nrow(tmp) > 0 ) {
+				pos1_tmp=tmp$pos1;	pos2_tmp=tmp$pos2;
+				tmp$pos1 = paste0('<a href=\'#\' onclick=\'igv.browser.search(\"', tmp$chrom1, ':', tmp$pos1-50, '-', tmp$pos1+50, ' ', tmp$chrom2, ':', pos2_tmp-50, '-', pos2_tmp+50, '\");\'>', tmp$pos1, '</a>');
+				tmp$pos2 = paste0('<a href=\'#\' onclick=\'igv.browser.search(\"', tmp$chrom1, ':', pos1_tmp-50, '-', pos1_tmp+50, ' ', tmp$chrom2, ':', tmp$pos2-50, '-', tmp$pos2+50, '\");\'>', tmp$pos2, '</a>');
+				DT::datatable(tmp, escape = FALSE, options = list(autoWidth = TRUE, initComplete = JS("function(settings, json) {",
+					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")), 
+					filter = list(position = 'top', clear = FALSE, plain = TRUE)) %>% DT::formatStyle(names(tmp), fontSize = '11px') %>%
+					DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(oncogenes), rep(onco_color, length(oncogenes)))) %>%
+					DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(tumorsupress), rep(supp_color, length(tumorsupress)))) %>%
+					DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(related), rep(rela_color, length(related))))
+			}
 		})
+
 		#// partner gene wordcloud of RNA SVs
 		output$wordcloud_rna <- wordcloud2::renderWordcloud2({
 			wordcloud2::wordcloud2(wordcloud_svrna()$freq, color=wordcloud_svrna()$colorlist, size=input$word_size_rna, shuffle=T, shape=input$word_shape_rna,
@@ -1659,12 +1665,20 @@ options(ucscChromosomeNames=FALSE)
 		output$DNAcontents <- DT::renderDataTable({ 
 			if ( is.null(input$file_dna_data) ) { return(NULL); }
 			tmp = inputdata_dna();	tmp$name = as.factor(tmp$name);	tmp$gene1 = as.factor(tmp$gene1);	tmp$gene2 = as.factor(tmp$gene2);	tmp$type = as.factor(tmp$type);
-			DT::datatable(tmp, options = list(autoWidth = TRUE, initComplete = JS("function(settings, json) {",
-				"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")),
-				filter = list(position = 'top', clear = FALSE, plain = TRUE)) %>% DT::formatStyle(names(tmp), fontSize = '11px') %>%
-				DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(oncogenes), rep(onco_color, length(oncogenes)))) %>%
-				DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(tumorsupress), rep(supp_color, length(tumorsupress)))) %>%
-				DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(related), rep(rela_color, length(related))))
+			if ( nrow(tmp) > 0 ) {
+				start1_tmp=tmp$start1;	end1_tmp=tmp$end1;
+				start2_tmp=tmp$start2;	end2_tmp=tmp$end2;
+				tmp$start1 = paste0('<a href=\'#\' onclick=\'igv.browser.search(\"', tmp$chrom1, ':', start1_tmp, '-', end1_tmp, ' ', tmp$chrom2, ':', start2_tmp, '-', end2_tmp, '\");\'>', tmp$start1, '</a>');
+				tmp$end1 = paste0('<a href=\'#\' onclick=\'igv.browser.search(\"', tmp$chrom1, ':', start1_tmp, '-', end1_tmp, ' ', tmp$chrom2, ':', start2_tmp, '-', end2_tmp, '\");\'>', tmp$end1, '</a>');
+				tmp$start2 = paste0('<a href=\'#\' onclick=\'igv.browser.search(\"', tmp$chrom1, ':', start1_tmp, '-', end1_tmp, ' ', tmp$chrom2, ':', start2_tmp, '-', end2_tmp, '\");\'>', tmp$start2, '</a>');
+				tmp$end2 = paste0('<a href=\'#\' onclick=\'igv.browser.search(\"', tmp$chrom1, ':', start1_tmp, '-', end1_tmp, ' ', tmp$chrom2, ':', start2_tmp, '-', end2_tmp, '\");\'>', tmp$end2, '</a>');
+				DT::datatable(tmp, escape = FALSE, options = list(autoWidth = TRUE, initComplete = JS("function(settings, json) {",
+					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")),
+					filter = list(position = 'top', clear = FALSE, plain = TRUE)) %>% DT::formatStyle(names(tmp), fontSize = '11px') %>%
+					DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(oncogenes), rep(onco_color, length(oncogenes)))) %>%
+					DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(tumorsupress), rep(supp_color, length(tumorsupress)))) %>%
+					DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(related), rep(rela_color, length(related))))
+			}
 		})
 		#// partner gene wordcloud of DNA SVs
 		output$wordcloud_dna <- wordcloud2::renderWordcloud2({
