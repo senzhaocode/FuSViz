@@ -44,6 +44,7 @@ RUN curl -L https://github.com/samtools/htslib/releases/download/${htsversion}/h
 RUN install2.r -e remotes
 RUN install2.r -e devtools
 RUN installGithub.r "lchiffon/wordcloud2"
+RUN wget https://cran.r-project.org/src/contrib/Archive/shinyWidgets/shinyWidgets_0.6.2.tar.gz && R CMD INSTALL shinyWidgets_0.6.2.tar.gz
 RUN installGithub.r "senzhaocode/FuSViz"
 RUN rm -rf /tmp/bcftools* && rm -rf /tmp/htslib-* && rm -rf /tmp/samtools-* && rm -rf /tmp/file*
 
