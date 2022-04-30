@@ -44,9 +44,9 @@ RUN curl -L https://github.com/samtools/htslib/releases/download/${htsversion}/h
 RUN install2.r -e remotes
 RUN install2.r -e devtools
 RUN installGithub.r "lchiffon/wordcloud2"
-RUN wget https://cran.r-project.org/src/contrib/Archive/shinyWidgets/shinyWidgets_0.6.2.tar.gz && R CMD INSTALL shinyWidgets_0.6.2.tar.gz
 RUN installGithub.r "senzhaocode/FuSViz"
-RUN rm -rf /tmp/bcftools* && rm -rf /tmp/htslib-* && rm -rf /tmp/samtools-* && rm -rf /tmp/file*
+RUN wget https://cran.r-project.org/src/contrib/Archive/shinyWidgets/shinyWidgets_0.6.2.tar.gz && R CMD INSTALL shinyWidgets_0.6.2.tar.gz
+RUN rm -rf /tmp/bcftools* && rm -rf /tmp/htslib-* && rm -rf /tmp/samtools-* && rm -rf /tmp/file* && && rm -rf /tmp/shinyWidgets*
 
 RUN echo "local(options(shiny.port = 3838, shiny.host = '0.0.0.0'))" >> /usr/local/lib/R/etc/Rprofile.site
 
