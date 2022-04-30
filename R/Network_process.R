@@ -63,7 +63,7 @@ network_process <- function(tmp, type, color_onco, color_supp, color_rela, color
 		genename = as.character(x[1]);
 		tmp_edge = edges[edges$gene1 == genename | edges$gene2 == genename, ]; #// select edge contain given node
 		num_sample = sum(as.numeric(tmp_edge$value));
-		judge = as.logical(ifelse(num_sample > 1, yes = TRUE, no = FALSE));
+		judge = as.logical(ifelse(num_sample > 0, yes = TRUE, no = FALSE));
 
 		if ( genename %in% names(oncogenes) ) {
 			color = color_onco;  hidden = FALSE;
@@ -128,8 +128,11 @@ network_process <- function(tmp, type, color_onco, color_supp, color_rela, color
 		score = sum(select_edge$value);
 		return(c(degree, score));
 	})
-	tag_degree_score = t(tag_degree_score); # transposition
-	nodes_degree_score = data.frame(nodes=as.character(nodes$nodes), degree=as.numeric(tag_degree_score[,1]), score=as.numeric(tag_degree_score[,2]), stringsAsFactors=F);
+	nodes_degree_score = data.frame(nodes=NULL, degree=NULL, score=NULL, stringsAsFactors=F);
+	if ( length(tag_degree_score) > 0 ) {
+		tag_degree_score = t(tag_degree_score); # transposition
+		nodes_degree_score = data.frame(nodes=as.character(nodes$nodes), degree=as.numeric(tag_degree_score[,1]), score=as.numeric(tag_degree_score[,2]), stringsAsFactors=F);
+	} 
 
 	tmp_new <- list(nodes=nodes, edges=edges, degree_score=nodes_degree_score);
 	return(tmp_new);
