@@ -1468,24 +1468,32 @@ options(ucscChromosomeNames=FALSE)
 		network_rna <- reactive({
 			tmp = inputdata()[, c("gene1", "gene2", "name")];	tmp = as.data.frame(tmp);
 			assembly = FuSViz::network_process(tmp, "RNA", onco_color, supp_color, rela_color, intergenic_color, other_color);
-			#// assemble final data.frame
-			nodes <- data.frame(id=as.character(assembly$nodes$nodes), value=as.numeric(assembly$nodes$Freq), label=rep('', length(assembly$nodes$nodes)),
+			if ( is.null(assembly$degree_score$nodes) ) {
+				return(NULL);
+			} else {
+				#// assemble final data.frame
+				nodes <- data.frame(id=as.character(assembly$nodes$nodes), value=as.numeric(assembly$nodes$Freq), label=rep('', length(assembly$nodes$nodes)),
 					color=list(background=as.character(assembly$nodes$tag_color), border="#0d0d0d"),
 					title=paste0("<p><b>", as.character(assembly$nodes$nodes),"</b></p>"), stringsAsFactors = F);
-			edges <- data.frame(from=assembly$edges$gene1, to=assembly$edges$gene2, value=as.numeric(assembly$edges$value),
+				edges <- data.frame(from=assembly$edges$gene1, to=assembly$edges$gene2, value=as.numeric(assembly$edges$value),
 					title=paste0("<p><br>Num_sample: <b>", as.numeric(assembly$edges$value),"</b></p>"), stringsAsFactors = F);
-			return(list(nodes=nodes, edges=edges, degree_score=assembly$degree_score));
+				return(list(nodes=nodes, edges=edges, degree_score=assembly$degree_score));
+			}
 		})
 		network_dna <- reactive({
 			tmp = inputdata_dna()[, c("gene1", "gene2", "name")];	tmp = as.data.frame(tmp);
 			assembly = FuSViz::network_process(tmp, "DNA", onco_color, supp_color, rela_color, intergenic_color, other_color);
-			#// assemble final data.frame
-			nodes <- data.frame(id=as.character(assembly$nodes$nodes), value=as.numeric(assembly$nodes$Freq), label=rep('', length(assembly$nodes$nodes)),
+			if ( is.null(assembly$degree_score$nodes) ) {
+				return(NULL)
+			} else {
+				#// assemble final data.frame
+				nodes <- data.frame(id=as.character(assembly$nodes$nodes), value=as.numeric(assembly$nodes$Freq), label=rep('', length(assembly$nodes$nodes)),
 					color=list(background=as.character(assembly$nodes$tag_color), border="#0d0d0d"),
 					title=paste0("<p><b>", as.character(assembly$nodes$nodes),"</b></p>"), stringsAsFactors = F);
-			edges <- data.frame(from=assembly$edges$gene1, to=assembly$edges$gene2, value=as.numeric(assembly$edges$value),
+				edges <- data.frame(from=assembly$edges$gene1, to=assembly$edges$gene2, value=as.numeric(assembly$edges$value),
 					title=paste0("<p><br>Num_sample: <b>", as.numeric(assembly$edges$value),"</b></p>"), stringsAsFactors = F);
-			return(list(nodes=nodes, edges=edges, degree_score=assembly$degree_score));
+				return(list(nodes=nodes, edges=edges, degree_score=assembly$degree_score));
+			}
 		})
 
 		#// Plot network for RNA SVs
@@ -1496,6 +1504,7 @@ options(ucscChromosomeNames=FALSE)
 		observeEvent(input$net_rna_plot, { 
 			#// create table for node hubs
 			output$RNAhubs <- DT::renderDataTable({
+				if ( is.null(network_rna()) ) { return(NULL); }
 				DT::datatable(network_rna()$degree_score, options = list(autoWidth = TRUE, initComplete = JS("function(settings, json) {",
 					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}"))) %>%
 					DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(oncogenes), rep(onco_color, length(oncogenes)))) %>%
@@ -1555,6 +1564,7 @@ options(ucscChromosomeNames=FALSE)
 		observeEvent(input$net_dna_plot, { 
 			#// create table for node hubs
 			output$DNAhubs <- DT::renderDataTable({
+				if ( is.null(network_dna()) ) { return(NULL); }
 				DT::datatable(network_dna()$degree_score, options = list(autoWidth = TRUE, initComplete = JS("function(settings, json) {",
 					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}"))) %>%
 					DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(oncogenes), rep(onco_color, length(oncogenes)))) %>%
