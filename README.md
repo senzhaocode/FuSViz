@@ -32,6 +32,7 @@ Run `docker run --rm -p 4000:3838 senzhao/fusviz_shiny_app:1.0`; then open web b
 
 ##### Installation
 
+    options(timeout=600)
     if (! require('remotes')) install.packages('remotes')
     remotes::install_github('senzhaocode/FuSViz')
 
