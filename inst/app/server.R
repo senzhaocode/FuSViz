@@ -593,7 +593,7 @@ options(ucscChromosomeNames=FALSE)
 			updateSelectizeInput(session = session, inputId = "mut_sample_dna", choices = unique(sample_name), selected = "", options = list(placeholder = 'select'));
 		})
 		genome_select_dna = reactiveValues(value=NULL); #// use selected chromosomes for visualization
-		circle_two_dna <- callModule(module = selectizeGroupServer, id = "circle_set_dna", data = circle_twocol_dna, vars = c("chr", "gene", "name"));
+		circle_two_dna <- callModule(module = selectizeGroupServer, id = "circle_set_dna", data = circle_twocol_dna, vars = c("chr", "gene", "name"), inline = FALSE);
 		circle_data_dna <- reactive({
 			#// select 'chr' (multiple choices accepted)
 			tmp = inputdata_dna()[inputdata_dna()$chrom1 %in% unique(circle_two_dna()$chr) | inputdata_dna()$chrom2 %in% unique(circle_two_dna()$chr), ];
@@ -718,7 +718,7 @@ options(ucscChromosomeNames=FALSE)
 			updateSelectizeInput(session = session, inputId = "mut_sample", choices = unique(sample_name), selected = "", options = list(placeholder = 'select'));
 		})
 		genome_select = reactiveValues(value=NULL); #// use selected chromosomes for visualization
-		circle_two <- callModule(module = selectizeGroupServer, id = "circle_set", data = circle_twocol, vars = c("chr", "gene", "name"));
+		circle_two <- callModule(module = selectizeGroupServer, id = "circle_set", data = circle_twocol, vars = c("chr", "gene", "name"), inline = FALSE);
 		circle_data <- reactive({
 			#// filter using selected 'chr' (multiple accepted)
 			tmp = as.data.table(inputdata()[inputdata()$chrom1 %in% unique(circle_two()$chr) | inputdata()$chrom2 %in% unique(circle_two()$chr), ]); 
@@ -1019,8 +1019,8 @@ options(ucscChromosomeNames=FALSE)
 		object_individual_A <- reactiveValues(value=NULL) #// 'object_individual_A$value' is list class with five elements:
 		object_individual_B <- reactiveValues(value=NULL) #// 'object_individual_B$value' is list class with five elements:
 		individualAB <- reactiveValues(geneA=NULL, symbol_A=NULL, geneB=NULL, symbol_B=NULL, breakpoint_set=NULL)
-		individual_1 <- callModule(module = selectizeGroupServer, id = "individual1", data = inputdata, vars = c("gene1", "gene2"))
-		individual_data <- callModule(module = selectizeGroupServer, id = "individual2", data = individual_1, vars = c("pos1", "pos2", "name", "strand1", "strand2"))
+		individual_1 <- callModule(module = selectizeGroupServer, id = "individual1", data = inputdata, vars = c("gene1", "gene2"), inline = FALSE)
+		individual_data <- callModule(module = selectizeGroupServer, id = "individual2", data = individual_1, vars = c("pos1", "pos2", "name", "strand1", "strand2"), inline = FALSE)
 		#// when input[['individual1-gene1']] NOT null, assign 'object_individual_A$value' using FUNCTION "get_annotation_db"
 		observeEvent(input[['individual1-gene1']], {
 			if ( is.null(database$txdb) || is.null(database$grTrack) ) {
