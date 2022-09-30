@@ -1506,10 +1506,7 @@ options(ucscChromosomeNames=FALSE)
 			output$RNAhubs <- DT::renderDataTable({
 				if ( is.null(network_rna()) ) { return(NULL); }
 				DT::datatable(network_rna()$degree_score, options = list(autoWidth = TRUE, initComplete = JS("function(settings, json) {",
-					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}"))) %>%
-					DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(oncogenes), rep(onco_color, length(oncogenes)))) %>%
-					DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(tumorsupress), rep(supp_color, length(tumorsupress)))) %>%
-					DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(related), rep(rela_color, length(related))))
+					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")))
 			})
 
 			#// create the network for RNA SVs
@@ -1566,10 +1563,7 @@ options(ucscChromosomeNames=FALSE)
 			output$DNAhubs <- DT::renderDataTable({
 				if ( is.null(network_dna()) ) { return(NULL); }
 				DT::datatable(network_dna()$degree_score, options = list(autoWidth = TRUE, initComplete = JS("function(settings, json) {",
-					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}"))) %>%
-					DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(oncogenes), rep(onco_color, length(oncogenes)))) %>%
-					DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(tumorsupress), rep(supp_color, length(tumorsupress)))) %>%
-					DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(related), rep(rela_color, length(related))))
+					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")))
 			})
 
 			#// create the network for DNA SVs
@@ -1622,17 +1616,40 @@ options(ucscChromosomeNames=FALSE)
 		#// summarize of RNA SVs in upload data
 		output$RNAcontents <- DT::renderDataTable({
 			if ( is.null(input$file_rna_data) ) { return(NULL); }
-			tmp = inputdata();	tmp$name = as.factor(tmp$name);	tmp$gene1 = as.factor(tmp$gene1);	tmp$gene2 = as.factor(tmp$gene2);
+			tmp = inputdata();	
+			tag1 = apply(tmp, 1, function(x){
+				if ( as.character(x[3]) %in% names(oncogenes) ) { 
+					return(1); 
+				} else if ( as.character(x[3]) %in% names(tumorsupress) ) { 
+					return(3); 
+				} else if ( as.character(x[3]) %in% names(related) ) { 
+					return(5);
+				} else {
+					return(7);
+				} 
+			})
+			tag2 = apply(tmp, 1, function(x){
+				if ( as.character(x[6]) %in% names(oncogenes) ) { 
+					return(1); 
+				} else if ( as.character(x[6]) %in% names(tumorsupress) ) { 
+					return(3); 
+				} else if ( as.character(x[6]) %in% names(related) ) { 
+					return(5);
+				} else {
+					return(7);
+				} 
+			})
+			tmp$tag1=tag1;	tmp$tag2=tag2;
+			tmp$name = as.factor(tmp$name);	tmp$gene1 = as.factor(tmp$gene1);	tmp$gene2 = as.factor(tmp$gene2);
 			if ( nrow(tmp) > 0 ) {
 				pos1_tmp=tmp$pos1;	pos2_tmp=tmp$pos2;
 				tmp$pos1 = paste0('<a href=\'#\' onclick=\'igv.browser.search(\"', tmp$chrom1, ':', tmp$pos1-50, '-', tmp$pos1+50, ' ', tmp$chrom2, ':', pos2_tmp-50, '-', pos2_tmp+50, '\");\'>', tmp$pos1, '</a>');
 				tmp$pos2 = paste0('<a href=\'#\' onclick=\'igv.browser.search(\"', tmp$chrom1, ':', pos1_tmp-50, '-', pos1_tmp+50, ' ', tmp$chrom2, ':', tmp$pos2-50, '-', tmp$pos2+50, '\");\'>', tmp$pos2, '</a>');
-				DT::datatable(tmp, escape = FALSE, options = list(autoWidth = TRUE, initComplete = JS("function(settings, json) {",
+				DT::datatable(tmp, escape = FALSE, options = list(autoWidth = TRUE, columnDefs = list(list(targets = c(12,13), visible = FALSE)), initComplete = JS("function(settings, json) {",
 					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")), 
 					filter = list(position = 'top', clear = FALSE, plain = TRUE)) %>% DT::formatStyle(names(tmp), fontSize = '11px') %>%
-					DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(oncogenes), rep(onco_color, length(oncogenes)))) %>%
-					DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(tumorsupress), rep(supp_color, length(tumorsupress)))) %>%
-					DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(related), rep(rela_color, length(related))))
+					DT::formatStyle('gene1','tag1', backgroundColor = DT::styleInterval(c(2, 4, 6), c("#ff8566", "#00ccff", "#ffcc33", "white"))) %>%
+					DT::formatStyle('gene2','tag2', backgroundColor = DT::styleInterval(c(2, 4, 6), c("#ff8566", "#00ccff", "#ffcc33", "white")))
 			}
 		})
 
@@ -1674,7 +1691,31 @@ options(ucscChromosomeNames=FALSE)
 		#// summarize DNA SVs in upload data
 		output$DNAcontents <- DT::renderDataTable({ 
 			if ( is.null(input$file_dna_data) ) { return(NULL); }
-			tmp = inputdata_dna();	tmp$name = as.factor(tmp$name);	tmp$gene1 = as.factor(tmp$gene1);	tmp$gene2 = as.factor(tmp$gene2);	tmp$type = as.factor(tmp$type);
+			tmp = inputdata_dna();	
+			tag1 = apply(tmp, 1, function(x){
+				if ( as.character(x[11]) %in% names(oncogenes) ) { 
+					return(1); 
+				} else if ( as.character(x[11]) %in% names(tumorsupress) ) { 
+					return(3); 
+				} else if ( as.character(x[11]) %in% names(related) ) { 
+					return(5);
+				} else {
+					return(7);
+				} 
+			})
+			tag2 = apply(tmp, 1, function(x){
+				if ( as.character(x[12]) %in% names(oncogenes) ) { 
+					return(1); 
+				} else if ( as.character(x[12]) %in% names(tumorsupress) ) { 
+					return(3); 
+				} else if ( as.character(x[12]) %in% names(related) ) { 
+					return(5);
+				} else {
+					return(7);
+				} 
+			})
+			tmp$tag1=tag1;	tmp$tag2=tag2;
+			tmp$name = as.factor(tmp$name);	tmp$gene1 = as.factor(tmp$gene1);	tmp$gene2 = as.factor(tmp$gene2);	tmp$type = as.factor(tmp$type);
 			if ( nrow(tmp) > 0 ) {
 				start1_tmp=tmp$start1;	end1_tmp=tmp$end1;
 				start2_tmp=tmp$start2;	end2_tmp=tmp$end2;
@@ -1682,12 +1723,11 @@ options(ucscChromosomeNames=FALSE)
 				tmp$end1 = paste0('<a href=\'#\' onclick=\'igv.browser.search(\"', tmp$chrom1, ':', start1_tmp, '-', end1_tmp, ' ', tmp$chrom2, ':', start2_tmp, '-', end2_tmp, '\");\'>', tmp$end1, '</a>');
 				tmp$start2 = paste0('<a href=\'#\' onclick=\'igv.browser.search(\"', tmp$chrom1, ':', start1_tmp, '-', end1_tmp, ' ', tmp$chrom2, ':', start2_tmp, '-', end2_tmp, '\");\'>', tmp$start2, '</a>');
 				tmp$end2 = paste0('<a href=\'#\' onclick=\'igv.browser.search(\"', tmp$chrom1, ':', start1_tmp, '-', end1_tmp, ' ', tmp$chrom2, ':', start2_tmp, '-', end2_tmp, '\");\'>', tmp$end2, '</a>');
-				DT::datatable(tmp, escape = FALSE, options = list(autoWidth = TRUE, initComplete = JS("function(settings, json) {",
+				DT::datatable(tmp, escape = FALSE, options = list(autoWidth = TRUE, columnDefs = list(list(targets = c(13,14), visible = FALSE)), initComplete = JS("function(settings, json) {",
 					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")),
 					filter = list(position = 'top', clear = FALSE, plain = TRUE)) %>% DT::formatStyle(names(tmp), fontSize = '11px') %>%
-					DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(oncogenes), rep(onco_color, length(oncogenes)))) %>%
-					DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(tumorsupress), rep(supp_color, length(tumorsupress)))) %>%
-					DT::formatStyle(c('gene1','gene2'), backgroundColor = DT::styleEqual(names(related), rep(rela_color, length(related))))
+					DT::formatStyle('gene1','tag1', backgroundColor = DT::styleInterval(c(2, 4, 6), c("#ff8566", "#00ccff", "#ffcc33", "white"))) %>%
+					DT::formatStyle('gene2','tag2', backgroundColor = DT::styleInterval(c(2, 4, 6), c("#ff8566", "#00ccff", "#ffcc33", "white")))
 			}
 		})
 		#// partner gene wordcloud of DNA SVs
@@ -1732,13 +1772,24 @@ options(ucscChromosomeNames=FALSE)
 		#// summarize DNA mutations in upload data
 		output$DNAMutations <- DT::renderDataTable({
 			if ( is.null(input$file_maf_data) ) { return(NULL); }
-			tmp = inputdata_mutation();	tmp$Hugo_Symbol = as.factor(tmp$Hugo_Symbol);	tmp$Tumor_Sample_Barcode = as.factor(tmp$Tumor_Sample_Barcode);
-			DT::datatable(tmp, options = list(autoWidth = TRUE, initComplete = JS("function(settings, json) {",
+			tmp = inputdata_mutation();	
+			tag = apply(tmp, 1, function(x){
+				if ( as.character(x[1]) %in% names(oncogenes) ) { 
+					return(1); 
+				} else if ( as.character(x[1]) %in% names(tumorsupress) ) { 
+					return(3); 
+				} else if ( as.character(x[1]) %in% names(related) ) { 
+					return(5);
+				} else {
+					return(7);
+				} 
+			})
+			tmp$tag = tag;
+			tmp$Hugo_Symbol = as.factor(tmp$Hugo_Symbol);	tmp$Tumor_Sample_Barcode = as.factor(tmp$Tumor_Sample_Barcode);
+			DT::datatable(tmp, options = list(autoWidth = TRUE, columnDefs = list(list(targets = c(7), visible = FALSE)), initComplete = JS("function(settings, json) {",
 				"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")),
 				filter = list(position = 'top', clear = FALSE, plain = TRUE)) %>% DT::formatStyle(names(tmp), fontSize = '11px') %>%
-				DT::formatStyle('Hugo_Symbol', backgroundColor = DT::styleEqual(names(oncogenes), rep(onco_color, length(oncogenes)))) %>%
-				DT::formatStyle('Hugo_Symbol', backgroundColor = DT::styleEqual(names(tumorsupress), rep(supp_color , length(tumorsupress)))) %>%
-				DT::formatStyle('Hugo_Symbol', backgroundColor = DT::styleEqual(names(related), rep(rela_color, length(related))))
+				DT::formatStyle('Hugo_Symbol', 'tag', backgroundColor = DT::styleInterval(c(2, 4, 6), c("#ff8566", "#00ccff", "#ffcc33", "white")))
 		})
 		#// wordcloud of mutated genes
 		output$wordcloud_mut <- wordcloud2::renderWordcloud2({
