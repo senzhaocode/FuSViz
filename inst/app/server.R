@@ -1340,7 +1340,7 @@ options(ucscChromosomeNames=FALSE)
 			breakpoint_set = unique(domain_1()$pos1)
 			for (i in 1:length(breakpoint_set)) { # print(paste("start domain A loop: ", i))
 				if (! exists(as.character(breakpoint_set[i]), where=geneA) ) {
-					geneA[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_A$value, database$whole_txdb, "upstream", offset=5) #// For geneA
+					geneA[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_A$value, database$whole_txdb, "upstream", input$offset_base_A) #// For geneA; 
 				}
 			}
 			#// remove the elements in the list where breakpoint outside transcript region of geneA
@@ -1352,6 +1352,38 @@ options(ucscChromosomeNames=FALSE)
 			domain_plotA$domainA=database$domain[database$domain$Transcript_id %in% name_domainA, ]
 			domain_plotA$motifA=database$motif[database$motif$Transcript_id %in% name_domainA, ]
 		})
+		observeEvent(input$offset_base_A, {
+			if ( is.null(object_domain_A$value) || input$domainA == "" ) { #// if 'object_domain_A$value' is NULL, set 'domain_plotA$geneA, $symbol_A, $domainA, $motifA' as NULL
+				domain_plotA$geneA = NULL; domain_plotA$symbol_A = NULL; domain_plotA$domainA = NULL; domain_plotA$motifA = NULL; return(); 
+			}
+			name_domainA = input$domainA;	name_domainA = gsub('-', '', name_domainA);
+			#// a subset transcript of geneA after update the choice values in selectInput
+			mytmp_A = list(); #// a subset of 'object_domain_A' (for selected transcripts of geneA)
+			mytmp_A$value$dataset = object_domain_A$value$dataset[object_domain_A$value$dataset$TXNAME %in% name_domainA, ]; 
+			mytmp_A$value$txTr_f = object_domain_A$value$txTr_f; 
+			mytmp_A$value$chr = object_domain_A$value$chr; 
+			mytmp_A$value$start = object_domain_A$value$start;
+			mytmp_A$value$end = object_domain_A$value$end; 
+			mytmp_A$value$strand = object_domain_A$value$strand;
+
+			geneA = list(); #// geneA is a list class
+			symbol_A = domain_1()[1,]$gene1
+			breakpoint_set = unique(domain_1()$pos1)
+			for (i in 1:length(breakpoint_set)) { # print(paste("start domain A loop: ", i))
+				if (! exists(as.character(breakpoint_set[i]), where=geneA) ) {
+					geneA[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_A$value, database$whole_txdb, "upstream", input$offset_base_A) #// For geneA; 
+				}
+			}
+			#// remove the elements in the list where breakpoint outside transcript region of geneA
+			if ( length(geneA) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneA, and plot stops (please check coordinates!")); req(NULL); }
+			geneA = Filter(Negate(function(x) is.null(unlist(x))), geneA)
+			control_break_AB$A = as.numeric(names(geneA)); # print(paste("selected breakpoint for geneA: ", as.numeric(names(geneA))));
+			domain_plotA$geneA=geneA
+			domain_plotA$symbol_A=symbol_A
+			domain_plotA$domainA=database$domain[database$domain$Transcript_id %in% name_domainA, ]
+			domain_plotA$motifA=database$motif[database$motif$Transcript_id %in% name_domainA, ]
+		})
+
 		#// select transcript_id of geneB
 		observeEvent(input$domainB, {
 			domain_plot_link$B1_xy = NULL;
@@ -1373,7 +1405,38 @@ options(ucscChromosomeNames=FALSE)
 			breakpoint_set = unique(domain_1()$pos2)
 			for (i in 1:length(breakpoint_set)) { # print(paste("start domain B loop: ", i))
 				if (! exists(as.character(breakpoint_set[i]), where=geneB) ) {
-					geneB[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_B$value, database$whole_txdb, "downstream", offset=5) #// For geneB
+					geneB[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_B$value, database$whole_txdb, "downstream", input$offset_base_B) #// For geneB
+				}
+			}
+			#// remove the elements in the list where breakpoint outside transcript region of geneB
+			if ( length(geneB) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneB, and plot stops (please check coordinates!")); req(NULL); }
+			geneB = Filter(Negate(function(x) is.null(unlist(x))), geneB)
+			control_break_AB$B = as.numeric(names(geneB)); # print(paste("selected breakpoint for gene2: ", as.numeric(names(geneB)))); 
+			domain_plotB$geneB=geneB
+			domain_plotB$symbol_B=symbol_B
+			domain_plotB$domainB=database$domain[database$domain$Transcript_id %in% name_domainB, ]
+			domain_plotB$motifB=database$motif[database$motif$Transcript_id %in% name_domainB, ]
+		})
+		observeEvent(input$offset_base_B, {
+			if ( is.null(object_domain_B$value) || input$domainB == "" ) { #// if 'object_domain_B$value' is NULL, set 'domain_plotB$geneB, $symbol_B, $domainB, $motifB' as NULL
+				domain_plotB$geneB = NULL; domain_plotB$symbol_B = NULL; domain_plotB$domainB = NULL; domain_plotB$motifB = NULL; return(); 
+			}
+			name_domainB = input$domainB;	name_domainB = gsub('-', '', name_domainB);
+			#// a subset transcript of geneB after update the choice values in selectInput
+			mytmp_B = list(); #// a subset of 'object_domain_B' (for selected transcripts of geneB)
+			mytmp_B$value$dataset = object_domain_B$value$dataset[object_domain_B$value$dataset$TXNAME %in% name_domainB, ];
+			mytmp_B$value$txTr_f = object_domain_B$value$txTr_f; 
+			mytmp_B$value$chr = object_domain_B$value$chr; 
+			mytmp_B$value$start = object_domain_B$value$start;
+			mytmp_B$value$end = object_domain_B$value$end; 
+			mytmp_B$value$strand = object_domain_B$value$strand;
+
+			geneB = list(); #// geneB is a list class
+			symbol_B = domain_1()[1,]$gene2
+			breakpoint_set = unique(domain_1()$pos2)
+			for (i in 1:length(breakpoint_set)) { # print(paste("start domain B loop: ", i))
+				if (! exists(as.character(breakpoint_set[i]), where=geneB) ) {
+					geneB[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_B$value, database$whole_txdb, "downstream", input$offset_base_B) #// For geneB
 				}
 			}
 			#// remove the elements in the list where breakpoint outside transcript region of geneB

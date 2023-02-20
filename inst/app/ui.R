@@ -592,6 +592,11 @@
 											pos2 = list(inputId = "pos2", title = div(style="font-size:12px", "Breakpoint B"), placeholder = 'select')
 										)
 									),
+									br(),
+									fluidRow(
+										column(6, numericInput("offset_base_A", label = div(style="font-size:10px", "Offset base for breakpointA"), value=5, min=0, max=10)),
+										column(6, numericInput("offset_base_B", label = div(style="font-size:10px", "Offset base for breakpointB"), value=5, min=0, max=10))
+									),
 									fluidRow(column(12, div(style="font-size:12px", HTML("<b>(*)</b> indicates required input")))),
 									br(),
 									actionButton("domain_on", "Activate")
