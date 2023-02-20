@@ -109,7 +109,7 @@
 						if ( type_B == "utr5" ) {
 							tag = 2; # "Inframe";
 						} else if ( type_B == "CDS" ) {
-							tag = 3; # "Outframe";
+							tag = 1; # "Unknown";
 						} else if ( type_B == "utr3" ) {
 							tag = 4; # "Noncoding";
 						} else {
@@ -147,7 +147,7 @@
 						if ( type_B == "utr5" ) {
 							tag = 2; # "Inframe";
 						} else if ( type_B == "CDS" ) {
-							tag = 3; # "Outframe";
+							tag = 1; # "Unknown";
 						} else if ( type_B == "utr3" ) {
 							tag = 2; # "Inframe";
 						} else {
@@ -157,7 +157,7 @@
 						if ( type_B == "utr5" ) {
 							tag = 2; # "Inframe";
 						} else if ( type_B == "CDS" ) {
-							tag = 3; # "Outframe";
+							tag = 1; # "Unknown";
 						} else if ( type_B == "utr3" ) {
 							tag = 4; # "Noncoding";
 						} else {
