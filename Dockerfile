@@ -1,4 +1,4 @@
-FROM rocker/shiny:4.1
+FROM rocker/shiny:4.2.0
 
 LABEL maintainer="Sen ZHAO <t.cytotoxic@gmail.com>"
 
@@ -32,7 +32,7 @@ ENV LIBRARY_PATH=$LIBRARY_PATH:/usr/local/lib/R/lib/
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/R/lib/
 
 WORKDIR /tmp
-ARG htsversion=1.13
+ARG htsversion=1.16
 RUN curl -L https://github.com/samtools/htslib/releases/download/${htsversion}/htslib-${htsversion}.tar.bz2 | tar xj && \
     (cd htslib-${htsversion} && ./configure --enable-plugins --with-plugin-path='$(libexecdir)/htslib:/usr/libexec/htslib' && make install) && \
     ldconfig && \
@@ -45,7 +45,7 @@ RUN install2.r -e remotes
 RUN install2.r -e devtools
 RUN installGithub.r "lchiffon/wordcloud2"
 # RUN installGithub.r "senzhaocode/FuSViz"
-RUN wget "https://github.com/senzhaocode/FuSViz/archive/refs/tags/v1.2.0.tar.gz" && R -e "remotes::install_local('v1.2.0.tar.gz', dependencies=T)"
+RUN wget "https://github.com/senzhaocode/FuSViz/archive/refs/tags/v1.4.0.tar.gz" && R -e "remotes::install_local('v1.4.0.tar.gz', dependencies=T)"
 RUN rm -rf /tmp/bcftools* && rm -rf /tmp/htslib-* && rm -rf /tmp/samtools-* && rm -rf /tmp/file* && rm -rf /tmp/shinyWidgets*
 
 RUN echo "local(options(shiny.port = 3838, shiny.host = '0.0.0.0'))" >> /usr/local/lib/R/etc/Rprofile.site
@@ -59,18 +59,8 @@ RUN apt-get clean autoclean
 RUN rm -rf /var/tmp/*
 RUN rm -rf /tmp/downloaded_packages
 
-# Set non-root user
-RUN addgroup --system senzhao && adduser --system --ingroup senzhao senzhao
-
-WORKDIR /home/senzhao
-
-COPY inst/app/*.R .
-
-RUN chown senzhao:senzhao -R /home/senzhao
-
-USER senzhao
-
+# set portal
 EXPOSE 3838
 
-CMD ["R", "-e", "shiny::runApp('/home/senzhao')"]
+CMD ["R", "-e", "shiny::runApp(file.path(system.file('app', package='FuSViz')))"]
 
