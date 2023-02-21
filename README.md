@@ -25,9 +25,9 @@ Run `docker run --rm -p 4000:3838 senzhao/fusviz_shiny_app:1.4.0`; then open web
 
 #### <ins>Deploy with singularity for Linux users</ins>
 
-A singularity container of FuSViz is available for [dowload](https://fusviz.s3.eu-north-1.amazonaws.com/fusviz_1.3.0.sif), and we recommend run it using singularity version (>= 3.7.3):
+A singularity container of FuSViz is available for [dowload](https://fusviz.s3.eu-north-1.amazonaws.com/fusviz_1.4.0.sif), and we recommend run it using singularity version (>= 3.7.3):
 
-`singularity run fusviz_1.3.0.sif 4000`, then open web browser and input address.
+`singularity run fusviz_1.4.0.sif 4000`, then open web browser and input address.
 
 #### <ins>Deploy without container</ins>
 
