@@ -178,7 +178,7 @@ Shiny.addCustomMessageHandler("DuplicateTrackRemove",
 				var replicate = addtracks.indexOf(trackName) >= 0;
 				if ( replicate ) { // matched
 					igv.browser.removeTrack(igv.browser.trackViews[n].track);
-					console.log("Remove replicated track: "+ igv.browser.trackViews[n].track);
+					console.log("Remove replicated track: "+ trackName);
 				}
 			}
 			n++;
