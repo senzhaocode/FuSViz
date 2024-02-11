@@ -14,7 +14,7 @@ options(ucscChromosomeNames=FALSE)
 				#// 2nd option
 				messageItem(from = "Issues", message = "Report issues and bugs", icon = icon("exclamation-circle", verify_fa = FALSE), href = "https://github.com/senzhaocode"),
 				badgeStatus = NULL,
-				icon = icon("info-circle fa-lg", verify_fa = FALSE),
+				icon = icon("info-circle", verify_fa = FALSE),
 				headerText = "App Information")
 		})
 
