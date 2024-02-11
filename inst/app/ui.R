@@ -612,7 +612,7 @@
 													shinycssloaders::withSpinner(plotOutput("chimerics_down", width = "100%", height = "100%"), type = 5, size = 0.7)
 										)),
 										tags$head(tags$style(".overviewmain {display: flex; align-items: flex-end; background-color: transparent; z-index: 0;}
-											.overviewlink {top: 1px; position: relative; z-index: 1;}
+											.overviewlink {top: 30px; position: relative; z-index: 1;}
 											.straightLine, .hrLine {position: absolute; background-color: black;}
 											html, body {height: 100%; width: 100%; margin: 0px;}"
 										)),
@@ -647,8 +647,8 @@
 										column(12, div(class="domainB", plotOutput("domain_down", height=220))),
 										tags$head(tags$style("
 										.domainA{background-color: transparent; z-index: -1;}
-										.fuseline{top: -10px; position: relative; z-index: 1;}
-										.domainB{background-color: transparent; top: -20px; position: relative; z-index: 0;}"
+										.fuseline{top: -5px; position: relative; z-index: 0;}
+										.domainB{background-color: transparent; top: -35px; position: relative; z-index: 1;}"
 										))
 									),
 									box(width = NULL,  status = "warning",
