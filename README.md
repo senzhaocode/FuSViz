@@ -37,6 +37,7 @@ A singularity container of FuSViz is available for [dowload](https://fusviz.s3.e
 
 * R (>=4.0.0): https://www.r-project.org/; [RStudio](https://rstudio.com/products/rstudio/download/#download) is recommended but not mandatory. 
 * For windows users, if an earlier version of R (< 4.0) is present in the system, please uninstall it firstly and make sure only R >=4.0 is available.
+* System requirement with a recommendation: >=4 GB physical memory.
 
 ##### Installation
 
