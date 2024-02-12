@@ -1,4 +1,4 @@
-FROM rocker/shiny:4.2.0
+FROM rocker/shiny:4.3.0
 
 LABEL maintainer="Sen ZHAO <t.cytotoxic@gmail.com>"
 
