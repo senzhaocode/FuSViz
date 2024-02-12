@@ -23,6 +23,8 @@ Optional: if user would like to build FuSViz image (developmental version), just
 
 Run `docker run --rm -p 4000:3838 senzhao/fusviz_shiny_app:1.4.0`; then open web browser and input address `127.0.0.1:4000`
 
+NOTE: FuSViz docker image is built under amd64 platform, which may show [a poor and slow performance](https://stackoverflow.com/questions/70765522/docker-amd64-warning-on-apple-m1-computer) in Apple M1 machine (arm64 platform). We recommend enable the feature of **Use Rosetta for x86/amd64 emulation on Apple Silicon** for Docker Desktop - Navigate to **Settings** in Docker Desktop and check **Use Rosetta for x86/amd64 emulation on Apple Silicon** in the **General** tab.
+
 #### <ins>Deploy with singularity for Linux users</ins>
 
 A singularity container of FuSViz is available for [dowload](https://fusviz.s3.eu-north-1.amazonaws.com/fusviz_1.4.0.sif), and we recommend run it using singularity version (>= 3.7.3):
