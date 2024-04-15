@@ -211,7 +211,7 @@ function load() {
 							var value = element.name.toLowerCase() === 'name' ? '<a href="https://www.genecards.org/Search/Keyword?queryString=' + element.value + '" target="_blank">' + element.value + '</a>' : element.value;
 							markup += "<tr><td class=\"igv-popover-td\">"
 									+ "<div class=\"igv-popover-name-value\">"
-									+ "<span class=\"igv-popover-name\">" + element.name + "</span>"
+									+ "<span class=\"igv-popover-name\">" + element.name + ": " + "</span>"
 									+ "<span class=\"igv-popover-value\">" + value + "</span>"
 									+ "</div>" + "</td></tr>";
 						} else {
