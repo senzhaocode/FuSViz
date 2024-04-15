@@ -13,8 +13,9 @@ get_annotation_db <- function(ensemblId, txdb_ref, grTrack_ref) {
 	# For testing: ensemblId = ensemblId_A; txdb_ref = txdb;
 	chrom_only = c("chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chr20","chr21","chr22","chrX","chrY","chrM");
 	cols = c("TXNAME", "TXCHROM", "TXSTRAND", "TXSTART", "TXEND");
-	dataset = AnnotationDbi::select(txdb_ref, keys=ensemblId, columns=cols, keytype="GENEID");
+	dataset = tryCatch(AnnotationDbi::select(txdb_ref, keys=ensemblId, columns=cols, keytype="GENEID"), error = function(e) {});
 
+	if ( is.null(dataset) ) { return(NULL); }
 	#// get the start and end coordinate of partner genes
 	start = tapply(dataset$TXSTART, as.factor(dataset$GENEID), min);
 	end = tapply(dataset$TXEND, as.factor(dataset$GENEID), max);
@@ -48,8 +49,9 @@ get_annotation_db_extend <- function(ensemblId, txdb_ref, grTrack_ref, whole_tx)
 	# For testing: ensemblId = ensemblId_B; txdb_ref = txdb; grTrack_ref = grTrack; whole_tx = whole_txdb
 	chrom_only = c("chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chr20","chr21","chr22","chrX","chrY","chrM");
 	cols = c("TXNAME", "TXCHROM", "TXSTRAND", "TXSTART", "TXEND");
-	dataset = AnnotationDbi::select(txdb_ref, keys=ensemblId, columns=cols, keytype="GENEID");
+	dataset = tryCatch(AnnotationDbi::select(txdb_ref, keys=ensemblId, columns=cols, keytype="GENEID"), error = function(e) {});
 
+	if ( is.null(dataset) ) { return(NULL); }
 	#// get the start and end coordinate of partner genes
 	start = tapply(dataset$TXSTART, as.factor(dataset$GENEID), min);
 	end = tapply(dataset$TXEND, as.factor(dataset$GENEID), max);
