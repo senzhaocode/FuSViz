@@ -9,6 +9,7 @@ suppressWarnings(suppressPackageStartupMessages(library(DT)))
 suppressWarnings(suppressPackageStartupMessages(library(BioCircos)))
 suppressWarnings(suppressPackageStartupMessages(library(wordcloud2)))
 suppressWarnings(suppressPackageStartupMessages(library(visNetwork)))
+suppressWarnings(suppressPackageStartupMessages(library(datamods)))
 
 #-------------------------------------
 # set and intialize global variables
@@ -16,6 +17,9 @@ suppressWarnings(suppressPackageStartupMessages(library(visNetwork)))
 #// System path of installed FuSViz package
 system_path = path.package("FuSViz");
 extdata = system.file("extdata", package = "FuSViz");
+
+#// load canonical transcript id
+load(file=file.path(extdata, "canonical.Rd"));
 
 #// Load gene name data: gene_id a data.frame class with two columns: 'ensembl_gene_id' and 'gene_symbol'
 load(file=file.path(extdata, "ensembl_symbol.Rd"));
