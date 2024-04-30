@@ -21,28 +21,37 @@ options(ucscChromosomeNames=FALSE)
 		#/////////////////////////////////////////////////////////
 		# Load genomics/transcriptomics database (hg19 or hg38) //
 		#/////////////////////////////////////////////////////////
-		database <- reactiveValues(txdb=NULL, whole_txdb=NULL, grTrack=NULL, chrTrack=NULL, domain=NULL, motif=NULL, genome_cir=NULL, gene_range=NULL, karyto=NULL, ensembl_id=NULL);
+		database <- reactiveValues(txdb=NULL, whole_txdb=NULL, grTrack=NULL, chrTrack=NULL, domain=NULL, motif=NULL, genome_cir=NULL, gene_range=NULL, karyto=NULL, ensembl_id=NULL, symbol_ensem=NULL, canonical=NULL, cancergenes=NULL, chrom_cir=NULL, organism=NULL);
 		observeEvent(input$Import_genome_data, {
 			#// load annotation db
 			if ( input$genome == "" ) {
 				shiny::showModal(modalDialog(title = "Warning message", "Please choose genome version!"));	req(NULL);
 			} else {
 				version = gsub('_offline', '', input$genome);
+				organism = NULL;
+				chrom_cir = NULL;
+				if ( version == 'hg19' || version == 'hg38' ) {
+					organism = "Human";
+					chrom_cir = c("chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chr20","chr21","chr22","chrX","chrY");
+				} else if ( version == 'GRCm39' ) {
+					organism = "Mouse";
+					chrom_cir = c("chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chrX","chrY"); 
+				}
 				shiny::withProgress(message='Load genomic/transcriptomic annotations', detail="Please wait for a while...", min=0, max=1, value=0.1, {
-					txdb <- suppressWarnings(suppressPackageStartupMessages(AnnotationDbi::loadDb(file=file.path(extdata, paste("gencode.annotation.", version, ".sqlite", sep="")))));
+					txdb <- suppressWarnings(suppressPackageStartupMessages(AnnotationDbi::loadDb(file=file.path(extdata, paste(organism, ".gencode.annotation.", version, ".sqlite", sep="")))));
 					shiny::incProgress(0.2);
-					load(file=file.path(extdata, paste("grTrack.", version, ".Rd", sep="")));
+					load(file=file.path(extdata, paste(organism, ".grTrack.", version, ".Rd", sep="")));
 					shiny::incProgress(0.1);
-					load(file=file.path(extdata, paste("cytoband.", version, ".Rd", sep="")));
+					load(file=file.path(extdata, paste(organism, ".cytoband.", version, ".Rd", sep="")));
 					shiny::incProgress(0.1);
 					whole_txdb <- GenomicFeatures::exonsBy(txdb, by = "tx", use.names=TRUE); # group exons by transcript_id
 					shiny::incProgress(0.2);
 
 					#// load domain annotation - one data.frame: domain
-					load(file=file.path(extdata, paste("Domain_interval.", version, ".Rd", sep="")));
+					load(file=file.path(extdata, paste(organism, ".Domain_interval.", version, ".Rd", sep="")));
 					shiny::incProgress(0.1);
 					# // load motif annotation - one data.frame: motif
-					load(file=file.path(extdata, paste("Motif_interval.", version, ".Rd", sep="")));
+					load(file=file.path(extdata, paste(organism, ".Motif_interval.", version, ".Rd", sep="")));
 					shiny::incProgress(0.1);
 
 					#// create genome length for circle plot
@@ -55,7 +64,25 @@ options(ucscChromosomeNames=FALSE)
 						genome_cir = list("chr1"=249250621, "chr2"=243199373, "chr3"=198022430, "chr4"=191154276, "chr5"=180915260, "chr6"=171115067, "chr7"=159138663, "chr8"=146364022, 
 							"chr9"=141213431, "chr10"=135534747, "chr11"=135006516, "chr12"=133851895, "chr13"=115169878, "chr14"=107349540, "chr15"=102531392, "chr16"=90354753,
 							"chr17"=81195210, "chr18"=78077248, "chr19"=59128983, "chr20"=63025520, "chr21"=48129895, "chr22"=51304566, "chrX"=155270560, "chrY"=59373566);
+					} else if (  input$genome == "GRCm39" || input$genome == "GRCm39_offline" ) {
+						genome_cir = list("chr1"=195154279, "chr2"=181755017, "chr3"=159745316, "chr4"=156860686, "chr5"=151758149, "chr6"=149588044, "chr7"=144995196, "chr8"=130127694,
+							"chr9"=124359700, "chr10"=130530862, "chr11"=121973369, "chr12"=120092757, "chr13"=120883175, "chr14"=125139656, "chr15"=104073951, "chr16"=98008968,
+							"chr17"=95294699, "chr18"=90720763, "chr19"=61420004, "chrX"=169476592, "chrY"=91455967);
 					}
+
+					#// load canonical transcript id
+					load(file=file.path(extdata, paste(organism, ".canonical.Rd", sep="")));
+					#// Load gene name data: gene_id a data.frame class with two columns: 'ensembl_gene_id' and 'gene_symbol'
+					load(file=file.path(extdata, paste(organism, ".ensembl_symbol.Rd", sep="")));
+					#// assign the ensembl_id to gene symbol
+					symbol_ensem = gene_id$Gene_name;
+					names(symbol_ensem) = gene_id$Gene_ID;
+					shiny::incProgress(0.1);
+
+					#// Load predefined gene dataset for oncogenes, tumor-suppress genes and cancer-related genes
+					load(file=file.path(extdata, paste(organism, ".cancergenes.Rd", sep="")));
+					shiny::incProgress(0.1);
+
 					#// create gene annotation for circle plot
 					gene_range = as.data.frame(genes(txdb), stringsAsFactors=F);
 					names(gene_range)[6] = "Gene_ID";
@@ -87,8 +114,9 @@ options(ucscChromosomeNames=FALSE)
 					karyto = karyto[order(karyto$chr), ]; #// re-order by chromosome names
 					shiny::incProgress(0.1);
 				})
-				database$txdb=txdb;	database$whole_txdb=whole_txdb;	database$grTrack=grTrack;	database$chrTrack=chrTrack;	database$domain=domain;
-				database$motif=motif;	database$genome_cir=genome_cir;	database$gene_range=gene_range;	database$karyto=karyto; database$ensembl_id=ensembl_id;
+				database$txdb=txdb;	database$whole_txdb=whole_txdb;	database$grTrack=grTrack;	database$chrTrack=chrTrack;	database$domain=domain;	database$symbol_ensem=symbol_ensem;	
+				database$cancergenes=cancergenes;	database$motif=motif;	database$genome_cir=genome_cir;	database$gene_range=gene_range;	database$karyto=karyto; 
+				database$ensembl_id=ensembl_id;	database$canonical=canonical;	database$chrom_cir=chrom_cir;	database$organism=organism;
 			}
 		})
 		observe({
@@ -124,11 +152,75 @@ options(ucscChromosomeNames=FALSE)
 			if ( col_num_rna[9] != "span" || any(is.na(tumordata$span)) == T || any(tumordata$sapn < 0) == T ) { showModal(modalDialog(title = "Error message", "'span' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
 			if ( col_num_rna[10] != "strand1" || any(is.na(tumordata$strand1)) == T || any(tumordata$strand1 == "") == T ) { showModal(modalDialog(title = "Error message", "'strand1' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
 			if ( col_num_rna[11] != "strand2" || any(is.na(tumordata$strand2)) == T || any(tumordata$strand2 == "") == T ) { showModal(modalDialog(title = "Error message", "'strand2' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( database$organism == 'Human' ) {
+				if ( TRUE %in% grepl("^[[:lower:]]+$", tumordata$gene1) ||  TRUE %in% grepl("^[[:lower:]]+$", tumordata$gene2) ) { # lowercase present in symbol
+					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for human!")); req(NULL); 
+				}
+			} else if  ( database$organism == 'Mouse' ) {
+				if ( FALSE %in% grepl("^[[:lower:]]+$", tumordata$gene1) ||  FALSE %in% grepl("^[[:lower:]]+$", tumordata$gene2) ) { # lowercase no present in symbol
+					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for mouse!")); req(NULL); 
+				}
+			}
 			inputFile$rnadata = tumordata;
 		})
 		#// edit and update cell value of rna SV table
-		observeEvent(input$RNAcontents_cell_edit, {
-			inputFile$rnadata <<- editData(inputFile$rnadata, input$RNAcontents_cell_edit, 'RNAcontents')
+		observeEvent(input[["RNAcontents_cell_edit"]], {
+			rnarow = input$RNAcontents_cell_edit$row;
+			rnaclmn = input$RNAcontents_cell_edit$col;
+			info = input[["RNAcontents_cell_edit"]];
+			rnavalue = inputFile$rnadata[rnarow, rnaclmn];
+			if ( rnaclmn == 1 || rnaclmn == 4 ) {
+				if ( info[["value"]] %in% database$chrom_cir ) {
+					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
+				} else {
+					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
+					info[["value"]] <- rnavalue;
+					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
+					showModal(modalDialog(title = "Warning message", paste(input$RNAcontents_cell_edit$value, " is not a valid chromosome name! NOTE: chromosome name should be a 'chr1-22-X-Y-M'!", sep="")));
+				}
+			} else if ( rnaclmn == 2 || rnaclmn == 5 || rnaclmn == 8 || rnaclmn == 9) {
+				if ( is(info[["value"]], "numeric") ) {
+					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
+				} else {
+					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
+					info[["value"]] <- rnavalue;
+					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
+					showModal(modalDialog(title = "Warning message", paste(input$RNAcontents_cell_edit$value, " is not a numeric feature! Please input a number!", sep="")));
+				}
+			} else if ( rnaclmn == 3 || rnaclmn == 6 ) {
+				genename = NULL;
+				if ( grepl("ENSG00", info[["value"]]) || grepl("ENSMUSG0", info[["value"]]) ) {
+					genename  = database$ensembl_id[database$ensembl_id == input$RNAcontents_cell_edit$value];
+				} else {
+					genename = names(database$symbol_ensem[database$symbol_ensem == input$RNAcontents_cell_edit$value]);
+				}
+				if ( length(genename) > 0 ) {
+					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
+				} else {
+					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
+					info[["value"]] <- rnavalue;
+					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
+					showModal(modalDialog(title = "Warning message", paste(input$RNAcontents_cell_edit$value, " is not a valid gene name! Please input valid gene name.", sep="")));
+				}
+			} else if ( rnaclmn == 7 ) {
+				if ( is(info[["value"]], "character") ) {
+					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
+				} else {
+					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
+					info[["value"]] <- rnavalue;
+					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
+					showModal(modalDialog(title = "Warning message", paste(input$RNAcontents_cell_edit$value, " is not a valid sample name! NOTE: sample name should be a character!", sep="")));
+				}
+			} else if ( rnaclmn == 10 ||  rnaclmn == 11 ) {
+				if ( info[["value"]] == '+' || info[["value"]] == '-' ) {
+					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
+				} else {
+					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
+					info[["value"]] <- rnavalue;
+					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
+					showModal(modalDialog(title = "Warning message", paste(input$RNAcontents_cell_edit$value, " is not a valid strand direction! NOTE: strand direction should be +/-!", sep="")));
+				}
+			}
     	})
 
 		#/////////////////////////////////////////////////////////////
@@ -155,11 +247,89 @@ options(ucscChromosomeNames=FALSE)
 			if ( col_num_dna[10] != "span" || any(is.na(dnadata$span)) == T || any(dnadata$sapn < 0) == T ) { showModal(modalDialog(title = "Error message", "'span' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
 			if ( col_num_dna[11] != "gene1" || any(is.na(dnadata$gene1)) == T || any(dnadata$gene1 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene1' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
 			if ( col_num_dna[12] != "gene2" || any(is.na(dnadata$gene2)) == T || any(dnadata$gene2 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene2' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( database$organism == 'Human' ) {
+				if ( TRUE %in% grepl("^[[:lower:]]+$", dnadata$gene1) ||  TRUE %in% grepl("^[[:lower:]]+$", dnadata$gene2) ) { # lowercase present in symbol
+					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for human!")); req(NULL); 
+				}
+			} else if  ( database$organism == 'Mouse' ) {
+				if ( FALSE %in% grepl("^[[:lower:]]+|[*]+$", dnadata$gene1) ||  FALSE %in% grepl("^[[:lower:]]+|[*]+$", dnadata$gene2) ) { # lowercase no present in symbol
+					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for mouse!")); req(NULL); 
+				}
+			}
 			inputFile$dnadata = dnadata;
 		})
-		#// edit and update cell value of rna SV table
+		#// edit and update cell value of dna SV table
 		observeEvent(input$DNAcontents_cell_edit, {
+			dnarow = input$DNAcontents_cell_edit$row;
+			dnaclmn = input$DNAcontents_cell_edit$col;
+			info = input[["DNAcontents_cell_edit"]];
+			dnavalue = inputFile$dnadata[dnarow, dnaclmn, with=FALSE];
 			inputFile$dnadata <<- editData(inputFile$dnadata, input$DNAcontents_cell_edit, 'DNAcontents')
+			if ( dnaclmn == 1 || dnaclmn == 4 ) {
+				if ( info[["value"]] %in% database$chrom_cir ) {
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+				} else {
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+					info[["value"]] <- dnavalue;
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+					showModal(modalDialog(title = "Warning message", paste(input$DNAcontents_cell_edit$value, " is not a valid chromosome name! NOTE: chromosome name should be a 'chr1-22-X-Y-M'!", sep="")));
+				}
+			} else if ( dnaclmn == 2 || dnaclmn == 3 || dnaclmn == 5 || dnaclmn == 6 || dnaclmn == 9 || dnaclmn == 10) {
+				if ( is(info[["value"]], "numeric") ) {
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+				} else {
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+					info[["value"]] <- dnavalue;
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+					showModal(modalDialog(title = "Warning message", paste(input$DNAcontents_cell_edit$value, " is not a numeric feature! NOTE: input a number!", sep="")));
+				}
+			} else if ( dnaclmn == 11 || dnaclmn == 12 ) {
+				genename = NULL;
+				if ( info[["value"]] == '*' ) {
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+				} else {
+					if ( grepl("ENSG00", info[["value"]]) || grepl("ENSMUSG0", info[["value"]]) ) {
+						genename = database$ensembl_id[database$ensembl_id == input$DNAcontents_cell_edit$value];
+					} else {
+						genename = names(database$symbol_ensem[database$symbol_ensem == input$DNAcontents_cell_edit$value]);
+					}
+					if ( length(genename) > 0 ) {
+						inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+					} else {
+						inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+						info[["value"]] <- dnavalue;
+						inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+						showModal(modalDialog(title = "Warning message", paste(input$DNAcontents_cell_edit$value, " is not a valid gene name! Please input valid gene name!", sep="")));
+					}
+				}
+			} else if ( dnaclmn == 7 ) {
+				if ( is(info[["value"]], "character") ) {
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+				} else {
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+					info[["value"]] <- dnavalue;
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+					showModal(modalDialog(title = "Warning message", paste(input$DNAcontents_cell_edit$value, " is not a valid sample name! NOTE: sample name should be a character!", sep="")));
+				}
+			} else if ( dnaclmn == 8 ) {
+				if ( info[["value"]] %in% c("BND", "DEL", "DUP", "INS", "INV") ) {
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+				} else {
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+					info[["value"]] <- dnavalue;
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+					showModal(modalDialog(title = "Warning message", paste(input$DNAcontents_cell_edit$value, " is not a valid SV type! NOTE: SV type should be 'BND, DEL, DUP, INS or INV'!", sep="")));
+				}
+			} else if ( dnaclmn == 10 ||  dnaclmn == 11 ) {
+				if ( info[["value"]] == '+' || info[["value"]] == '-' ) {
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+				} else {
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+					info[["value"]] <- dnavalue;
+					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
+					showModal(modalDialog(title = "Warning message", paste(input$DNAcontents_cell_edit$value, " is not a valid strand direction! NOTE: strand direction should be +/-!", sep="")));
+				}
+			}
     	})
 
 		#//////////////////////////////////
@@ -167,6 +337,7 @@ options(ucscChromosomeNames=FALSE)
 		#//////////////////////////////////
 		drug_target_match <- reactive({
 			tmp = NULL;
+			if ( input$genome == "GRCm39" ) { return(tmp); }
 			if ( is.null(input$file_rna_data) ) { # dna_sv file not load
 				if ( is.null(input$file_dna_data) ) { # rna_sv file not load
 					return(NULL);
@@ -243,7 +414,7 @@ options(ucscChromosomeNames=FALSE)
 			#// convert data.table to data.frame, and count freq of 'Hugo_Symbol-anno-Turmo_Sample_Barcode' per 'Chrom-Position'
 			mutdata = mutdata[, c("Hugo_Symbol", "Chromosome", "Start_Position", "End_Position", "Tumor_Sample_Barcode", "anno")];
 			#// chromosome control not including 'chrM'
-			mutdata = mutdata[mutdata$Chromosome %in% chrom_cir, ]; # chromosome control, not including 'chrM'
+			mutdata = mutdata[mutdata$Chromosome %in% database$chrom_cir, ]; # chromosome control, not including 'chrM'
 			inputFile$mutationdata = mutdata
 		})
 		mutation_bedgraph <- reactiveValues(value=NULL); #// summarize mutation freq 
@@ -265,7 +436,7 @@ options(ucscChromosomeNames=FALSE)
 		wordcloud_svrna <- reactive({ # list with one data.frame class and one vector class
 			if ( is.null(inputFile$rnadata) ) { req(NULL); }
 			word = NULL;	word = inputFile$rnadata[,c("name","gene1","gene2")]; #// select 'name', 'gene1' and 'gene2'
-			word = FuSViz::wordcloud_processs(word, input$gene_freq_rna, "RNA", onco_color, supp_color, rela_color);
+			word = FuSViz::wordcloud_processs(word, input$gene_freq_rna, "RNA", database$cancergenes, onco_color, supp_color, rela_color);
 			return(word);
 		})
 		#// wordcloud_svdna => for partner genes from DNA-seq
@@ -273,7 +444,7 @@ options(ucscChromosomeNames=FALSE)
 			if ( is.null(inputFile$dnadata) ) { req(NULL); }
 			word = NULL;    word = inputFile$dnadata[,c("name","gene1","gene2")]; #// select 'name', 'gene1' and 'gene2'
 			word = word[! (word$gene1 == '*' & word$gene2 == '*'), ]; #// delete row with both gene1 and gene1 == '*'
-			word = FuSViz::wordcloud_processs(word, input$gene_freq_dna, "DNA", onco_color, supp_color, rela_color);
+			word = FuSViz::wordcloud_processs(word, input$gene_freq_dna, "DNA", database$cancergenes, onco_color, supp_color, rela_color);
 			return(word);
 		})
 		#// wordcloud_mutat => for partner genes from mutation profile
@@ -287,7 +458,7 @@ options(ucscChromosomeNames=FALSE)
 			word = inputFile$mutationdata[anno %like% reg_exp];
 			word = word[,c("Tumor_Sample_Barcode","Hugo_Symbol")]; #// select 'name', 'gene'
 			names(word) = c("name", "gene");
-			word = FuSViz::wordcloud_processs(word, input$gene_freq_mut, "Mut", onco_color, supp_color, rela_color);
+			word = FuSViz::wordcloud_processs(word, input$gene_freq_mut, "Mut", database$cancergenes, onco_color, supp_color, rela_color);
 			return(word);
 		})
 
@@ -340,7 +511,7 @@ options(ucscChromosomeNames=FALSE)
 		#///////////////////////////////////////////////////////////////////////////
 		circle_twocol <- reactive({ # a data.frame class
 			if ( is.null(inputFile$rnadata) ) { req(NULL); }
-			twocol = inputFile$rnadata[inputFile$rnadata$chrom1 %in% chrom_cir & inputFile$rnadata$chrom2 %in% chrom_cir, ]; # chromosome control for circular plot
+			twocol = inputFile$rnadata[inputFile$rnadata$chrom1 %in% database$chrom_cir & inputFile$rnadata$chrom2 %in% database$chrom_cir, ]; # chromosome control for circular plot
 			#// 'twocol' has three columns "chrom", "gene" and "name"
 			twocol = data.frame(chr=c(as.character(twocol$chrom1), as.character(twocol$chrom2)), 
 					gene=c(as.character(twocol$gene1), as.character(twocol$gene2)),
@@ -350,7 +521,7 @@ options(ucscChromosomeNames=FALSE)
 		})
 		circle_twocol_dna <- reactive({ # a data.frame class
 			if ( is.null(inputFile$dnadata) ) { req(NULL); }
-			twocol_dna = inputFile$dnadata[inputFile$dnadata$chrom1 %in% chrom_cir & inputFile$dnadata$chrom2 %in% chrom_cir, ]; # chromosome control for circular plot
+			twocol_dna = inputFile$dnadata[inputFile$dnadata$chrom1 %in% database$chrom_cir & inputFile$dnadata$chrom2 %in% database$chrom_cir, ]; # chromosome control for circular plot
 			#// 'twocol' has two columns "chrom", "gene" and "name"
 			twocol_dna = data.frame(chr=c(as.character(twocol_dna$chrom1), as.character(twocol_dna$chrom2)), 
 					gene=c(as.character(twocol_dna$gene1), as.character(twocol_dna$gene2)),
@@ -390,6 +561,7 @@ options(ucscChromosomeNames=FALSE)
 		#////////////////////////////////////////////////////////////////////////////////
 		#// 'input_twoway' has two elements: 'rnabed' - a data.frame class for bed format and 'rnabedgraph' - a data.frame class for tumorbedgraph format
 		input_twoway_rna_bed <- reactive({
+			if ( is.null(inputFile$rnadata) ) { req(NULL); }
 			#// Defined data.frame class 'rnabed' and 'rnabedgraph' for RNA SVs
 			rnabed = NULL;	rnabedgraph = NULL;
 			#// Set num of split and span reads for filtering control
@@ -624,6 +796,7 @@ options(ucscChromosomeNames=FALSE)
 		genome_select_dna = reactiveValues(value=NULL); #// use selected chromosomes for visualization
 		circle_two_dna <- select_group_server(id = "circle_set_dna", data = circle_twocol_dna, vars = reactive(c("chr", "gene", "name")));
 		circle_data_dna <- reactive({
+			if ( is.null(inputFile$dnadata) ) { return(NULL); }
 			#// select 'chr' (multiple choices accepted)
 			tmp = inputFile$dnadata[inputFile$dnadata$chrom1 %in% unique(circle_two_dna()$chr) | inputFile$dnadata$chrom2 %in% unique(circle_two_dna()$chr), ];
 			#// filter using selected 'gene' (multiple choices accepted)
@@ -748,6 +921,7 @@ options(ucscChromosomeNames=FALSE)
 		genome_select = reactiveValues(value=NULL); #// use selected chromosomes for visualization
 		circle_two <- select_group_server(id = "circle_set", data = circle_twocol, vars = reactive(c("chr", "gene", "name")));
 		circle_data <- reactive({
+			if ( is.null(inputFile$rnadata) ) { return(NULL); }
 			#// filter using selected 'chr' (multiple accepted)
 			tmp = as.data.table(inputFile$rnadata[inputFile$rnadata$chrom1 %in% unique(circle_two()$chr) | inputFile$rnadata$chrom2 %in% unique(circle_two()$chr), ]); 
 			#// filter using selected 'gene' (multiple accepted)
@@ -889,10 +1063,10 @@ options(ucscChromosomeNames=FALSE)
 			if ( length(unique(as.character(overview_tmp()$gene1))) == 1 ) {
 				choice_geneA = unique(as.character(overview_tmp()$gene1))
 				ens_A = NULL;
-				if ( grepl("ENSG00", choice_geneA) ) {
+				if ( grepl("ENSG00", choice_geneA) || grepl("ENSMUSG0", choice_geneA) ) {
 					ens_A = database$ensembl_id[database$ensembl_id == choice_geneA];
 				} else {
-					ens_A = names(symbol_ensem[symbol_ensem == choice_geneA])
+					ens_A = names(database$symbol_ensem[database$symbol_ensem == choice_geneA])
 				}
 				if ( length(ens_A) == 1 ) { #// if gene symbol matches to ensembl_id
 					object_over_A$value <- FuSViz::get_annotation_db_extend(ens_A, database$txdb, database$grTrack, database$whole_txdb)
@@ -901,7 +1075,7 @@ options(ucscChromosomeNames=FALSE)
 						showModal(modalDialog(title = "Warning message", paste("GeneA(", choice_geneA, ") is not available in annotation database, and process stops here!", sep="")));	req(NULL)
 					} else {
 						#// update the choice values in selectInput
-                        canonical_transA = canonical[canonical$ensembl_gene_id == ens_A,]$ensembl_transcript_id
+                        canonical_transA = database$canonical[database$canonical$ensembl_gene_id == ens_A,]$ensembl_transcript_id
                         selectinput_A = data.frame(TXNAME=object_over_A$value$dataset$TXNAME, TAG=object_over_A$value$dataset$TXNAME, stringsAsFactors=FALSE)
                         if (! is.na(canonical_transA[1]) ) { #// transcripts with canonical are tagged
                             if ( length(selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG) > 0 ) {
@@ -934,10 +1108,10 @@ options(ucscChromosomeNames=FALSE)
 			if ( length(unique(as.character(overview_tmp()$gene2))) == 1 ) {
 				choice_geneB = unique(as.character(overview_tmp()$gene2))
 				ens_B = NULL;
-				if ( grepl("ENSG00", choice_geneB) ) {
+				if ( grepl("ENSG00", choice_geneB) || grepl("ENSMUSG0", choice_geneB) ) {
 					ens_B = database$ensembl_id[database$ensembl_id == choice_geneB];
 				} else {
-					ens_B = names(symbol_ensem[symbol_ensem == choice_geneB])
+					ens_B = names(database$symbol_ensem[database$symbol_ensem == choice_geneB])
 				}
 				if ( length(ens_B) == 1 ) {
 					object_over_B$value <- FuSViz::get_annotation_db_extend(ens_B, database$txdb, database$grTrack, database$whole_txdb)
@@ -946,7 +1120,7 @@ options(ucscChromosomeNames=FALSE)
 						showModal(modalDialog(title = "Warning message", paste("GeneB(", choice_geneB, ") is not available in annotation database, and process stops here!", sep=""))); req(NULL);
 					} else {
 						#// update the choice values in selectInput
-                        canonical_transB = canonical[canonical$ensembl_gene_id == ens_B,]$ensembl_transcript_id
+                        canonical_transB = database$canonical[database$canonical$ensembl_gene_id == ens_B,]$ensembl_transcript_id
 						selectinput_B = data.frame(TXNAME=object_over_B$value$dataset$TXNAME, TAG=object_over_B$value$dataset$TXNAME, stringsAsFactors=FALSE)
                         if (! is.na(canonical_transB[1]) ) { #// transcripts with canonical are tagged
                             if ( length(selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG) > 0 ) {
@@ -1116,10 +1290,10 @@ options(ucscChromosomeNames=FALSE)
 			if ( length(unique(as.character(individual_data()$gene1))) == 1 ) {
 				choice_geneA = unique(as.character(individual_data()$gene1))
 				ens_A = NULL;
-				if ( grepl("ENSG00", choice_geneA) ) {
+				if ( grepl("ENSG00", choice_geneA) ||  grepl("ENSMUSG0", choice_geneA) ) {
 					ens_A = database$ensembl_id[database$ensembl_id == choice_geneA];
 				} else {
-					ens_A = names(symbol_ensem[symbol_ensem == choice_geneA])
+					ens_A = names(database$symbol_ensem[database$symbol_ensem == choice_geneA])
 				}
 				if ( length(ens_A) == 1 ) { #// if gene symbol matches to ensembl_id
 					object_individual_A$value <- FuSViz::get_annotation_db(ens_A, database$txdb, database$grTrack)
@@ -1128,7 +1302,7 @@ options(ucscChromosomeNames=FALSE)
 						howModal(modalDialog(title = "Warning message", paste("GeneA(", choice_geneA, ") is not available in annotation database, and process stops here!", sep=""))); req(NULL)
 					} else {
 						#// update the choice values in selectInput
-                        canonical_transA = canonical[canonical$ensembl_gene_id == ens_A,]$ensembl_transcript_id
+                        canonical_transA = database$canonical[database$canonical$ensembl_gene_id == ens_A,]$ensembl_transcript_id
                         selectinput_A = data.frame(TXNAME=object_individual_A$value$dataset$TXNAME, TAG=object_individual_A$value$dataset$TXNAME, stringsAsFactors=FALSE)
                         if (! is.na(canonical_transA[1]) ) { #// transcripts with canonical are tagged
                             if ( length(selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG) > 0 ) {
@@ -1160,10 +1334,10 @@ options(ucscChromosomeNames=FALSE)
 			if ( length(unique(as.character(individual_data()$gene2))) == 1 ) {
 				choice_geneB = unique(as.character(individual_data()$gene2))
 				ens_B = NULL;
-				if ( grepl("ENSG00", choice_geneB) ) {
+				if ( grepl("ENSG00", choice_geneB) || grepl("ENSMUSG0", choice_geneB) ) {
 					ens_B = database$ensembl_id[database$ensembl_id == choice_geneB];
 				} else {
-					ens_B = names(symbol_ensem[symbol_ensem == choice_geneB])
+					ens_B = names(database$symbol_ensem[database$symbol_ensem == choice_geneB])
 				}
 				if ( length(ens_B) == 1 ) { #// if gene symbol matches to ensembl_id
 					object_individual_B$value <- FuSViz::get_annotation_db(ens_B, database$txdb, database$grTrack)
@@ -1172,7 +1346,7 @@ options(ucscChromosomeNames=FALSE)
 						howModal(modalDialog(title = "Warning message", paste("GeneB()", choice_geneB, ") is not available in annotation database, and process stops here!", sep="")));	req(NULL)
 					} else {
 						#// update the choice values in selectInput
-                        canonical_transB = canonical[canonical$ensembl_gene_id == ens_B,]$ensembl_transcript_id
+                        canonical_transB = database$canonical[database$canonical$ensembl_gene_id == ens_B,]$ensembl_transcript_id
 						selectinput_B = data.frame(TXNAME=object_individual_B$value$dataset$TXNAME, TAG=object_individual_B$value$dataset$TXNAME, stringsAsFactors=FALSE)
                         if (! is.na(canonical_transB[1]) ) { #// transcripts with canonical are tagged
                             if ( length(selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG) > 0 ) {
@@ -1329,10 +1503,10 @@ options(ucscChromosomeNames=FALSE)
             if ( length(unique(as.character(domain_1()$gene1))) == 1 ) { #// make sure only one symbol of geneA selected
             	choice_geneA = unique(as.character(domain_1()$gene1))
 				ens_A = NULL;
-				if ( grepl("ENSG00", choice_geneA) ) {
+				if ( grepl("ENSG00", choice_geneA) || grepl("ENSMUSG0", choice_geneA) ) {
 					ens_A = database$ensembl_id[database$ensembl_id == choice_geneA];
 				} else {
-					ens_A = names(symbol_ensem[symbol_ensem == choice_geneA])
+					ens_A = names(database$symbol_ensem[database$symbol_ensem == choice_geneA])
 				}
 				if ( length(ens_A) == 1 ) { #// if gene symbol matches to ensembl_id
 					object_domain_A$value <- FuSViz::get_annotation_db(ens_A, database$txdb, database$grTrack)
@@ -1344,7 +1518,7 @@ options(ucscChromosomeNames=FALSE)
 						motif_geneA = database$motif[database$motif$Gene_id == ens_A, ]
 						#// get transcript_id with domain or motif annotation
 						DM_transA = unique(c(as.character(domain_geneA$Transcript_id), as.character(motif_geneA$Transcript_id)))
-                   		canonical_transA = canonical[canonical$ensembl_gene_id == ens_A,]$ensembl_transcript_id
+                   		canonical_transA = database$canonical[database$canonical$ensembl_gene_id == ens_A,]$ensembl_transcript_id
 						#// only keep transcripts of geneA that harbor breakpoints
 						break_max_A = max(domain_1()$pos1)
 						break_min_A = min(domain_1()$pos1)
@@ -1407,10 +1581,10 @@ options(ucscChromosomeNames=FALSE)
             if ( length(unique(as.character(domain_1()$gene2))) == 1 ) { #// make sure only one symbol of geneB selected
 				choice_geneB = unique(as.character(domain_1()$gene2))
 				ens_B = NULL;
-				if ( grepl("ENSG00", choice_geneB) ) {
+				if ( grepl("ENSG00", choice_geneB) || grepl("ENSMUSG0", choice_geneB) ) {
 					ens_B = database$ensembl_id[database$ensembl_id == choice_geneB];
 				} else {
-					ens_B = names(symbol_ensem[symbol_ensem == choice_geneB])
+					ens_B = names(database$symbol_ensem[database$symbol_ensem == choice_geneB])
 				}
 				if ( length(ens_B) == 1 ) { #// if gene symbol matches to ensembl_id
 					object_domain_B$value <- FuSViz::get_annotation_db(ens_B, database$txdb, database$grTrack)
@@ -1421,7 +1595,7 @@ options(ucscChromosomeNames=FALSE)
 						domain_geneB = database$domain[database$domain$Gene_id == ens_B, ]
 						motif_geneB = database$motif[database$motif$Gene_id == ens_B, ]
 						DM_transB = unique(c(as.character(domain_geneB$Transcript_id), as.character(motif_geneB$Transcript_id))) #// get transcript_id with domain or motif annotation
-                    	canonical_transB = canonical[canonical$ensembl_gene_id == ens_B,]$ensembl_transcript_id
+                    	canonical_transB = database$canonical[database$canonical$ensembl_gene_id == ens_B,]$ensembl_transcript_id
 						#// only keep transcripts of geneB that harbor breakpoints
 						break_max_B = max(domain_1()$pos2)
 						break_min_B = min(domain_1()$pos2)
@@ -1688,7 +1862,7 @@ options(ucscChromosomeNames=FALSE)
 		network_rna <- reactive({
 			if ( is.null(inputFile$rnadata) ) { req(NULL); }
 			tmp = inputFile$rnadata[, c("gene1", "gene2", "name")];	tmp = as.data.frame(tmp);
-			assembly = FuSViz::network_process(tmp, "RNA", onco_color, supp_color, rela_color, intergenic_color, other_color);
+			assembly = FuSViz::network_process(tmp, "RNA", database$cancergenes, onco_color, supp_color, rela_color, intergenic_color, other_color);
 			if ( is.null(assembly$degree_score$nodes) ) {
 				return(NULL);
 			} else {
@@ -1704,7 +1878,7 @@ options(ucscChromosomeNames=FALSE)
 		network_dna <- reactive({
 			if ( is.null(inputFile$dnadata) ) { req(NULL); }
 			tmp = inputFile$dnadata[, c("gene1", "gene2", "name")];	tmp = as.data.frame(tmp);
-			assembly = FuSViz::network_process(tmp, "DNA", onco_color, supp_color, rela_color, intergenic_color, other_color);
+			assembly = FuSViz::network_process(tmp, "DNA", database$cancergenes, onco_color, supp_color, rela_color, intergenic_color, other_color);
 			if ( is.null(assembly$degree_score$nodes) ) {
 				return(NULL)
 			} else {
@@ -1840,22 +2014,22 @@ options(ucscChromosomeNames=FALSE)
 			if ( is.null(inputFile$rnadata) ) { req(NULL);  }
 			tmp = inputFile$rnadata;	
 			tag1 = apply(tmp, 1, function(x){
-				if ( as.character(x[3]) %in% names(oncogenes) ) { 
+				if ( as.character(x[3]) %in% names(database$cancergenes$oncogene) ) { 
 					return(1); 
-				} else if ( as.character(x[3]) %in% names(tumorsupress) ) { 
+				} else if ( as.character(x[3]) %in% names(database$cancergenes$tumorsuppress) ) { 
 					return(3); 
-				} else if ( as.character(x[3]) %in% names(related) ) { 
+				} else if ( as.character(x[3]) %in% names(database$cancergenes$related) ) { 
 					return(5);
 				} else {
 					return(7);
 				} 
 			})
 			tag2 = apply(tmp, 1, function(x){
-				if ( as.character(x[6]) %in% names(oncogenes) ) { 
+				if ( as.character(x[6]) %in% names(database$cancergenes$oncogene) ) { 
 					return(1); 
-				} else if ( as.character(x[6]) %in% names(tumorsupress) ) { 
+				} else if ( as.character(x[6]) %in% names(database$cancergenes$tumorsuppress) ) { 
 					return(3); 
-				} else if ( as.character(x[6]) %in% names(related) ) { 
+				} else if ( as.character(x[6]) %in% names(database$cancergenes$related) ) { 
 					return(5);
 				} else {
 					return(7);
@@ -1935,22 +2109,22 @@ options(ucscChromosomeNames=FALSE)
 			if ( is.null(inputFile$dnadata) ) { req(NULL);  }
 			tmp = inputFile$dnadata;	
 			tag1 = apply(tmp, 1, function(x){
-				if ( as.character(x[11]) %in% names(oncogenes) ) { 
+				if ( as.character(x[11]) %in% names(database$cancergenes$oncogene) ) { 
 					return(1); 
-				} else if ( as.character(x[11]) %in% names(tumorsupress) ) { 
+				} else if ( as.character(x[11]) %in% names(database$cancergenes$tumorsuppress) ) { 
 					return(3); 
-				} else if ( as.character(x[11]) %in% names(related) ) { 
+				} else if ( as.character(x[11]) %in% names(database$cancergenes$related) ) { 
 					return(5);
 				} else {
 					return(7);
 				} 
 			})
 			tag2 = apply(tmp, 1, function(x){
-				if ( as.character(x[12]) %in% names(oncogenes) ) { 
+				if ( as.character(x[12]) %in% names(database$cancergenes$oncogene) ) { 
 					return(1); 
-				} else if ( as.character(x[12]) %in% names(tumorsupress) ) { 
+				} else if ( as.character(x[12]) %in% names(database$cancergenes$tumorsuppress) ) { 
 					return(3); 
-				} else if ( as.character(x[12]) %in% names(related) ) { 
+				} else if ( as.character(x[12]) %in% names(database$cancergenes$related) ) { 
 					return(5);
 				} else {
 					return(7);
@@ -2034,11 +2208,11 @@ options(ucscChromosomeNames=FALSE)
 			if ( is.null(inputFile$mutationdata) ) { req(NULL); }
 			tmp = inputFile$mutationdata;	
 			tag = apply(tmp, 1, function(x){
-				if ( as.character(x[1]) %in% names(oncogenes) ) { 
+				if ( as.character(x[1]) %in% names(database$cancergenes$oncogene) ) { 
 					return(1); 
-				} else if ( as.character(x[1]) %in% names(tumorsupress) ) { 
+				} else if ( as.character(x[1]) %in% names(database$cancergenes$tumorsuppress) ) { 
 					return(3); 
-				} else if ( as.character(x[1]) %in% names(related) ) { 
+				} else if ( as.character(x[1]) %in% names(database$cancergenes$related) ) { 
 					return(5);
 				} else {
 					return(7);
@@ -2093,7 +2267,7 @@ options(ucscChromosomeNames=FALSE)
 		observe({
 			if ( is.null(input$genome) || input$genome == "" ) {
 			} else {
-				if ( input$genome == "hg19" || input$genome == "hg38" ) {
+				if ( input$genome == "hg19" || input$genome == "hg38" || input$genome == "GRCm39" ) {
 					output$FuSViz <- FuSViz::renderFuSViz(
 						FuSViz::FuSViz(genomeName=input$genome, displayMode="EXPANDED", trackHeight=200)
 					)
@@ -2106,6 +2280,8 @@ options(ucscChromosomeNames=FALSE)
 				FuSViz::Trackoffline(session, "hg19", name="RefSeq [hg19 offline]")
 			} else if ( input$genome == "hg38_offline" ) {
 				FuSViz::Trackoffline(session, "hg38", name="RefSeq [hg38 offline]")
+			} else if ( input$genome == "GRCm39_offline" ) {
+				FuSViz::Trackoffline(session, "GRCm39", name="RefSeq [GRCm39 offline]")
 			} else {
 				showModal(modalDialog(title = "Warning message", "Load gene track in offline mode not available!")); req(NULL);
 			}

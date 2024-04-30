@@ -18,23 +18,6 @@ suppressWarnings(suppressPackageStartupMessages(library(datamods)))
 system_path = path.package("FuSViz");
 extdata = system.file("extdata", package = "FuSViz");
 
-#// load canonical transcript id
-load(file=file.path(extdata, "canonical.Rd"));
-
-#// Load gene name data: gene_id a data.frame class with two columns: 'ensembl_gene_id' and 'gene_symbol'
-load(file=file.path(extdata, "ensembl_symbol.Rd"));
-#// assign the ensembl_id to gene symbol
-symbol_ensem = gene_id$Gene_name;
-names(symbol_ensem) = gene_id$Gene_ID;
-
-#// chrom control for circular plot
-chrom_cir = c("chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chr20","chr21","chr22","chrX","chrY");
-
-#// Load predefined gene dataset for oncogenes, tumor-suppress genes and cancer-related genes
-load(file=file.path(extdata, "cancergenes.Rd"));
-oncogenes = cancergenes$oncogene;
-tumorsupress = cancergenes$tumorsuppress;
-related = cancergenes$related;
 #// define the default color for 'oncogene', 'tumorsuppress gene' and 'cancer-related gene'
 onco_color = "#ff8566";
 supp_color = "#00ccff";

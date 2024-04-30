@@ -64,7 +64,7 @@
 							fluidRow(
 								column(3, h5(icon("database", verify_fa = FALSE), "Annotation data", style = "font-weight: bold; font-size: 16px;")),
 								column(4, selectizeInput("genome", label = span("Genome version", div(style = "display:inline-block;", title = "Choose a genome version for annotation data import", icon("info-circle", style="font-size: 12px"))), 
-											choices = c("hg19", "hg38", "hg19_offline", "hg38_offline"), multiple = F, 
+											choices = c("hg19", "hg38", "hg19_offline", "hg38_offline", "GRCm39", "GRCm39_offline"), multiple = F, 
 											options = list(placeholder = 'select', onInitialize = I('function() { this.setValue(""); }')))),
 								column(3, style = "margin-top: 25px;", actionButton("Import_genome_data", "Import", icon = icon("bolt", verify_fa = FALSE), width = "100%"))
 							)
