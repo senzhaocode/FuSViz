@@ -19,7 +19,7 @@ Depends:
 Imports:
     xml2,
     jsonlite,
-    htmlwidgets (>= 1.6.3),
+    htmlwidgets (>= 1.6.2),
     data.table,
     Gviz (>= 1.46.0),
     GenomicFeatures (>= 1.54.0),
