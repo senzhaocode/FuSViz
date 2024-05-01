@@ -7,6 +7,7 @@
 network_process(
   tmp,
   type,
+  cancergenes,
   color_onco,
   color_supp,
   color_rela,
@@ -18,6 +19,8 @@ network_process(
 \item{tmp}{A data.frame with three columns (i.e. \code{'gene1'}, \code{'gene2'}, \code{'name'}).}
 
 \item{type}{A string (e.g. \code{'DNA'} or \code{'RNA'}).}
+
+\item{cancergenes}{A list of cancer genes (e.g. \code{'oncogene'}, \code{'tumorsuppress'} or \code{'related'}).}
 
 \item{color_onco}{A string of color value (e.g. \code{'#ff0000'} or \code{'rgb(100,0,100)'}); if partner gene is oncogene (defalut: '#ff8566').}
 

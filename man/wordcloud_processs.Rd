@@ -4,7 +4,7 @@
 \alias{wordcloud_processs}
 \title{Create a data.frame for wordcloud visualization}
 \usage{
-wordcloud_processs(word, gene_freq, type, onco_color, supp_color, rela_color)
+wordcloud_processs(word, gene_freq, type, cancergenes, onco_color, supp_color, rela_color)
 }
 \arguments{
 \item{word}{A data.frame object with two columns (i.e. \code{'name'} - sample; \code{'gene'} - symbol).}
@@ -12,6 +12,8 @@ wordcloud_processs(word, gene_freq, type, onco_color, supp_color, rela_color)
 \item{gene_freq}{A numeric value for data filtering using recurrent freq of partner genes.}
 
 \item{type}{A character string (e.g. 'RNA', 'DNA' or 'Mut').}
+
+\item{cancergenes}{A list of cancer genes (e.g. \code{'oncogene'}, \code{'tumorsuppress'} or \code{'related'}).}
 
 \item{onco_color}{A character string represents color code for oncogenes (default: '#ff8566').}
 
