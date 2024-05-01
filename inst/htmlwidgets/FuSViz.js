@@ -157,6 +157,9 @@ Shiny.addCustomMessageHandler("Trackoffline",
 		} else if ( version === 'hg38' ) {
 			setting = {format: "refgene", name: name, url: window.location.href + "Reference/refGene.sorted.txt", indexed: false,
 					visibilityWindow: -1, height: trackHeight, searchable: true, displayMode: displayMode};
+		} else if ( version === 'GRCm39' ) {
+			setting = {format: "refgene", name: name, url: window.location.href + "Reference/ncbiRefSeq.txt", indexed: false,
+					visibilityWindow: -1, height: trackHeight, searchable: true, displayMode: displayMode};
 		}
 		igv.browser.loadTrack(setting);
 	}
@@ -285,11 +288,38 @@ function selectIGVoptions(genomeName, initialLocus, displayMode, trackHeight) {
 			}
 		]
 	}
+	// setting for hg38 version
+	var genome_mm39 = {
+		minimumBases: 5,
+		flanking: 1000,
+		showRuler: true,
+		reference: {
+			id: "mm39",
+			name: "Mouse (GRChm39 / mm39)",
+			fastaURL: "https://s3.amazonaws.com/igv.org.genomes/mm39/mm39.fa",
+			indexURL: "https://s3.amazonaws.com/igv.org.genomes/mm39/mm39.fa.fai",
+			cytobandURL: "https://s3.amazonaws.com/igv.org.genomes/mm39/cytoBandIdeo.txt.gz"
+		},
+		tracks: [
+			{
+				name: 'RefSeq Genes (mm39)',
+				format: "refgene",
+				url: "https://s3.amazonaws.com/igv.org.genomes/mm39/ncbiRefSeq.txt.gz",
+				indexURL: "https://s3.amazonaws.com/igv.org.genomes/mm39/ncbiRefSeq.txt.gz.tbi",
+				visibilityWindow: -1,
+				removable: true,
+				height: trackHeight,
+				displayMode: displayMode
+			}
+		]
+	}
 
 	if ( genomeName === "hg19" ) {
 		return(genome_hg19);
 	} else if ( genomeName === "hg38" ) {
 		return(genome_hg38);
+	} else if ( genomeName === "GRCm39" ) {
+		return(genome_mm39);
 	} else {
 		console.log("Genome version " + genomeName + " is not present!");
 		return(undefined);
