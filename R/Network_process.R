@@ -4,6 +4,7 @@
 #'
 #' @param tmp A data.frame with three columns (i.e. \code{'gene1'}, \code{'gene2'}, \code{'name'}).
 #' @param type A string (e.g. \code{'DNA'} or \code{'RNA'}).
+#' @param cancergenes A list of cancer genes (e.g. \code{'oncogene'}, \code{'tumorsuppress'} or \code{'related'}).
 #' @param color_onco A string of color value (e.g. \code{'#ff0000'} or \code{'rgb(100,0,100)'}); if partner gene is oncogene (defalut: '#ff8566').
 #' @param color_supp A string of color value (e.g. \code{'#ff0000'} or \code{'rgb(100,0,100)'}); if partner gene is tumor suppress gene (defalut: '#00ccff').
 #' @param color_rela A string of color value (e.g. \code{'#ff0000'} or \code{'rgb(100,0,100)'}); if partner gene is cancer-related gene (defalut: '#ffcc33').
@@ -13,10 +14,10 @@
 #' @return A list with three data.frame elements (i.e. \code{'nodes'}, \code{'edges'} and \code{'degree_score'}).
 #'
 #' @export
-network_process <- function(tmp, type, color_onco, color_supp, color_rela, color_inter, color_other) {
+network_process <- function(tmp, type, cancergenes, color_onco, color_supp, color_rela, color_inter, color_other) {
 	tmp = tmp[! (tmp$gene1 == '*' & tmp$gene2 == '*'), ]; #// remove the entry with both breakpoints at integenic region
 	tmp = tmp[! (grepl("ENSG00", tmp$gene1) & grepl("ENSG00", tmp$gene2)), ]; #// remove the entry with both partners as ensembl_id
-	geneset = c(names(oncogenes), names(tumorsupress), names(related)); #// merge pre-defined geneset
+	geneset = c(names(cancergenes$oncogene), names(cancergenes$tumorsuppress), names(cancergenes$related)); #// merge pre-defined geneset
 
 	#// only keep gene pairs if either gene1 or gene2 (at least one of them) is in pre-defined geneset
 	# tmp = tmp[! (tmp$gene1 == '*' & !(tmp$gene2 %in% geneset)), ]; #// if gene1 == *; gene2 shall be in pre-defined geneset
@@ -65,11 +66,11 @@ network_process <- function(tmp, type, color_onco, color_supp, color_rela, color
 		num_sample = sum(as.numeric(tmp_edge$value));
 		judge = as.logical(ifelse(num_sample > 0, yes = TRUE, no = FALSE));
 
-		if ( genename %in% names(oncogenes) ) {
+		if ( genename %in% names(cancergenes$oncogene) ) {
 			color = color_onco;  hidden = FALSE;
-		} else if ( genename %in% names(tumorsupress) ) {
+		} else if ( genename %in% names(cancergenes$tumorsuppress) ) {
 			color = color_supp; hidden = FALSE;
-		} else if ( genename %in% names(related) ) {
+		} else if ( genename %in% names(cancergenes$related) ) {
 			color = color_rela;   hidden = FALSE;
 		} else {
 			if ( grepl('^\\*', genename) ) {
