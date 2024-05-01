@@ -128,6 +128,13 @@ function load() {
 					minimumBases: 5,
 					showRuler: true,
 					reference: { id: "hg38", name: "local", fastaURL: localref['file'], indexURL: localref['index'], cytobandURL: localref['cytoband'] }}
+			} else if ( localref['file'].name.startsWith('mm39') ) { 
+				options = { 
+					loadDefaultGenomes: false,
+					flanking: 1000,
+					minimumBases: 5,
+					showRuler: true,
+					reference: { id: "mm39", name: "local", fastaURL: localref['file'], indexURL: localref['index'], cytobandURL: localref['cytoband'] }}
 			} else {
 				alert("Genome reference version not available!!!");
 			}
