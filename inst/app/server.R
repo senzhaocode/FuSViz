@@ -1030,8 +1030,8 @@ options(ucscChromosomeNames=FALSE)
 # Two-way module plot (only for RNA SVs)
 #-------------------------------------------
 	#------ For fusion overview -------#
-	overview_size_up <- reactive({ return(50*input$overview_size); })
-	overview_size_down <- reactive({ return(450*input$overview_size); })
+	overview_size_up <- reactive({ return(20*input$overview_size); })
+	overview_size_down <- reactive({ return(480*input$overview_size); })
 	#// 'object_over_A$value' and 'object_over_B$value' are list classes with five elements: 'select_region_f' is a data.frame class, 'dataset' is a data.frame class
 	object_over_A <- reactiveValues(value=NULL)
 	object_over_B <- reactiveValues(value=NULL) 
@@ -1281,7 +1281,7 @@ options(ucscChromosomeNames=FALSE)
 	individualAB <- reactiveValues(geneA=NULL, symbol_A=NULL, geneB=NULL, symbol_B=NULL, breakpoint_set=NULL)
 	individual_data <- select_group_server(id = "individual", data = reactive(inputFile$rnadata), vars = reactive(c("gene1", "gene2", "pos1", "pos2", "name", "strand1", "strand2")))
     #// when input[['individual-gene1']] NOT null, assign 'object_individual_A$value' using FUNCTION "get_annotation_db"
-    observe({
+    observeEvent(input[['individual-gene1']], {
         if ( is.null(input[['individual-gene1']]) || input[['individual-gene1']] == "" ) {
             object_individual_A = NULL
             updateSelectizeInput(session = session, inputId = "transA_individual", choices = "")
@@ -1325,7 +1325,7 @@ options(ucscChromosomeNames=FALSE)
         }
 	})
     #// when input[['individual-gene2']] NOT null, assign 'object_individual_B$value' using FUNCTION "get_annotation_db"
-	observe({
+	observeEvent(input[['individual-gene2']], {
         if ( is.null(input[['individual-gene2']]) || input[['individual-gene2']] == "" ) {
             object_individual_B = NULL
             updateSelectizeInput(session = session, inputId = "transB_individual", choices = "")

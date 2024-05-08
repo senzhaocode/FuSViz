@@ -620,8 +620,8 @@
 										column(12, div(class="overviewmain", id="overviewmain",
 											shinycssloaders::withSpinner(plotOutput("chimerics_down", width = "100%", height = "100%"), type = 5, size = 0.7)
 										)),
-										tags$head(tags$style(".overviewmain {display: flex; align-items: flex-end; background-color: transparent; z-index: 1;}
-											.overviewlink {top: 30px; position: relative; z-index: 0;}
+										tags$head(tags$style(".overviewmain {display: flex; align-items: flex-end; background-color: transparent; z-index: 0;}
+											.overviewlink {top: 5px; position: relative; z-index: 1;}
 											.straightLine, .hrLine {position: absolute; background-color: black;}
 											html, body {height: 100%; width: 100%; margin: 0px;}"
 										)),
@@ -652,12 +652,12 @@
 								tabPanel("Domain_plot", 
 									fluidRow(
 										column(12, div(class="domainA", shinycssloaders::withSpinner(plotOutput("domain_up", height=220), type = 5, size = 0.7))),
-										column(12, div(class="fuseline", plotOutput("linking", height=60))),
+										column(12, div(class="fuseline", plotOutput("linking", height=30))),
 										column(12, div(class="domainB", shinycssloaders::withSpinner(plotOutput("domain_down", height=220), type = 5, size = 0.7))),
 										tags$head(tags$style("
 											.domainA{background-color: transparent; z-index: -1;}
-											.fuseline{top: -5px; position: relative; z-index: 0;}
-											.domainB{background-color: transparent; top: -35px; position: relative; z-index: 1;}"
+											.fuseline{top: 5px; position: relative; z-index: 1;}
+											.domainB{background-color: transparent; z-index: 0;}"
 										))
 									),
                    					box(width = NULL,  status = "warning",
