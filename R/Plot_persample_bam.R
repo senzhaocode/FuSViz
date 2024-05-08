@@ -56,6 +56,7 @@ chrom_name_function <- function(file, selection) {
 #' @param rna_bam_path A string - path of alignment file from RNA-seq (BAM format).
 #' @param dna_bam_path A string - path of alignment file from DNA-seq (BAM format), default value: NULL.
 #' @param version A string - genomic annotation version (either 'hg38' or 'hg19', default: 'hg38')
+#' @param organism A string - organism name (either 'Human' or 'Mouse', default: 'Human')
 #' @param chrom_notation_rna A boolean type - if TRUE (default value) chromosome name in RNA-seq alignment denotes like 'chrX'; if FALSE chromosome denotes like 'X'.
 #' @param chrom_notation_dna A boolean type - if TRUE (default value) chromosome name in DNA-seq alignment denotes like 'chrX'; if FALSE chromosome denotes like 'X'.
 #' @param coverage_plot_trans A boolean type - if TRUE, RNA read coverage is plotted by reads mapped to exons and related introns of geneA and geneB transcripts; otherwise (default: FALSE) RNA read coverage is plotted by reads mapped to full genomic regions of geneA and geneB. coverage_plot_trans is only valid for RNA-seq alignment.
@@ -76,7 +77,7 @@ chrom_name_function <- function(file, selection) {
 #' @return NULL
 #' 
 #' @export
-plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, breakpoint_B, rna_bam_path, dna_bam_path=NULL, version='hg38', coverage_plot_trans=F, offset=2000, chrom_notation_rna=T, chrom_notation_dna=T, duplicate=F, unmappedmate=NA, notpassQC=F, properpair=NA, split=NULL, span=NULL, transcriptA=NULL, transcriptB=NULL, fusion_strandA=NULL, fusion_strandB=NULL, coverage_max_A=NULL, coverage_max_B=NULL) {
+plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, breakpoint_B, rna_bam_path, dna_bam_path=NULL, version='hg38', organism='Human', coverage_plot_trans=F, offset=2000, chrom_notation_rna=T, chrom_notation_dna=T, duplicate=F, unmappedmate=NA, notpassQC=F, properpair=NA, split=NULL, span=NULL, transcriptA=NULL, transcriptB=NULL, fusion_strandA=NULL, fusion_strandB=NULL, coverage_max_A=NULL, coverage_max_B=NULL) {
 
 	stopifnot(is(first_name, "character")); 
 	stopifnot(is(second_name, "character"));
@@ -84,6 +85,7 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	stopifnot(is(breakpoint_B, "numeric"));
 	stopifnot(is(rna_bam_path, "character"));
 	stopifnot( version == 'hg19' || version == 'hg38' );
+	stopifnot( organism == 'Human' || organism == 'Mouse' );
 	stopifnot(is(offset, "numeric"));
 	stopifnot(is.logical(coverage_plot_trans));
 	stopifnot(is.logical(chrom_notation_rna));
@@ -107,13 +109,13 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	system_path = path.package("FuSViz");
 	extdata = system.file("extdata", package = "FuSViz")
 	#// assign the ensembl_id to gene symbol
-	load(file=file.path(extdata, "ensembl_symbol.Rd"));
+	load(file=file.path(extdata, paste(organism, ".ensembl_symbol.Rd", sep="")));
 	symbol_ensem = gene_id$Gene_name;
 	names(symbol_ensem) = gene_id$Gene_ID;
 	#// load genomic annotation file
-	txdb <- suppressWarnings(suppressPackageStartupMessages(AnnotationDbi::loadDb(file=file.path(extdata, paste("gencode.annotation.", version, ".sqlite", sep="")))));
-	load(file=file.path(extdata, paste("grTrack.", version, ".Rd", sep="")));
-	load(file=file.path(extdata, paste("cytoband.", version, ".Rd", sep="")));
+	txdb <- suppressWarnings(suppressPackageStartupMessages(AnnotationDbi::loadDb(file=file.path(extdata, paste(organism, ".gencode.annotation.", version, ".sqlite", sep="")))));
+	load(file=file.path(extdata, paste(organism, ".grTrack.", version, ".Rd", sep="")));
+	load(file=file.path(extdata, paste(organism, ".cytoband.", version, ".Rd", sep="")));
 	whole_txdb <- GenomicFeatures::exonsBy(txdb, by = "tx", use.names=TRUE); # group exons by transcript_id
 	#// obtain ensembl_id
 	gene_range = as.data.frame(genes(txdb), stringsAsFactors=F);
