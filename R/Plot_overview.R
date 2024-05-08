@@ -167,8 +167,8 @@ plot_separate_overview <- function(first, first_name, second, second_name, cytob
 plot_arrow_overview <- function(collect, first, second, breakpoint, zoom) {
 	A1_xy = collect$A1_xy
 	B1_xy = collect$B1_xy
-	zoom = zoom/50;
-	bezier_control_point_offset = 40*zoom; #// Control the degree of bezier curve (can be adjusted)
+	zoom = zoom/20;
+	bezier_control_point_offset = 20*zoom; #// Control the degree of bezier curve (can be adjusted)
 			
 	#// Process curve coordinate (x1, y, x2, y2)
 	if ( nrow(breakpoint) > 0 ) { #// make sure 'breakpoint' data.frame is not empty
@@ -178,7 +178,7 @@ plot_arrow_overview <- function(collect, first, second, breakpoint, zoom) {
 			#// x_pos_gene_downstream: x-coordinate of geneB breakpoint, y_pos: y-coordinate of geneA and geneB breakpoint)	
 			if (! is.null(curve_coordinate) ) {
 				#// NOTE: this value should be identical to the setting 'plotOutput("chimerics_up", height=50)' in ui.R
-				curve_coordinate["y_pos"] = 50*zoom;
+				curve_coordinate["y_pos"] = 20*zoom;
 				#// Draw the bezier curve between transcripts						
 				grid::pushViewport(grid::viewport(xscale = c(0, grDevices::dev.size(units = "px")[1]), yscale = c(grDevices::dev.size(units = "px")[2], 0)));
 				grid::grid.bezier(rep(c(curve_coordinate["x_pos_gene_upstream"], curve_coordinate["x_pos_gene_downstream"]), each = 2), #// x coordinates
@@ -187,12 +187,12 @@ plot_arrow_overview <- function(collect, first, second, breakpoint, zoom) {
 					gp = grid::gpar(col="red", fill="red", lwd=0.8));
 
 				number_position_x = curve_coordinate["x_pos_gene_upstream"] + (curve_coordinate["x_pos_gene_downstream"] - curve_coordinate["x_pos_gene_upstream"]) / 2
-				number_position_y = curve_coordinate["y_pos"] - bezier_control_point_offset + 4*zoom;
+				number_position_y = curve_coordinate["y_pos"] - bezier_control_point_offset + 2*zoom;
 				#// 'supporting_reads_text' is the number of samples supporting a given breakpoint combination
 				supporting_reads_text = paste("(", breakpoint[i,3], ")", sep="")
 				grid::grid.text(supporting_reads_text, x = number_position_x / grDevices::dev.size(units = "px")[1], y = 1 - number_position_y / grDevices::dev.size(units = "px")[2],
 					vp = grid::viewport(xscale = c(0, grDevices::dev.size(units = "px")[1]), yscale = c(grDevices::dev.size(units = "px")[2], 0)),
-					gp = grid::gpar(fontsize = 7))
+					gp = grid::gpar(fontsize = 6))
 			}
 		}
 	}

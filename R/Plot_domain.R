@@ -354,7 +354,7 @@ plot_separate_domain_arrow <- function(A1_xy, B1_xy, first, second, breakpoint) 
 				#// NOTE: y-pos in 'curve_coordinate' data.frame are coordinates of output$domainA and output$domainB, which should be converted to that of output$fuseline
 				curve_coordinate["y_pos_gene_upstream"] = 0
 				#// NOTE: this value should be identical to the setting "div(class="fuseline", plotOutput("linking", height=60))" in ui.R
-				curve_coordinate["y_pos_gene_downstream"] = 60;
+				curve_coordinate["y_pos_gene_downstream"] = 30;
 				#// Draw the straight lines between the transcripts
 				grid::pushViewport(grid::viewport(xscale = c(0, grDevices::dev.size(units = "px")[1]), yscale = c(grDevices::dev.size(units = "px")[2], 0)));
 				color_set=NULL; # set arrow color
