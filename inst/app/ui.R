@@ -630,9 +630,10 @@
 									box(width = NULL,  status = "warning",
 										sliderInput("overview_size", label = "Zoom in/out", value = 1.5, min = 0.5, max = 4, ticks = FALSE, step = 0.05),
 										fluidRow(
-											column(6, radioButtons(inputId = "file_fusion1", label = "Choose file type to download:",
-												inline = TRUE, choices = list("PDF", "PNG"))),
-											column(6, downloadButton(outputId = "FusionDown1", label = "Download plot"))
+											column(3, radioButtons(inputId = "file_fusion1", label = "Choose file type to download:", inline = TRUE, choices = list("PDF", "PNG"))),
+											column(2, numericInput("overview_width", label = div("Layout_width", style = "display:inline-block; font-size:12px", title = "Set the width of plot layout (unit: inches)", icon("info-circle", style="font-size: 9px")), value=10, min=1, max=50)),
+											column(2, numericInput("overview_height", label = div("Layout_height", style = "display:inline-block; font-size:12px", title = "Set the height of plot layout (unit: inches)", icon("info-circle", style="font-size: 9px")), value=10, min=1, max=50)),
+											column(3, downloadButton(outputId = "FusionDown1", label = "Download plot"))
 										)
 									)
                					),
@@ -643,9 +644,10 @@
 									box(width = NULL, status = "warning",
 										sliderInput("persample_size", label = "Zoom in/out", value = 1.5, min = 0.5, max = 4, ticks = FALSE, step = 0.05),
 										fluidRow(
-											column(6, radioButtons(inputId = "file_fusion2", label = "Choose file type to download:", 
-												inline = TRUE, choices = list("PDF", "PNG"))),
-											column(6, downloadButton(outputId = "FusionDown2", label = "Download plot"))
+											column(3, radioButtons(inputId = "file_fusion2", label = "Choose file type to download:", inline = TRUE, choices = list("PDF", "PNG"))),
+											column(2, numericInput("sample_width", label = div("Layout_width", style = "display:inline-block; font-size:12px", title = "Set the width of plot layout (unit: inches)", icon("info-circle", style="font-size: 9px")), value=10, min=1, max=50)),
+											column(2, numericInput("sample_height", label = div("Layout_height", style = "display:inline-block; font-size:12px", title = "Set the height of plot layout (unit: inches)", icon("info-circle", style="font-size: 9px")), value=10, min=1, max=50)),
+											column(3, downloadButton(outputId = "FusionDown2", label = "Download plot"))
 										)
 									)
 								),
@@ -662,8 +664,10 @@
 									),
                    					box(width = NULL,  status = "warning",
 										fluidRow(
-											column(6, radioButtons(inputId = "file_fusion3", label = "Choose file type to download:", inline = TRUE, choices = list("PDF", "PNG"))),
-											column(6, downloadButton(outputId = "FusionDown3", label = "Download plot"))
+											column(3, radioButtons(inputId = "file_fusion3", label = "Choose file type to download:", inline = TRUE, choices = list("PDF", "PNG"))),
+											column(2, numericInput("domain_width", label = div("Layout_width", style = "display:inline-block; font-size:12px", title = "Set the width of plot layout (unit: inches)", icon("info-circle", style="font-size: 9px")), value=20, min=1, max=50)),
+											column(2, numericInput("domain_height", label = div("Layout_height", style = "display:inline-block; font-size:12px", title = "Set the height of plot layout (unit: inches)", icon("info-circle", style="font-size: 9px")), value=10, min=1, max=50)),
+											column(3, downloadButton(outputId = "FusionDown3", label = "Download plot"))
 										)
 									)
                 				)

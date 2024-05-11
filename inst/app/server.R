@@ -1256,14 +1256,11 @@ options(ucscChromosomeNames=FALSE)
 	output$FusionDown1 <- downloadHandler(
 	filename = function(){ paste("Two-way_overview_plot", tolower(input$file_fusion1), sep =".") },
 		content = function(file) {
-			width = overview_size_down()
-			height = overview_size_down() + overview_size_up()
 			pixelratio = 2
-
 			if( input$file_fusion1 == "PNG" ) {
-				png(file, width=width*pixelratio, height=height*pixelratio, res=72*pixelratio, units = "px")
+				png(file, width = input$overview_width, height = input$overview_height, res=72*pixelratio, units = "in")
 			} else {
-				pdf(file, width = 8, height = 8)
+				pdf(file, width = input$overview_width, height = input$overview_height)
 			}
 			if ( length(overviewAB$geneA) > 0 && length(overviewAB$geneB) > 0 && length(rownames(overview_data_static$value)) > 0 ) {
 				FuSViz::plot_separate_overview_download(overviewAB$geneA, overviewAB$symbol_A, overviewAB$geneB, overviewAB$symbol_B, database$chrTrack, overview_data())
@@ -1437,14 +1434,11 @@ options(ucscChromosomeNames=FALSE)
 	output$FusionDown2 <- downloadHandler(
 		filename = function(){ paste("Two-way_persample_plot", tolower(input$file_fusion2), sep =".") },
 		content = function(file){
-			width = persample_size_full();
-			height = persample_size_full();
 			pixelratio = 2
-
 			if( input$file_fusion2 == "PNG" ) {
-				png(file, width=width*pixelratio, height=height*pixelratio, res=72*pixelratio, units = "px")
+				png(file, width = input$sample_width, height = input$sample_height, res=72*pixelratio, units = "in")
 			} else {
-				pdf(file, width = 8, height = 8)
+				pdf(file, width = input$sample_width, height = input$sample_height)
 			}
 			if ( length(individualAB$geneA) > 0 && length(individualAB$geneB) > 0 ) {
 				FuSViz::plot_separate_individual(individualAB$geneA, individualAB$symbol_A, individualAB$geneB, individualAB$symbol_B, individualAB$breakpoint_set, database$chrTrack)
@@ -1826,14 +1820,11 @@ options(ucscChromosomeNames=FALSE)
 	output$FusionDown3 <- downloadHandler(
 		filename = function(){ paste("Two-way_domain_plot", tolower(input$file_fusion3), sep =".") },
 		content = function(file){
-			width = 500
-			height = 500
 			pixelratio = 2
-
 			if( input$file_fusion3 == "PNG" ) {
-				png(file, width=width*pixelratio, height=height*pixelratio, res=72*pixelratio, units = "px")
+				png(file, width=input$domain_width, height=input$domain_height, res=72*pixelratio, units = "in")
 			} else {
-				pdf(file, width = 8, height = 8)
+				pdf(file, width=input$domain_width, height=input$domain_height)
 			}
             if ( !is.null(object_domain_A$value) && !is.null(object_domain_B$value) ) {
 			    FuSViz::plot_separate_domain_download(domain_plotA$geneA, domain_plotA$symbol_A, domain_plotA$domainA, domain_plotA$motifA,
