@@ -362,11 +362,11 @@ plot_separate_overview_download <- function(first, first_name, second, second_na
 					gp = grid::gpar(fontsize = 7))
 				#// Add dash lines showing the breakpoint of upstream partner
 				grid::grid.lines(c(curve_coordinate["x_pos_gene_upstream"], curve_coordinate["x_pos_gene_upstream"]), #// x positions
-					c(curve_coordinate["y_pos"] - 5, 450), #// y positions
+					c(curve_coordinate["y_pos"] - 5, 550), #// y positions
 					default.units = "native", arrow=NULL, gp = grid::gpar(col="black", lty=3, lwd=0.3));
 				#// Add dash lines showing the breakpoint of downstream partner
 				grid::grid.lines(c(curve_coordinate["x_pos_gene_downstream"], curve_coordinate["x_pos_gene_downstream"]), #// x positions
-					c(curve_coordinate["y_pos"] - 5, 450), #// y positions
+					c(curve_coordinate["y_pos"] - 5, 550), #// y positions
 					default.units = "native", arrow=NULL, gp = grid::gpar(col="black", lty=3, lwd=0.3));
 			}
 		}
