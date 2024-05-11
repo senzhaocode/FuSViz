@@ -482,7 +482,7 @@ plot_separate_domain_download <- function(first, first_name, first_domain, first
 
 	#// plot domain and fusion events
 	#// define plot region [start-offset, end+offset]
-	nf = grid::grid.layout(nrow=3, ncol=2, widths=grid::unit(c(1, 1), "null"), heights = grid::unit(c(36, 1, 36), "null"))
+	nf = grid::grid.layout(nrow=3, ncol=2, widths=grid::unit(c(1, 1), "null"), heights = grid::unit(c(36, 4, 36), "null"))
 	grid::grid.newpage(); #// start a new page
 	grid::pushViewport(grid::viewport(layout = nf)); #// divide the page to different sections (nf specifies the section composite)
 
