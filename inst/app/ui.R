@@ -76,14 +76,14 @@
 								column(3, h5(icon("upload", verify_fa = FALSE), "SV callings from RNA-seq data", style = "font-weight: bold; font-size: 16px;")),
 								column(4, fileInput('file_rna_data', label = span("Upload file in txt format", div(style = "display:inline-block;", title = "File upload button will be enabled after importing annotation data", icon("info-circle", style="font-size: 12px"))), accept = c('text/csv', 'text/comma-separated-values', 
 										'text/tab-separated-values', '.csv', '.tsv', '.txt'), placeholder = "txt, csv or tsv format")),
-								column(4, radioButtons('sep_rna_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/RNA_SV_example.txt" target="_blank">(See and Download an exampale)</a></p>'), choices = c(Comma = ',', Tab = '\t', Semicolon = ';'), selected = '\t', inline = T))
+								column(4, radioButtons('sep_rna_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/RNA_SV_example.txt" target="_blank">(See and Download an example)</a></p>'), choices = c(Comma = ',', Tab = '\t', Semicolon = ';'), selected = '\t', inline = T))
 							),
 							hr(tags$style("border-top: 1px solid #000000; color: black; background-color: white")),
 							fluidRow(
 								column(3, h5(icon("upload", verify_fa = FALSE), "SV callings from DNA-seq data", style = "font-weight: bold; font-size: 16px;")),
 								column(4, fileInput('file_dna_data', label = span("Upload file in bedpe format", div(style = "display:inline-block;", title = "File upload button will be enabled after importing annotation data", icon("info-circle", style="font-size: 12px"))), accept = c('text/csv', 'text/comma-separated-values', 
 										'text/tab-separated-values', '.csv', '.tsv', '.txt'), placeholder = "bedpe format")),
-								column(4, radioButtons('sep_dna_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/DNA_SV_example.txt" target="_blank">(See and Download an exampale)</a></p>'), choices = c(Comma = ',', Tab = '\t', Semicolon = ';'), selected = '\t', inline = T))
+								column(4, radioButtons('sep_dna_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/DNA_SV_example.txt" target="_blank">(See and Download an example)</a></p>'), choices = c(Comma = ',', Tab = '\t', Semicolon = ';'), selected = '\t', inline = T))
 							)
 						)
 					),
@@ -92,7 +92,7 @@
 							fluidRow(
 								column(3, h5(icon("upload", verify_fa = FALSE), "Mutation variants (SNVs and Indels)", style = "font-weight: bold; font-size: 16px;")),
 								column(4, fileInput('file_maf_data', label = span("Upload file in MAF format", div(style = "display:inline-block;", title = "File upload button will be enabled after importing annotation data", icon("info-circle", style="font-size: 12px"))), accept = c('text/maf', '.maf'), placeholder = "maf format")),
-								column(4, radioButtons('sep_maf_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/TCGA.PRAD.mutect.somatic.maf" target="_blank">(See and Download an exampale)</a></p>'), choices = c(Tab = '\t'), selected = '\t', inline = T))
+								column(4, radioButtons('sep_maf_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/TCGA.PRAD.mutect.somatic.maf" target="_blank">(See and Download an example)</a></p>'), choices = c(Tab = '\t'), selected = '\t', inline = T))
 							)
 						)
 					)
