@@ -8,7 +8,7 @@
 #' @param downstream_xy A data.frame (i.e. a returned object \code{'B1_xy'} in FUNCTION "plot_separate_domain_geneB" - exon coordinates(x1, y1, x2, y2) of intron-reduced transcripts).
 #' @param downstream_flag A list (i.e. the same object \code{'second'} used in FUNCTION "plot_separate_domain_geneB")
 #'        with two elements (e.g. \code{'second\$pos\$transcript'} and \code{'second\$pos\$select_region'}, in which introns were reduced for the transcript).
-#' @param breakpoint_xy A data.frame with one row (e.g. \code{'breakpoint_xy[i,1]'} - breakpoint pos of geneA transcript; \code{'breakpoint_xy[i,2]'} - breakpoint pos of geneB transcript).
+#' @param breakpoint_xy A data.frame with one row (e.g. \code{'breakpoint_xy[i,1]'} - breakpoint pos of geneA transcript; \code{'breakpoint_xy[i,2]'} - breakpoint pos of geneB transcript); \code{'breakpoint[i,3]'} - fusion strand of geneA; \code{'breakpoint[i,4]'} - fusion strand of geneB; \code{'breakpoint[i,5]'} - insertion sequence if available
 #'        NOTE: breakpoint coordinates are adjusted by reducing introns.
 #'
 #' @return A data.frame with five columns (i.e. \code{'x_pos_gene_upstream'}, \code{'x_pos_gene_downstream'}, \code{'y_pos_gene_upstream'}, \code{'y_pos_gene_downstream'}, \code{'tag'}).
@@ -20,6 +20,8 @@
 	break_B=breakpoint_xy[, 2];
 	strand_A=breakpoint_xy[, 3];
 	strand_B=breakpoint_xy[, 4];
+	insert=breakpoint_xy[, 5];
+	if ( nzchar(insert) ) { insert_length=nchar(insert); } else { insert_length=0; }
 	tag = 0;
 
 	exon_xy_A1 = Gviz::coords(upstream_xy$GeneRegionTrack); #// coordinates of all exons in geneA plotting
@@ -123,7 +125,7 @@
 								tag = 1; # "Unknown"; - breakpoint at intronic region
 							} else {
 								if (! is.na(cds_start_A) && ! is.na(cds_start_B) ) {
-									Yushu_A = (domain_breakpoint_A - cds_start_A + 1) %% 3;
+									Yushu_A = (domain_breakpoint_A - cds_start_A + insert_length + 1) %% 3;
 									Yushu_B = (domain_breakpoint_B - cds_start_B + 1) %% 3;
 									if ( Yushu_A == 0 && Yushu_B == 1 ) {
 										tag = 2; # "Inframe";
@@ -335,7 +337,7 @@ plot_separate_domain_geneB <- function(second, second_name, second_domain, secon
 #' @param second A list - \strong{'key'} is \code{'\$pos'} (i.e. breakpoint pos of geneB); \code{'second\$pos\$transcript'} is a data.frame object
 #'        that collects evaluation of breakpoint pos for geneB transcript after reducing intron; \code{'second\$pos\$select_region'} is a data.frame object
 #'        (5utr-cds-utr3 annotation after reducing intron) for plotting and it is a constant variable for different \code{'\$pos'} values.
-#' @param breakpoint A data.frame with two columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos of geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos of geneB transcript).
+#' @param breakpoint A data.frame with three columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos of geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos of geneB transcript; \code{'breakpoint[i,3]'} - fusion strand of geneA; \code{'breakpoint[i,4]'} - fusion strand of geneB; \code{'breakpoint[i,5]'} - insertion sequence if available).
 #'
 #' @return NULL
 #'         NOTE: In terms of translation consequence of fusion line, there are four corresponding colors (i.e. black - Unknown, blue - Inframe, red - Outframe and '#008080' - Truncate-loss).
@@ -422,7 +424,7 @@ plot_separate_domain_arrow <- function(A1_xy, B1_xy, first, second, breakpoint) 
 #'        \code{'second_domain\$Domain_name'}: domain name abbreviation).
 #' @param second_motif A data.frame for collecting motif annotation (e.g. \code{'second_motif\$Start'}: motif start; \code{'secondt_motif\$End'}: motif end;
 #'        \code{'second_motif\$Domain_name'}: motif name abbreviation).
-#' @param breakpoint A data.frame with two columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos of geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos of geneB transcript).
+#' @param breakpoint A data.frame with two columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos of geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos of geneB transcript; \code{'breakpoint[i,3]'} - fusion strand of geneA; \code{'breakpoint[i,4]'} - fusion strand of geneB; \code{'breakpoint[i,5]'} - insertion sequence if available).
 #' @param offset A numeric value - extend the partner gene interval (default: 0, e.g. [start-offset, end+offset]).
 #'
 #' @export
