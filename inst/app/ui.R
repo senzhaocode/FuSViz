@@ -76,14 +76,14 @@
 								column(3, h5(icon("upload", verify_fa = FALSE), "SV callings from RNA-seq data", style = "font-weight: bold; font-size: 16px;")),
 								column(4, fileInput('file_rna_data', label = span("Upload file in txt format", div(style = "display:inline-block;", title = "File upload button will be enabled after importing annotation data", icon("info-circle", style="font-size: 12px"))), accept = c('text/csv', 'text/comma-separated-values', 
 										'text/tab-separated-values', '.csv', '.tsv', '.txt'), placeholder = "txt, csv or tsv format")),
-								column(4, radioButtons('sep_rna_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/RNA_SV_example.txt" target="_blank">(See and Download an example)</a></p>'), choices = c(Comma = ',', Tab = '\t', Semicolon = ';'), selected = '\t', inline = T))
+								column(4, radioButtons('sep_rna_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/RNA_SV_example.txt" target="_blank">(See and download an example on basis of hg38 genome assembly)</a></p>'), choices = c(Comma = ',', Tab = '\t', Semicolon = ';'), selected = '\t', inline = T))
 							),
 							hr(tags$style("border-top: 1px solid #000000; color: black; background-color: white")),
 							fluidRow(
 								column(3, h5(icon("upload", verify_fa = FALSE), "SV callings from DNA-seq data", style = "font-weight: bold; font-size: 16px;")),
 								column(4, fileInput('file_dna_data', label = span("Upload file in bedpe format", div(style = "display:inline-block;", title = "File upload button will be enabled after importing annotation data", icon("info-circle", style="font-size: 12px"))), accept = c('text/csv', 'text/comma-separated-values', 
 										'text/tab-separated-values', '.csv', '.tsv', '.txt'), placeholder = "bedpe format")),
-								column(4, radioButtons('sep_dna_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/DNA_SV_example.txt" target="_blank">(See and Download an example)</a></p>'), choices = c(Comma = ',', Tab = '\t', Semicolon = ';'), selected = '\t', inline = T))
+								column(4, radioButtons('sep_dna_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/DNA_SV_example.txt" target="_blank">(See and download an example on basis of hg38 genome assembly)</a></p>'), choices = c(Comma = ',', Tab = '\t', Semicolon = ';'), selected = '\t', inline = T))
 							)
 						)
 					),
@@ -92,7 +92,7 @@
 							fluidRow(
 								column(3, h5(icon("upload", verify_fa = FALSE), "Mutation variants (SNVs and Indels)", style = "font-weight: bold; font-size: 16px;")),
 								column(4, fileInput('file_maf_data', label = span("Upload file in MAF format", div(style = "display:inline-block;", title = "File upload button will be enabled after importing annotation data", icon("info-circle", style="font-size: 12px"))), accept = c('text/maf', '.maf'), placeholder = "maf format")),
-								column(4, radioButtons('sep_maf_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/TCGA.PRAD.mutect.somatic.maf" target="_blank">(See and Download an example)</a></p>'), choices = c(Tab = '\t'), selected = '\t', inline = T))
+								column(4, radioButtons('sep_maf_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/TCGA.PRAD.mutect.somatic.maf" target="_blank">(See and download an example on basis of hg38 genome assembly)</a></p>'), choices = c(Tab = '\t'), selected = '\t', inline = T))
 							)
 						)
 					)
@@ -125,7 +125,7 @@
 							),
 							br(),
 							fluidRow(
-								box(title = "Feature summary", status="warning", width=12, height = "100%", collapsible = TRUE, collapsed = TRUE,
+								box(title = "Feature summary", status="warning", width=12, height = "100%", collapsible = TRUE, collapsed = FALSE,
 									tabBox(id = "Feature_rna", height = "100%", width = "100%",
 										tabPanel("SV relevant gene wordcloud",
 											fluidRow(class = "rna_box",
@@ -190,7 +190,7 @@
 							),
 							br(),
 							fluidRow(
-								box(title = "Feature summary", status="warning", width=12, height = "100%", collapsible = TRUE, collapsed = TRUE,
+								box(title = "Feature summary", status="warning", width=12, height = "100%", collapsible = TRUE, collapsed = FALSE,
 									tabBox(id = "Feature_dna", height = "100%", width = "100%",
 										tabPanel("SV relevant gene wordcloud",
 											fluidRow(class = "dna_box",
@@ -256,7 +256,7 @@
 							),
 							br(),
 							fluidRow(
-								box(title = "Feature summary", status="warning", width=12, height = "100%", collapsible = TRUE, collapsed = TRUE,
+								box(title = "Feature summary", status="warning", width=12, height = "100%", collapsible = TRUE, collapsed = FALSE,
 									tabBox(id = "Feature_mut", height = "100%", width = "100%",
 										tabPanel("Mutated gene wordcloud",
 											fluidRow(class = "mut_box",
@@ -395,6 +395,31 @@
 					h4("Linear module"),
 					sidebarLayout(
 						sidebarPanel(width = 3,
+							fluidRow(
+								column(12, tags$p(tags$b("Choose local files to upload: ", style = "font-size:13px"))),
+								column(12, tags$p(tags$b("* Upload read alignment and its index (", tags$u("BAM"), " or ", tags$u("CRAM"), " format)", style = "font-size:12px"))),
+								column(12, tags$p(tags$b("* Upload annotation file and its index (bgzipped and tabixed", tags$u("VCF"), ", ", tags$u("BED"), " and ", tags$u("GTF"), " format)", style = "font-size:12px"))),
+								column(12, tags$p(tags$b("* Upload genome reference and its index (indexed ", tags$u("fasta"), ") and cytoband information in ", tags$u("txt"), " format - used to enable offline mode", style = "font-size:12px"))),
+								br(),
+								column(12, HTML("<input id='uploadfile' class='hidden' type='file' multiple='true' accept='.bam,.bai,.cram,.crai,.gz,.tbi,.fasta,.fai,.txt' onchange=\"load()\"/>
+											<label for='uploadfile'><img src='Visualize/Button.png' alt='Upload img' height='100' width='200'></label>")),
+								br(),
+								column(12, HTML("<div id='filename'></div>")),
+								tags$script(src = "Visualize/Upload_file.js")
+							),
+							hr(tags$style("border-top: 3px solid #000000; color: black; background-color: black")),
+							fluidRow(
+								column(12, tags$p(tags$b("Activate the gene annotation track under offline mode (click it after genome reference upload)", style = "font-size:13px"))),
+								column(12, actionButton("offlineTrackButton", "Load gene track (offline)"))
+							),
+							hr(tags$style("border-top: 3px solid #000000; color: black; background-color: black")),
+							fluidRow(
+								column(12, textInput(inputId = "BAM", label = div("Alignment URL", style = "display:inline-block; font-size:12px", title = "Load a hosted BAM/CRAM file via URL", icon("info-circle", style="font-size: 9px")), value = NULL)),
+								column(12, textInput(inputId = "BAMindex", label = div("Alignment index URL", style = "display:inline-block; font-size:12px", title = "Load a hosted BAM/CRAM index file via URL", icon("info-circle", style="font-size: 9px")), value = NULL)),
+								column(12, actionButton("addTrackButtonBAM", label = NULL, style = "width: 115px; height: 71px;
+											background: url('Visualize/cloud_upload.png');  background-size: cover; background-position: center;"))
+							),
+							hr(tags$style("border-top: 3px solid #000000; color: black; background-color: black")),
 							tabsetPanel(id = "igv-panel-control",
 								tabPanel("DNA_SV",
 									fluidRow(
@@ -448,24 +473,6 @@
 										column(12, textInput(inputId = "genomicPos", label = div("Genome coordinate", style = "display:inline-block; font-size:12px", title = "Show genomic start and end coordinates of current IGV session window", icon("info-circle", style="font-size: 9px")), value = "")),
 										column(6, actionButton("GetPos", label = "Show coordinate")),
 										column(6, actionButton("MovePos", label = "Clear"))
-									),
-									hr(tags$style("border-top: 3px solid #000000; color: black; background-color: black")),
-									fluidRow(
-										column(12, tags$p(tags$b("Choose external files to upload: ", style = "font-size:13px"))),
-										column(12, tags$p(tags$b("* Upload read alignment and its index (", tags$u("BAM"), " or ", tags$u("CRAM"), " format)", style = "font-size:12px"))),
-										column(12, tags$p(tags$b("* Upload annotation file and its index (bgzipped and tabixed", tags$u("VCF"), ", ", tags$u("BED"), " and ", tags$u("GTF"), " format)", style = "font-size:12px"))),
-										column(12, tags$p(tags$b("* Upload genome reference and its index (indexed ", tags$u("fasta"), ") and cytoband information in ", tags$u("txt"), " format - used to enable offline mode", style = "font-size:12px"))),
-										br(),
-										column(12, HTML("<input id='uploadfile' class='hidden' type='file' multiple='true' accept='.bam,.bai,.cram,.crai,.gz,.tbi,.fasta,.fai,.txt' onchange=\"load()\"/>
-														<label for='uploadfile'><img src='Visualize/Button.png' alt='Upload img' height='100' width='200'></label>")),
-										br(),
-										column(12, HTML("<div id='filename'></div>")),
-										tags$script(src = "Visualize/Upload_file.js")
-									),
-									hr(tags$style("border-top: 3px solid #000000; color: black; background-color: black")),
-									fluidRow(
-										column(12, tags$p(tags$b("Activate the gene annotation track in offline mode (after uploading genome reference)", style = "font-size:13px"))),
-										column(12, actionButton("offlineTrackButton", "Load gene track (offline)"))
 									)
 								),
 								tabPanel("RNA_SV",
@@ -487,13 +494,6 @@
 										column(6, numericInput("rna_dismin_bed", label = div("Min_dist", style = "display:inline-block; font-size:12px", title = "Filter out SVs with a distance between breakpoints below the cutoff value", icon("info-circle", style="font-size: 9px")), value=0, min=0, max=500000000)),
 										column(6, numericInput("rna_dismax_bed", label = div("Max_dist", style = "display:inline-block; font-size:12px", title = "Filter out SVs with a distance between breakpoints above the cutoff value", icon("info-circle", style="font-size: 9px")), value=500000000, min=0, max=500000000)),
 										column(12, actionButton("addTrackButtonRNABed", "Load RNA breakpoints in bed"))
-									),
-									hr(tags$style("border-top: 3px solid #000000; color: black; background-color: black")),
-									fluidRow(
-										column(12, textInput(inputId = "BAM", label = div("Alignment URL", style = "display:inline-block; font-size:12px", title = "Load a BAM file hosted via URL", icon("info-circle", style="font-size: 9px")), value = NULL)),
-										column(12, textInput(inputId = "BAMindex", label = div("Alignment index URL", style = "display:inline-block; font-size:12px", title = "Load a BAM index file hosted via URL", icon("info-circle", style="font-size: 9px")), value = NULL)),
-										column(12, actionButton("addTrackButtonBAM", label = NULL, style = "width: 115px; height: 71px;
-											background: url('Visualize/cloud_upload.png');  background-size: cover; background-position: center;"))
 									)
 								),
 								tabPanel("Mut",

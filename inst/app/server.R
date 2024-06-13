@@ -139,7 +139,8 @@ options(ucscChromosomeNames=FALSE)
 			#// Upload and read inputfile of RNA SVs (11 columns)
 			tumordata = read.csv(input$file_rna_data$datapath, header=TRUE, sep=input$sep_rna_file, quote="");
 			col_num_rna = colnames(tumordata);
-			if ( length(col_num_rna) < 11 ) { showModal(modalDialog(title = "Error message", "Column number (11) of RNA input file does not meet requirement!")); req(NULL); }
+			tumordata$comment[is.na(tumordata$comment)] = ""
+			if ( length(col_num_rna) < 12 ) { showModal(modalDialog(title = "Error message", "Column number (12) of RNA input file does not meet requirement!")); req(NULL); }
 			#// NOTE: column1-11 (chrom1, pos1, gene1, chrom2, pos2, gene2, name, split, span, strand1, strand2) - NA unaccepted.
 			if ( col_num_rna[1] != "chrom1" || any(is.na(tumordata$chrom1)) == T || any(tumordata$chrom1 == "") == T ) { showModal(modalDialog(title = "Error message", "'chrom1' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
 			if ( col_num_rna[2] != "pos1" || any(is.na(tumordata$pos1)) == T || any(tumordata$pos1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'pos1' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
@@ -152,6 +153,7 @@ options(ucscChromosomeNames=FALSE)
 			if ( col_num_rna[9] != "span" || any(is.na(tumordata$span)) == T || any(tumordata$sapn < 0) == T ) { showModal(modalDialog(title = "Error message", "'span' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
 			if ( col_num_rna[10] != "strand1" || any(is.na(tumordata$strand1)) == T || any(tumordata$strand1 == "") == T ) { showModal(modalDialog(title = "Error message", "'strand1' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
 			if ( col_num_rna[11] != "strand2" || any(is.na(tumordata$strand2)) == T || any(tumordata$strand2 == "") == T ) { showModal(modalDialog(title = "Error message", "'strand2' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[12] != "comment" || any(is.na(tumordata$comment)) == T ) { showModal(modalDialog(title = "Error message", "'comment' column has incorrect name or NA value for RNA SVs!")); req(NULL); }
 			if ( database$organism == 'Human' ) {
 				if ( TRUE %in% grepl("^[[:lower:]]+$", tumordata$gene1) ||  TRUE %in% grepl("^[[:lower:]]+$", tumordata$gene2) ) { # lowercase present in symbol
 					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for human!")); req(NULL); 
@@ -159,6 +161,12 @@ options(ucscChromosomeNames=FALSE)
 			} else if  ( database$organism == 'Mouse' ) {
 				if ( FALSE %in% grepl("^[[:lower:]]+$", tumordata$gene1) ||  FALSE %in% grepl("^[[:lower:]]+$", tumordata$gene2) ) { # lowercase no present in symbol
 					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for mouse!")); req(NULL); 
+				}
+			}
+			no_empty=tumordata$comment[nzchar(tumordata$comment)]
+			if ( length(no_empty) > 0 ) {
+				if ( TRUE %in% grepl("[^A|^T|^G|^C|^N|^a|^t|^g|^c|^n]", no_empty)  ) {
+					showModal(modalDialog(title = "Error message", "Unexpected letter is present in the string in addition to A|a, C|c, G|g, T|t and N|n!")); req(NULL);
 				}
 			}
 			inputFile$rnadata = tumordata;
@@ -202,7 +210,7 @@ options(ucscChromosomeNames=FALSE)
 					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
 					showModal(modalDialog(title = "Warning message", paste(input$RNAcontents_cell_edit$value, " is not a valid gene name! Please input valid gene name.", sep="")));
 				}
-			} else if ( rnaclmn == 7 ) {
+			} else if ( rnaclmn == 7 || rnaclmn == 12 ) {
 				if ( is(info[["value"]], "character") ) {
 					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
 				} else {
@@ -1466,7 +1474,7 @@ options(ucscChromosomeNames=FALSE)
     #// filter breakpoints (i.e. keep breakpoints inside of the selected transcript_id of geneA and geneB)
 	observe({
         if ( is.null(inputFile$rnadata) ) { req(NULL); }
-		domain_break = unique(data.frame(pos1=domain_1()$pos1, pos2=domain_1()$pos2, strand1=domain_1()$strand1, strand2=domain_1()$strand2, stringsAsFactors=FALSE))
+		domain_break = unique(data.frame(pos1=domain_1()$pos1, pos2=domain_1()$pos2, strand1=domain_1()$strand1, strand2=domain_1()$strand2, comment=domain_1()$comment, stringsAsFactors=FALSE))
 		if ( length(control_break_AB$A) > 0 ) { #// control_break_AB$A not empty
 			if ( length(control_break_AB$B) > 0 ) { #// control_break_AB$B not empty
 				domain_filter$value = domain_break[domain_break$pos1 %in% control_break_AB$A & domain_break$pos2 %in% control_break_AB$B, ]
@@ -2033,7 +2041,7 @@ options(ucscChromosomeNames=FALSE)
 				DT::datatable(tmp, escape = FALSE, editable = 'cell', extensions = 'Buttons', options = list(dom = 'Blfrtip', buttons = list(
 					list(extend = "collection", text = 'Download Data', action = DT::JS("function(e, dt, node, config) { Shiny.setInputValue('rnadownload', true, {priority: 'event'}); }")),
 					list(extend = "collection", text = 'Delete Row', action = DT::JS("function(e, dt, node, config) { Shiny.setInputValue('rnaDeleteRow', true, {priority: 'event'}); }"))),
-					autoWidth = TRUE, columnDefs = list(list(targets = c(12,13), visible = FALSE)), initComplete = JS("function(settings, json) { $(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")),
+					autoWidth = TRUE, columnDefs = list(list(targets = c(13,14), visible = FALSE)), initComplete = JS("function(settings, json) { $(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")),
 					filter = list(position = 'top', clear = FALSE, plain = TRUE)) %>% DT::formatStyle(names(tmp), fontSize = '11px') %>%
 					DT::formatStyle('gene1','tag1', backgroundColor = DT::styleInterval(c(2, 4, 6), c("#ff8566", "#00ccff", "#ffcc33", "white"))) %>%
 					DT::formatStyle('gene2','tag2', backgroundColor = DT::styleInterval(c(2, 4, 6), c("#ff8566", "#00ccff", "#ffcc33", "white")))
