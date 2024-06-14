@@ -27,9 +27,9 @@ NOTE: *FuSViz* docker image is built under amd64 platform, which may show [a poo
 
 #### <ins>Deploy with singularity for Linux users</ins>
 
-A singularity container of FuSViz is available for [dowload](https://fusviz.s3.eu-north-1.amazonaws.com/fusviz_1.6.0.sif), and we recommend run it using singularity version (>= 3.7.3):
+A singularity container of FuSViz is available for [dowload](https://fusviz.s3.eu-north-1.amazonaws.com/fusviz_v1.7.0.sif), and we recommend run it using singularity version (>= 3.7.3):
 
-`singularity run fusviz_1.4.0.sif 4000`, then open web browser and input address.
+`singularity run fusviz_v1.7.0.sif 4000`, then open web browser and input address.
 
 #### <ins>Deploy without container</ins>
 
