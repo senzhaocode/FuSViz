@@ -7,7 +7,7 @@ TranscriptA="ENST00000382518"
 TranscriptB="ENST00000356819"
 strandA="+"
 strandB="+"
-BAM="/data/admsenzha/BAM/IPD0824-R03-d96-A09.bam"
+BAM="/data/admsenzha/BAM/example.bam"
 split=499
 span=0
 
