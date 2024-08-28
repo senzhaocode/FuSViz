@@ -1,6 +1,6 @@
 ![FuSviz_overview](logo_white_back.png)
 
-[![Build Status](https://travis-ci.com/senzhaocode/FuSViz.svg?branch=master)](https://travis-ci.com/github/senzhaocode/FuSViz)
+[![Build Status](https://travis-ci.com/senzhaocode/FuSViz.svg?branch=master)]
 
 ### Overview
 
