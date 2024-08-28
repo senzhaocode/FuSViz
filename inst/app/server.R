@@ -139,31 +139,31 @@ options(ucscChromosomeNames=FALSE)
 			#// Upload and read inputfile of RNA SVs (11 columns)
 			tumordata = read.csv(input$file_rna_data$datapath, header=TRUE, sep=input$sep_rna_file, quote="");
 			col_num_rna = colnames(tumordata);
-			tumordata$comment[is.na(tumordata$comment)] = ""
-			if ( length(col_num_rna) < 12 ) { showModal(modalDialog(title = "Error message", "Column number (12) of RNA input file does not meet requirement!")); req(NULL); }
+			if ( length(col_num_rna) < 12 ) { showModal(modalDialog(title = "Error message", "RNA SV input file does not meet requirement - column number MUST be 12!")); req(NULL); }
+			tumordata$untemplated_insert[is.na(tumordata$untemplated_insert)] = ""
 			#// NOTE: column1-11 (chrom1, pos1, gene1, chrom2, pos2, gene2, name, split, span, strand1, strand2) - NA unaccepted.
-			if ( col_num_rna[1] != "chrom1" || any(is.na(tumordata$chrom1)) == T || any(tumordata$chrom1 == "") == T ) { showModal(modalDialog(title = "Error message", "'chrom1' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
-			if ( col_num_rna[2] != "pos1" || any(is.na(tumordata$pos1)) == T || any(tumordata$pos1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'pos1' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
-			if ( col_num_rna[3] != "gene1" || any(is.na(tumordata$gene1)) == T || any(tumordata$gene1 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene1' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
-			if ( col_num_rna[4] != "chrom2" || any(is.na(tumordata$chrom2)) == T || any(tumordata$chrom2 == "") == T ) { showModal(modalDialog(title = "Error message", "'chrom2' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
-			if ( col_num_rna[5] != "pos2" || any(is.na(tumordata$pos2)) == T || any(tumordata$pos2 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'pos2' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
-			if ( col_num_rna[6] != "gene2" || any(is.na(tumordata$gene2)) == T || any(tumordata$gene2 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene2' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
-			if ( col_num_rna[7] != "name" || any(is.na(tumordata$name)) == T || any(tumordata$name == "") == T ) { showModal(modalDialog(title = "Error message", "'name' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
-			if ( col_num_rna[8] != "split" || any(is.na(tumordata$split)) == T || any(tumordata$split < 0) == T ) { showModal(modalDialog(title = "Error message", "'split' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
-			if ( col_num_rna[9] != "span" || any(is.na(tumordata$span)) == T || any(tumordata$sapn < 0) == T ) { showModal(modalDialog(title = "Error message", "'span' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
-			if ( col_num_rna[10] != "strand1" || any(is.na(tumordata$strand1)) == T || any(tumordata$strand1 == "") == T ) { showModal(modalDialog(title = "Error message", "'strand1' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
-			if ( col_num_rna[11] != "strand2" || any(is.na(tumordata$strand2)) == T || any(tumordata$strand2 == "") == T ) { showModal(modalDialog(title = "Error message", "'strand2' column has incorrect name or empty/NA value for RNA SVs!")); req(NULL); }
-			if ( col_num_rna[12] != "comment" || any(is.na(tumordata$comment)) == T ) { showModal(modalDialog(title = "Error message", "'comment' column has incorrect name or NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[1] != "chrom1" || any(is.na(tumordata$chrom1)) == T || any(tumordata$chrom1 == "") == T ) { showModal(modalDialog(title = "Error message", "'chrom1' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[2] != "pos1" || any(is.na(tumordata$pos1)) == T || any(tumordata$pos1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'pos1' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[3] != "gene1" || any(is.na(tumordata$gene1)) == T || any(tumordata$gene1 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene1' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[4] != "chrom2" || any(is.na(tumordata$chrom2)) == T || any(tumordata$chrom2 == "") == T ) { showModal(modalDialog(title = "Error message", "'chrom2' column has an incorrect header name or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[5] != "pos2" || any(is.na(tumordata$pos2)) == T || any(tumordata$pos2 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'pos2' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[6] != "gene2" || any(is.na(tumordata$gene2)) == T || any(tumordata$gene2 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene2' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[7] != "name" || any(is.na(tumordata$name)) == T || any(tumordata$name == "") == T ) { showModal(modalDialog(title = "Error message", "'name' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[8] != "split" || any(is.na(tumordata$split)) == T || any(tumordata$split < 0) == T ) { showModal(modalDialog(title = "Error message", "'split' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[9] != "span" || any(is.na(tumordata$span)) == T || any(tumordata$sapn < 0) == T ) { showModal(modalDialog(title = "Error message", "'span' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[10] != "strand1" || any(is.na(tumordata$strand1)) == T || any(tumordata$strand1 == "") == T ) { showModal(modalDialog(title = "Error message", "'strand1' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[11] != "strand2" || any(is.na(tumordata$strand2)) == T || any(tumordata$strand2 == "") == T ) { showModal(modalDialog(title = "Error message", "'strand2' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[12] != "untemplated_insert" || any(is.na(tumordata$untemplated_insert)) == T ) { showModal(modalDialog(title = "Error message", "'untemplated_insert' column has an incorrect header or NA value for RNA SVs!")); req(NULL); }
 			if ( database$organism == 'Human' ) {
-				if ( TRUE %in% grepl("^[[:lower:]]+$", tumordata$gene1) ||  TRUE %in% grepl("^[[:lower:]]+$", tumordata$gene2) ) { # lowercase present in symbol
+				if ( TRUE %in% grepl("[[:lower:]]+", tumordata$gene1) ||  TRUE %in% grepl("[[:lower:]]+", tumordata$gene2) ) { # lowercase present in symbol
 					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for human!")); req(NULL); 
 				}
 			} else if  ( database$organism == 'Mouse' ) {
-				if ( FALSE %in% grepl("^[[:lower:]]+$", tumordata$gene1) ||  FALSE %in% grepl("^[[:lower:]]+$", tumordata$gene2) ) { # lowercase no present in symbol
+				if ( FALSE %in% grepl("^[[:upper:]][[:lower:]]+", tumordata$gene1) ||  FALSE %in% grepl("^[[:upper:]][[:lower:]]+", tumordata$gene2) ) { # lowercase no present in symbol
 					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for mouse!")); req(NULL); 
 				}
 			}
-			no_empty=tumordata$comment[nzchar(tumordata$comment)]
+			no_empty=tumordata$untemplated_insert[nzchar(tumordata$untemplated_insert)]
 			if ( length(no_empty) > 0 ) {
 				if ( TRUE %in% grepl("[^A|^T|^G|^C|^N|^a|^t|^g|^c|^n]", no_empty)  ) {
 					showModal(modalDialog(title = "Error message", "Unexpected letter is present in the string in addition to A|a, C|c, G|g, T|t and N|n!")); req(NULL);
@@ -241,26 +241,26 @@ options(ucscChromosomeNames=FALSE)
 			dnadata = data.table::fread(input$file_dna_data$datapath, sep=input$sep_dna_file, stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE,
 						header = TRUE, fill = TRUE, quote = "");
 			col_num_dna = colnames(dnadata);
-			if ( length(col_num_dna) < 12 ) { showModal(modalDialog(title = "Error message", "Column number (12) of DNA input file does not meet requirement!")); req(NULL); }
+			if ( length(col_num_dna) < 12 ) { showModal(modalDialog(title = "Error message", "DNA SV input file does not meet requirement - column number MUST be 12!")); req(NULL); }
 			#// NOTE: column1-12 (chrom1, start1, end1, chrom2, start2, end2, name, type, split, span, gene1 and gene2) - no NA accepted.
-			if ( col_num_dna[1] != "chrom1" || any(is.na(dnadata$chrom1)) == T || any(dnadata$chrom1 == "") == T ) { showModal(modalDialog(title = "Error message", "'chrom1' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
-			if ( col_num_dna[2] != "start1" || any(is.na(dnadata$start1)) == T || any(dnadata$start1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'start1' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
-			if ( col_num_dna[3] != "end1" || any(is.na(dnadata$end1)) == T || any(dnadata$end1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'end1' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
-			if ( col_num_dna[4] != "chrom2" || any(is.na(dnadata$chrom2)) == T || any(dnadata$chrom2 == "") == T ) { showModal(modalDialog(title = "Error message", "'chrom2' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
-			if ( col_num_dna[5] != "start2" || any(is.na(dnadata$start2)) == T || any(dnadata$start2 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'start2' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
-			if ( col_num_dna[6] != "end2" || any(is.na(dnadata$end2)) == T || any(dnadata$end1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'end2' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
-			if ( col_num_dna[7] != "name" || any(is.na(dnadata$name)) == T || any(dnadata$name == "") == T ) { showModal(modalDialog(title = "Error message", "'name' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
-			if ( col_num_dna[8] != "type" || any(is.na(dnadata$type)) == T || any(dnadata$type == "") == T ) { showModal(modalDialog(title = "Error message", "'type' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
-			if ( col_num_dna[9] != "split" || any(is.na(dnadata$split)) == T || any(dnadata$split < 0) == T ) { showModal(modalDialog(title = "Error message", "'split' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
-			if ( col_num_dna[10] != "span" || any(is.na(dnadata$span)) == T || any(dnadata$sapn < 0) == T ) { showModal(modalDialog(title = "Error message", "'span' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
-			if ( col_num_dna[11] != "gene1" || any(is.na(dnadata$gene1)) == T || any(dnadata$gene1 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene1' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
-			if ( col_num_dna[12] != "gene2" || any(is.na(dnadata$gene2)) == T || any(dnadata$gene2 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene2' column has incorrect name or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[1] != "chrom1" || any(is.na(dnadata$chrom1)) == T || any(dnadata$chrom1 == "") == T ) { showModal(modalDialog(title = "Error message", "'chrom1' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[2] != "start1" || any(is.na(dnadata$start1)) == T || any(dnadata$start1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'start1' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[3] != "end1" || any(is.na(dnadata$end1)) == T || any(dnadata$end1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'end1' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[4] != "chrom2" || any(is.na(dnadata$chrom2)) == T || any(dnadata$chrom2 == "") == T ) { showModal(modalDialog(title = "Error message", "'chrom2' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[5] != "start2" || any(is.na(dnadata$start2)) == T || any(dnadata$start2 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'start2' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[6] != "end2" || any(is.na(dnadata$end2)) == T || any(dnadata$end1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'end2' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[7] != "name" || any(is.na(dnadata$name)) == T || any(dnadata$name == "") == T ) { showModal(modalDialog(title = "Error message", "'name' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[8] != "type" || any(is.na(dnadata$type)) == T || any(dnadata$type == "") == T ) { showModal(modalDialog(title = "Error message", "'type' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[9] != "split" || any(is.na(dnadata$split)) == T || any(dnadata$split < 0) == T ) { showModal(modalDialog(title = "Error message", "'split' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[10] != "span" || any(is.na(dnadata$span)) == T || any(dnadata$sapn < 0) == T ) { showModal(modalDialog(title = "Error message", "'span' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[11] != "gene1" || any(is.na(dnadata$gene1)) == T || any(dnadata$gene1 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene1' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[12] != "gene2" || any(is.na(dnadata$gene2)) == T || any(dnadata$gene2 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene2' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
 			if ( database$organism == 'Human' ) {
-				if ( TRUE %in% grepl("^[[:lower:]]+$", dnadata$gene1) ||  TRUE %in% grepl("^[[:lower:]]+$", dnadata$gene2) ) { # lowercase present in symbol
+				if ( TRUE %in% grepl("[[:lower:]]+", dnadata$gene1) ||  TRUE %in% grepl("[[:lower:]]+", dnadata$gene2) ) { # lowercase present in symbol
 					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for human!")); req(NULL); 
 				}
 			} else if  ( database$organism == 'Mouse' ) {
-				if ( FALSE %in% grepl("^[[:lower:]]+|[*]+$", dnadata$gene1) ||  FALSE %in% grepl("^[[:lower:]]+|[*]+$", dnadata$gene2) ) { # lowercase no present in symbol
+				if ( FALSE %in% grepl("^[[:upper:]][[:lower:]]+", dnadata$gene1) ||  FALSE %in% grepl("^[[:upper:]][[:lower:]]+", dnadata$gene2) ) { # lowercase no present in symbol
 					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for mouse!")); req(NULL); 
 				}
 			}
@@ -379,17 +379,17 @@ options(ucscChromosomeNames=FALSE)
 			col_num_mut = colnames(mutdata);
 			if ( length(col_num_mut) != 8 ) { showModal(modalDialog(title = "Error message", "Eight required columns (i.e. 'Hugo_Symbol', 'Chromosome', 'Start_Position', 'End_Position', 'Reference_Allele', 'Tumor_Seq_Allele2', 'Variant_Classification' and 'Tumor_Sample_Barcode') of Mutation MAF file fail to be met!")); req(NULL); }
 			#// NOTE: column1-8 (Hugo_Symbol, Chromosome, Start_Position, End_Position, Reference_Allele, Tumor_Seq_Allele2, Variant_Classification, Tumor_Sample_Barcode) - no NA accepted.
-			if ( any(is.na(mutdata$Chromosome)) == T || any(mutdata$Chromosome == "") == T ) { showModal(modalDialog(title = "Error message", "'Chromosome' column has incorrect name or empty/NA value for mutation profile!")); req(NULL); }
-			if ( any(is.na(mutdata$Start_Position)) == T || any(mutdata$Start_Position <= 0) == T ) { showModal(modalDialog(title = "Error message", "'Start_Position' column has incorrect name or empty/NA value for mutation profile!")); req(NULL); }
-			if ( any(is.na(mutdata$End_Position)) == T || any(mutdata$End_Position <= 0) == T ) { showModal(modalDialog(title = "Error message", "'End_Position' column has incorrect name or empty/NA value for mutation profile!")); req(NULL); }
-			if ( any(is.na(mutdata$Reference_Allele)) == T || any(mutdata$Reference_Allele == "") == T ) { showModal(modalDialog(title = "Error message", "'Reference_Allele' column has incorrect name or empty/NA value for mutation profile!")); req(NULL); }
-			if ( any(is.na(mutdata$Tumor_Seq_Allele2)) == T || any(mutdata$Tumor_Seq_Allele2 == "") == T ) { showModal(modalDialog(title = "Error message", "'Tumor_Seq_Allele2' column has incorrect name or empty/NA value for mutation profile!")); req(NULL); }
-			if ( any(is.na(mutdata$Variant_Classification)) == T || any(mutdata$Variant_Classification == "") == T ) { showModal(modalDialog(title = "Error message", "'Variant_Classification' column has incorrect name or empty/NA value for mutation profile!")); req(NULL); }
-			if ( any(is.na(mutdata$Tumor_Sample_Barcode)) == T || any(mutdata$Tumor_Sample_Barcode == "") == T ) { showModal(modalDialog(title = "Error message", "'Tumor_Sample_Barcode' column has incorrect name or empty/NA value for mutation profile!")); req(NULL); }
+			if ( any(is.na(mutdata$Chromosome)) == T || any(mutdata$Chromosome == "") == T ) { showModal(modalDialog(title = "Error message", "'Chromosome' column has an incorrect header or empty/NA value for mutation profile!")); req(NULL); }
+			if ( any(is.na(mutdata$Start_Position)) == T || any(mutdata$Start_Position <= 0) == T ) { showModal(modalDialog(title = "Error message", "'Start_Position' column has an incorrect header or empty/NA value for mutation profile!")); req(NULL); }
+			if ( any(is.na(mutdata$End_Position)) == T || any(mutdata$End_Position <= 0) == T ) { showModal(modalDialog(title = "Error message", "'End_Position' column has an incorrect header or empty/NA value for mutation profile!")); req(NULL); }
+			if ( any(is.na(mutdata$Reference_Allele)) == T || any(mutdata$Reference_Allele == "") == T ) { showModal(modalDialog(title = "Error message", "'Reference_Allele' column has an incorrect header or empty/NA value for mutation profile!")); req(NULL); }
+			if ( any(is.na(mutdata$Tumor_Seq_Allele2)) == T || any(mutdata$Tumor_Seq_Allele2 == "") == T ) { showModal(modalDialog(title = "Error message", "'Tumor_Seq_Allele2' column has an incorrect header or empty/NA value for mutation profile!")); req(NULL); }
+			if ( any(is.na(mutdata$Variant_Classification)) == T || any(mutdata$Variant_Classification == "") == T ) { showModal(modalDialog(title = "Error message", "'Variant_Classification' column has an incorrect header or empty/NA value for mutation profile!")); req(NULL); }
+			if ( any(is.na(mutdata$Tumor_Sample_Barcode)) == T || any(mutdata$Tumor_Sample_Barcode == "") == T ) { showModal(modalDialog(title = "Error message", "'Tumor_Sample_Barcode' column has an incorrect header or empty/NA value for mutation profile!")); req(NULL); }
 
 			if ( is.null(input$file_rna_data) ) { # dna_sv file not load
 				if ( is.null(input$file_dna_data) ) { # rna_sv file not load
-					shiny::showModal(modalDialog(title = "Warning message", "Before load mutation data, please load SV data first!!!"));	req(NULL);
+					shiny::showModal(modalDialog(title = "Warning message", "Before load mutation data, please load SV data firstly!!!"));	req(NULL);
 				} else { # dna_sv file load 
 					mutdata = mutdata[Tumor_Sample_Barcode %in% unique(as.character(inputFile$dnadata$name))];
 				}
@@ -895,7 +895,7 @@ options(ucscChromosomeNames=FALSE)
 					tracklist = tracklist + BioCircos::BioCircosSNPTrack('MutationTrack', circle_mutation_dna()$Chromosome, circle_mutation_dna()$Start_Position, circle_mutation_dna()$freq, 
 							labels = circle_mutation_dna()$anno_new, size = 1.4, maxRadius = 0.95, minRadius = 0.75, colors = "orange");
 				} else {
-					shiny::showModal(modalDialog(title = "Error message", "No mutation data in MAF format loads!"));	req(NULL);
+					shiny::showModal(modalDialog(title = "Error message", "No mutation data in MAF format is loaded!"));	req(NULL);
 				}
 			}
 			#// if no selection, all chroms for visual
@@ -1010,7 +1010,7 @@ options(ucscChromosomeNames=FALSE)
 					tracklist = tracklist + BioCircos::BioCircosSNPTrack('MutationTrack', circle_mutation()$Chromosome, circle_mutation()$Start_Position, circle_mutation()$freq, 
 							labels = circle_mutation()$anno_new, size = 1.4, maxRadius = 0.95, minRadius = 0.75, colors = "orange");
 				} else {
-					shiny::showModal(modalDialog(title = "Error message", "No mutation data in MAF format loads!"));	req(NULL);
+					shiny::showModal(modalDialog(title = "Error message", "No mutation data in MAF format is loaded!"));	req(NULL);
 				}
 			}
 			#// if no selection, use all chroms for visualization
@@ -1201,12 +1201,12 @@ options(ucscChromosomeNames=FALSE)
 				if ( length(geneA) > 0 ) { 
 					geneA[sapply(geneA, is.null)] <- NULL; #// remove element with NULL in the list geneA (if all elements are NULL, geneA = NULL)
 				} else {
-					showModal(modalDialog(title = "Warning message", "No breakpoints within geneA, and plot stops (please check coordinates!)")); req(NULL)
+					showModal(modalDialog(title = "Warning message", "No breakpoints within geneA or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!")); req(NULL)
 				}
 				if ( length(geneB) > 0 ) { 
 					geneB[sapply(geneB, is.null)] <- NULL; #// remove element with NULL in the list geneB (if all elements are NULL, geneB = NULL)
 				} else {
-					showModal(modalDialog(title = "Warning message", "No breakpoints within geneB, and plot stops (please check coordinates!)")); req(NULL)
+					showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)")); req(NULL)
 				}
 				overviewAB$geneA=geneA; overviewAB$symbol_A=symbol_A;
 				overviewAB$geneB=geneB; overviewAB$symbol_B=symbol_B;
@@ -1216,7 +1216,7 @@ options(ucscChromosomeNames=FALSE)
 				showModal(modalDialog(title = "Warning message", paste("No or multiple geneA(", choice_geneA, ") / geneB(", choice_geneB, ") is present (check gene symbol!)", sep="")));	req(NULL)
 			}
 		} else {
-			showModal(modalDialog(title = "Warning message", "No gene symbols selected for fusion partners (choose gene symbol first!)")); req(NULL)
+			showModal(modalDialog(title = "Warning message", "No gene symbols are chosen for fusion partners (choose gene symbol first!)")); req(NULL)
 		}
 	})
     
@@ -1348,7 +1348,7 @@ options(ucscChromosomeNames=FALSE)
 					object_individual_B$value <- FuSViz::get_annotation_db(ens_B, database$txdb, database$grTrack)
 					if ( is.null(object_individual_B$value) ) {
 						updateSelectizeInput(session = session, inputId = "transB_individual", choices = "") #// NOTE: set choices = "" not (NULL)
-						howModal(modalDialog(title = "Warning message", paste("GeneB()", choice_geneB, ") is not available in annotation database, and process stops here!", sep="")));	req(NULL)
+						howModal(modalDialog(title = "Warning message", paste("GeneB(", choice_geneB, ") is not available in annotation database, and process stops here!", sep="")));	req(NULL)
 					} else {
 						#// update the choice values in selectInput
                         canonical_transB = database$canonical[database$canonical$ensembl_gene_id == ens_B,]$ensembl_transcript_id
@@ -1414,12 +1414,12 @@ options(ucscChromosomeNames=FALSE)
 					if ( length(geneA) > 0 ) {
 						geneA[sapply(geneA, is.null)] <- NULL; #// remove element with NULL
 					} else {
-						showModal(modalDialog(title = "Warning message", "No breakpoints within geneA, and plot stops (please check coordinates!)")); req(NULL)
+						showModal(modalDialog(title = "Warning message", "No breakpoints within geneA or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)")); req(NULL)
 					}
 					if ( length(geneB) > 0 ) {
 						geneB[sapply(geneB, is.null)] <- NULL; #// remove element with NULL
 					} else {
-						showModal(modalDialog(title = "Warning message", "No breakpoints within geneB, and plot stops (please check coordinates!)")); req(NULL)
+						showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)")); req(NULL)
 					}
 					individualAB$geneA=geneA;	individualAB$symbol_A=symbol_A;
 					individualAB$geneB=geneB;	individualAB$symbol_B=symbol_B;
@@ -1428,7 +1428,7 @@ options(ucscChromosomeNames=FALSE)
 					showModal(modalDialog(title = "Warning message", "Multiple entries are not allowed!")); req(NULL)
 				}
 			} else {
-				showModal(modalDialog(title = "Warning message", "No gene symbols selected for fusion partners (choose gene symbol first!)")); req(NULL)
+				showModal(modalDialog(title = "Warning message", "No gene symbols are chosen for fusion partners (choose gene symbol first!)")); req(NULL)
 			}
 		})
     #// start persample_size
@@ -1474,7 +1474,7 @@ options(ucscChromosomeNames=FALSE)
     #// filter breakpoints (i.e. keep breakpoints inside of the selected transcript_id of geneA and geneB)
 	observe({
         if ( is.null(inputFile$rnadata) ) { req(NULL); }
-		domain_break = unique(data.frame(pos1=domain_1()$pos1, pos2=domain_1()$pos2, strand1=domain_1()$strand1, strand2=domain_1()$strand2, comment=domain_1()$comment, stringsAsFactors=FALSE))
+		domain_break = unique(data.frame(pos1=domain_1()$pos1, pos2=domain_1()$pos2, strand1=domain_1()$strand1, strand2=domain_1()$strand2, comment=domain_1()$untemplated_insert, stringsAsFactors=FALSE))
 		if ( length(control_break_AB$A) > 0 ) { #// control_break_AB$A not empty
 			if ( length(control_break_AB$B) > 0 ) { #// control_break_AB$B not empty
 				domain_filter$value = domain_break[domain_break$pos1 %in% control_break_AB$A & domain_break$pos2 %in% control_break_AB$B, ]
@@ -1527,7 +1527,7 @@ options(ucscChromosomeNames=FALSE)
 						tmp_AA = object_domain_A$value$dataset
 						tmp_AA = object_domain_A$value$dataset[break_max_A >= object_domain_A$value$dataset$TXSTART & break_min_A <= object_domain_A$value$dataset$TXEND, ]
 						if ( length(dim(tmp_AA)[1]) == 0 ) { #// judge whether 0-row in tmp_AA
-							showModal(modalDialog(title = "Warning message", "No breakpoints within geneA, and plot stops (please check coordinates!)")); req(NULL);
+							showModal(modalDialog(title = "Warning message", "No breakpoints within geneA or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)")); req(NULL);
 						}
 						selectinput_A = data.frame(TXNAME=tmp_AA$TXNAME, TAG=tmp_AA$TXNAME, stringsAsFactors=FALSE)
 						if (! is.na(DM_transA[1]) ) { #// transcripts harboring domain/motif are present
@@ -1604,7 +1604,7 @@ options(ucscChromosomeNames=FALSE)
 						tmp_BB = object_domain_B$value$dataset
 						tmp_BB = object_domain_B$value$dataset[break_max_B >= object_domain_B$value$dataset$TXSTART & break_min_B <= object_domain_B$value$dataset$TXEND, ]
 						if ( length(dim(tmp_BB)[1]) == 0 ) { #// judge whether 0-row in tmp_BB 
-							showModal(modalDialog(title = "Warning message", "No breakpoints within geneB, and plot stops (please check coordinates!)")); req(NULL);
+							showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)")); req(NULL);
 						}
 						selectinput_B = data.frame(TXNAME=tmp_BB$TXNAME, TAG=tmp_BB$TXNAME, stringsAsFactors=FALSE)
 						if (! is.na(DM_transB[1]) ) { #// transcript harboring domain/motif are present
@@ -1673,7 +1673,7 @@ options(ucscChromosomeNames=FALSE)
 				}
 			}
 			#// remove the elements in the list where breakpoint outside transcript region of geneA
-			if ( length(geneA) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneA, and plot stops (check coordinates!")); req(NULL); }
+			if ( length(geneA) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneA or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!")); req(NULL); }
 			geneA = Filter(Negate(function(x) is.null(unlist(x))), geneA)
 			control_break_AB$A = as.numeric(names(geneA)); # print(paste("selected breakpoint for geneA: ", as.numeric(names(geneA))));
 			domain_plotA$geneA=geneA
@@ -1714,7 +1714,7 @@ options(ucscChromosomeNames=FALSE)
 				}
 			}
 			#// remove the elements in the list where breakpoint outside transcript region of geneA
-			if ( length(geneA) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneA, and plot stops (check coordinates!")); req(NULL); }
+			if ( length(geneA) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneA or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!")); req(NULL); }
 			geneA = Filter(Negate(function(x) is.null(unlist(x))), geneA)
 			control_break_AB$A = as.numeric(names(geneA)); # print(paste("selected breakpoint for geneA: ", as.numeric(names(geneA))));
 			domain_plotA$geneA=geneA
@@ -1756,7 +1756,7 @@ options(ucscChromosomeNames=FALSE)
 				}
 			}
 			#// remove the elements in the list where breakpoint outside transcript region of geneB
-			if ( length(geneB) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneB, and plot stops (check coordinates!")); req(NULL); }
+			if ( length(geneB) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!")); req(NULL); }
 			geneB = Filter(Negate(function(x) is.null(unlist(x))), geneB)
 			control_break_AB$B = as.numeric(names(geneB)); # print(paste("selected breakpoint for gene2: ", as.numeric(names(geneB)))); 
 			domain_plotB$geneB=geneB
@@ -1797,7 +1797,7 @@ options(ucscChromosomeNames=FALSE)
 				}
 			}
 			#// remove the elements in the list where breakpoint outside transcript region of geneB
-			if ( length(geneB) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneB, and plot stops (check coordinates!")); req(NULL); }
+			if ( length(geneB) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!")); req(NULL); }
 			geneB = Filter(Negate(function(x) is.null(unlist(x))), geneB)
 			control_break_AB$B = as.numeric(names(geneB)); # print(paste("selected breakpoint for gene2: ", as.numeric(names(geneB)))); 
 			domain_plotB$geneB=geneB
@@ -1901,7 +1901,10 @@ options(ucscChromosomeNames=FALSE)
 			output$RNAhubs <- DT::renderDataTable({
 				if ( is.null(network_rna()) ) { return(NULL); }
 				DT::datatable(network_rna()$degree_score, options = list(autoWidth = TRUE, initComplete = JS("function(settings, json) {",
-					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")))
+					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}"))) %>%
+                    DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(database$cancergenes$oncogene), rep(onco_color, length(database$cancergenes$oncogene)))) %>%
+					DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(database$cancergenes$tumorsuppress), rep(supp_color, length(database$cancergenes$tumorsuppress)))) %>%
+					DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(database$cancergenes$related), rep(rela_color, length(database$cancergenes$related))))
 			})
 
 			#// create the network for RNA SVs
@@ -1958,8 +1961,10 @@ options(ucscChromosomeNames=FALSE)
 			output$DNAhubs <- DT::renderDataTable({
 				if ( is.null(network_dna()) ) { return(NULL); }
 				DT::datatable(network_dna()$degree_score, options = list(autoWidth = TRUE, initComplete = JS("function(settings, json) {",
-					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")))
-			})
+					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}"))) %>%
+					DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(database$cancergenes$oncogene), rep(onco_color, length(database$cancergenes$oncogene)))) %>%
+					DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(database$cancergenes$tumorsuppress), rep(supp_color, length(database$cancergenes$tumorsuppress)))) %>%
+					DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(database$cancergenes$related), rep(rela_color, length(database$cancergenes$related))))			})
 
 			#// create the network for DNA SVs
 			output$network_dna <- visNetwork::renderVisNetwork({

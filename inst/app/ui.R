@@ -73,15 +73,15 @@
 					fluidRow(
 						box(title = "Upload structural variation file", width = 12, status = "info", solidHeader = TRUE,
 							 fluidRow(
-								column(3, h5(icon("upload", verify_fa = FALSE), "SV callings from RNA-seq data", style = "font-weight: bold; font-size: 16px;")),
-								column(4, fileInput('file_rna_data', label = span("Upload file in txt format", div(style = "display:inline-block;", title = "File upload button will be enabled after importing annotation data", icon("info-circle", style="font-size: 12px"))), accept = c('text/csv', 'text/comma-separated-values', 
+								column(3, h5(icon("upload", verify_fa = FALSE), "SV calls from RNA-seq data", style = "font-weight: bold; font-size: 16px;")),
+								column(4, fileInput('file_rna_data', label = span("Upload file in txt format", div(style = "display:inline-block;", title = "File upload button will be enabled after importing annotation resource data", icon("info-circle", style="font-size: 12px"))), accept = c('text/csv', 'text/comma-separated-values', 
 										'text/tab-separated-values', '.csv', '.tsv', '.txt'), placeholder = "txt, csv or tsv format")),
 								column(4, radioButtons('sep_rna_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/RNA_SV_example.txt" target="_blank">(See and download an example on basis of hg38 genome assembly)</a></p>'), choices = c(Comma = ',', Tab = '\t', Semicolon = ';'), selected = '\t', inline = T))
 							),
 							hr(tags$style("border-top: 1px solid #000000; color: black; background-color: white")),
 							fluidRow(
-								column(3, h5(icon("upload", verify_fa = FALSE), "SV callings from DNA-seq data", style = "font-weight: bold; font-size: 16px;")),
-								column(4, fileInput('file_dna_data', label = span("Upload file in bedpe format", div(style = "display:inline-block;", title = "File upload button will be enabled after importing annotation data", icon("info-circle", style="font-size: 12px"))), accept = c('text/csv', 'text/comma-separated-values', 
+								column(3, h5(icon("upload", verify_fa = FALSE), "SV calls from DNA-seq data", style = "font-weight: bold; font-size: 16px;")),
+								column(4, fileInput('file_dna_data', label = span("Upload file in bedpe format", div(style = "display:inline-block;", title = "File upload button will be enabled after importing annotation resource data", icon("info-circle", style="font-size: 12px"))), accept = c('text/csv', 'text/comma-separated-values', 
 										'text/tab-separated-values', '.csv', '.tsv', '.txt'), placeholder = "bedpe format")),
 								column(4, radioButtons('sep_dna_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/DNA_SV_example.txt" target="_blank">(See and download an example on basis of hg38 genome assembly)</a></p>'), choices = c(Comma = ',', Tab = '\t', Semicolon = ';'), selected = '\t', inline = T))
 							)
@@ -91,7 +91,7 @@
 						box(title = "Upload mutation profile file (optional)", width = 12, status = "info", solidHeader = TRUE,
 							fluidRow(
 								column(3, h5(icon("upload", verify_fa = FALSE), "Mutation variants (SNVs and Indels)", style = "font-weight: bold; font-size: 16px;")),
-								column(4, fileInput('file_maf_data', label = span("Upload file in MAF format", div(style = "display:inline-block;", title = "File upload button will be enabled after importing annotation data", icon("info-circle", style="font-size: 12px"))), accept = c('text/maf', '.maf'), placeholder = "maf format")),
+								column(4, fileInput('file_maf_data', label = span("Upload file in MAF format", div(style = "display:inline-block;", title = "File upload button will be enabled after importing annotation resource data", icon("info-circle", style="font-size: 12px"))), accept = c('text/maf', '.maf'), placeholder = "maf format")),
 								column(4, radioButtons('sep_maf_file', label = HTML('<p>Separator <a href="https://fusviz.s3.eu-north-1.amazonaws.com/TCGA.PRAD.mutect.somatic.maf" target="_blank">(See and download an example on basis of hg38 genome assembly)</a></p>'), choices = c(Tab = '\t'), selected = '\t', inline = T))
 							)
 						)
@@ -340,7 +340,7 @@
 										selectizeInput("mut_sample", label = div("Mutation sample", style = "display:inline-block; font-size:13px", title = "Limit to plot small variant profile related to the choosen samples", icon("info-circle", style="font-size: 10px")), choices = NULL, multiple = T, options = list(placeholder = 'select', 
 											onInitialize = I('function() { this.setValue(""); }')))),
 									br(),
-									fluidRow(column(12, actionButton("circos_plot", "Plot / Refresh"))),
+									fluidRow(column(12, actionButton("circos_plot", label = div("Plot / Refresh", title = "Please note that changes made to the data will not be reflected in the plot until the ‘plot/refresh’ button is clicked on")))),
 									br(),
 									fluidRow(column(12, downloadButton(outputId = "CircleDownRNA", label = "Download circular plot")))
 								),
@@ -369,14 +369,14 @@
 										selectizeInput("mut_sample_dna", label = div("Mutation sample", style = "display:inline-block; font-size:13px", title = "Limit to plot small variant profile related to the choosen samples", icon("info-circle", style="font-size: 10px")), choices = NULL, multiple = T, options = list(placeholder = 'select', 
 											onInitialize = I('function() { this.setValue(""); }')))),
 									br(),
-									fluidRow(column(12, actionButton("circos_plot_dna", "Plot / Refresh"))),
+									fluidRow(column(12, actionButton("circos_plot_dna", label = div("Plot / Refresh", title = "Please note that changes made to the data will not be reflected in the plot until the ‘plot/refresh’ button is clicked on")))),
 									br(),
 									fluidRow(column(12, downloadButton(outputId = "CircleDownDNA", label = "Download circular plot")))
 								)
 							)
 						),
 						box(status="warning", width=9,
-							tabBox(id = "fusion_plot_page", height = "100%", width = "100%",
+							tabBox(id = "circle_plot_page", height = "100%", width = "100%",
 								tabPanel("RNA_SV_circular_plot",
 									shinycssloaders::withSpinner(BioCircos::BioCircosOutput("circle_1", height=700), type = 5, size = 0.7)
 								),
@@ -397,26 +397,26 @@
 						sidebarPanel(width = 3,
 							fluidRow(
 								column(12, tags$p(tags$b("Choose local files to upload: ", style = "font-size:13px"))),
-								column(12, tags$p(tags$b("* Upload read alignment and its index (", tags$u("BAM"), " or ", tags$u("CRAM"), " format)", style = "font-size:12px"))),
-								column(12, tags$p(tags$b("* Upload annotation file and its index (bgzipped and tabixed", tags$u("VCF"), ", ", tags$u("BED"), " and ", tags$u("GTF"), " format)", style = "font-size:12px"))),
-								column(12, tags$p(tags$b("* Upload genome reference and its index (indexed ", tags$u("fasta"), ") and cytoband information in ", tags$u("txt"), " format - used to enable offline mode", style = "font-size:12px"))),
+								column(12, tags$p(tags$b("* Upload read alignment and its index files (", tags$u("BAM"), " or ", tags$u("CRAM"), " format)", style = "font-size:12px"))),
+								column(12, tags$p(tags$b("* Upload annotation and its index files (bgzipped and tabixed", tags$u("VCF"), ", ", tags$u("BED"), " and ", tags$u("GTF"), " format)", style = "font-size:12px"))),
+								column(12, tags$p(tags$b("* Upload genome reference and its index files (indexed ", tags$u("fasta"), ") and cytoband information in ", tags$u("txt"), " format - used to enable offline mode", style = "font-size:12px"))),
 								br(),
 								column(12, HTML("<input id='uploadfile' class='hidden' type='file' multiple='true' accept='.bam,.bai,.cram,.crai,.gz,.tbi,.fasta,.fai,.txt' onchange=\"load()\"/>
-											<label for='uploadfile'><img src='Visualize/Button.png' alt='Upload img' height='100' width='200'></label>")),
+											<label for='uploadfile'><img src='Visualize/Button.png' alt='Upload img' height='80' width='160'></label>")),
 								br(),
 								column(12, HTML("<div id='filename'></div>")),
 								tags$script(src = "Visualize/Upload_file.js")
 							),
 							hr(tags$style("border-top: 3px solid #000000; color: black; background-color: black")),
 							fluidRow(
-								column(12, tags$p(tags$b("Activate the gene annotation track under offline mode (click it after genome reference upload)", style = "font-size:13px"))),
+								column(12, tags$p(tags$b("Activate the gene annotation track for offline mode (click it after genome reference upload)", style = "font-size:13px"))),
 								column(12, actionButton("offlineTrackButton", "Load gene track (offline)"))
 							),
 							hr(tags$style("border-top: 3px solid #000000; color: black; background-color: black")),
 							fluidRow(
 								column(12, textInput(inputId = "BAM", label = div("Alignment URL", style = "display:inline-block; font-size:12px", title = "Load a hosted BAM/CRAM file via URL", icon("info-circle", style="font-size: 9px")), value = NULL)),
 								column(12, textInput(inputId = "BAMindex", label = div("Alignment index URL", style = "display:inline-block; font-size:12px", title = "Load a hosted BAM/CRAM index file via URL", icon("info-circle", style="font-size: 9px")), value = NULL)),
-								column(12, actionButton("addTrackButtonBAM", label = NULL, style = "width: 115px; height: 71px;
+								column(12, actionButton("addTrackButtonBAM", label = NULL, style = "width: 89px; height: 55px;
 											background: url('Visualize/cloud_upload.png');  background-size: cover; background-position: center;"))
 							),
 							hr(tags$style("border-top: 3px solid #000000; color: black; background-color: black")),
@@ -431,7 +431,7 @@
 													options = list(placeholder = 'select', onInitialize = I('function() { this.setValue(""); }')))),
 										column(7, selectizeInput("dna_sample_bedpe", label = div("Sample", style = "display:inline-block; font-size:12px", title = "Limit to plot SVs of the choosen samples", icon("info-circle", style="font-size: 9px")), choices = NULL, multiple = T, 
 													options = list(placeholder = 'select', onInitialize = I('function() { this.setValue(""); }')))),
-										column(12, actionButton("addTrackButtonBedPe", "Load DNA SV track in bedpe"))
+										column(12, actionButton("addTrackButtonBedPe", label = div("Load and refresh DNA SV track in bedpe", title = "Please note that changes made to the data will not be reflected in the plot until the ‘Load and refresh DNA SV track in bedpe’ button is clicked on")))
 									),
 									hr(tags$style("border-top: 3px solid #000000; color: black; background-color: black")),
 									fluidRow(
@@ -453,7 +453,7 @@
 														.no-spinners input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; } ")),
 										column(8, selectizeInput("dna_sample_seg", label = div("Sample", style = "display:inline-block; font-size:12px", title = "Limit to plot SVs of the choosen samples", icon("info-circle", style="font-size: 9px")), choices = NULL, multiple = T, 
 													options = list(placeholder = 'select', onInitialize = I('function() { this.setValue(""); }')))),
-										column(12, actionButton("addTrackButtonSeg", "Load DNA SV track in seg"))
+										column(12, actionButton("addTrackButtonSeg", label = div("Load and refresh DNA SV track in seg", title = "Please note that changes made to the data will not be reflected in the plot until the ‘Load and refresh DNA SV track in seg’ button is clicked on")))
 									),
 									hr(tags$style("border-top: 3px solid #000000; color: black; background-color: black")),
 									fluidRow(
@@ -466,7 +466,7 @@
 														#dna_type_bed+ .selectize-dropdown-content { width: 70px; }")),
 										column(6, numericInput("dna_dismin_bed", label = div("Min_dist", style = "display:inline-block; font-size:12px", title = "Filter out SVs with a distance between breakpoints below the cutoff value", icon("info-circle", style="font-size: 9px")), value=0, min=0, max=500000000)),
 										column(6, numericInput("dna_dismax_bed", label = div("Max_dist", style = "display:inline-block; font-size:12px", title = "Filter out SVs with a distance between breakpoints above the cutoff value", icon("info-circle", style="font-size: 9px")), value=500000000, min=0, max=500000000)),
-										column(12, actionButton("addTrackButtonBed", "Load DNA breakpoints in bed"))
+										column(12, actionButton("addTrackButtonBed", label = div("Load and refresh DNA breakpoints in bed", title = "Please note that changes made to the data will not be reflected in the plot until the ‘Load and refresh DNA breakpoints in bed’ button is clicked on")))
 									),
 									hr(tags$style("border-top: 3px solid #000000; color: black; background-color: black")),
 									fluidRow(
@@ -483,7 +483,7 @@
 										column(6, numericInput("rna_dismax_bedpe", label = div("Max_dist", style = "display:inline-block; font-size:12px", title = "Filter out intra-chromosome SVs with a distance between breakpoints above the cutoff value", icon("info-circle", style="font-size: 9px")), value=500000000, min=0, max=500000000)),
 										column(8, selectizeInput("rna_sample_bedpe", label = div("Sample", style = "display:inline-block; font-size:12px", title = "Limit to plot SVs of the choosen samples", icon("info-circle", style="font-size: 9px")), choices = NULL, multiple = T, 
 													options = list(placeholder = 'select', onInitialize = I('function() { this.setValue(""); }')))),
-										column(12, actionButton("addTrackButtonRNABedpe", "Load RNA SV track in bedpe"))
+										column(12, actionButton("addTrackButtonRNABedpe", label = div("Load and refresh RNA SV track in bedpe", title = "Please note that changes made to the data will not be reflected in the plot until the ‘Load and refresh RNA SV track in bedpe’ button is clicked on")))
 									),
 									hr(tags$style("border-top: 3px solid #000000; color: black; background-color: black")),
 									fluidRow(
@@ -493,7 +493,7 @@
 													options = list(placeholder = 'select', onInitialize = I('function() { this.setValue(""); }')))),
 										column(6, numericInput("rna_dismin_bed", label = div("Min_dist", style = "display:inline-block; font-size:12px", title = "Filter out SVs with a distance between breakpoints below the cutoff value", icon("info-circle", style="font-size: 9px")), value=0, min=0, max=500000000)),
 										column(6, numericInput("rna_dismax_bed", label = div("Max_dist", style = "display:inline-block; font-size:12px", title = "Filter out SVs with a distance between breakpoints above the cutoff value", icon("info-circle", style="font-size: 9px")), value=500000000, min=0, max=500000000)),
-										column(12, actionButton("addTrackButtonRNABed", "Load RNA breakpoints in bed"))
+										column(12, actionButton("addTrackButtonRNABed", label = div("Load and refresh RNA breakpoints in bed", title = "Please note that changes made to the data will not be reflected in the plot until the ‘Load and refresh RNA breakpoints in bed’ button is clicked on")))
 									)
 								),
 								tabPanel("Mut",
@@ -505,7 +505,7 @@
 											options = list(placeholder = 'select', onInitialize = I('function() { this.setValue(""); }'))),
 										selectizeInput("mut_sample_line", label = div("Mut_sample", style = "display:inline-block; font-size:12px", title = "Limit to plot small variant profile of the choosen samples", icon("info-circle", style="font-size: 9px")), choices = NULL, multiple = T, 
 											options = list(placeholder = 'select', onInitialize = I('function() { this.setValue(""); }'))),
-										actionButton("addTrackButtonMut", "Load mutation profile")
+										actionButton("addTrackButtonMut", label = div("Load and refresh mutation profile", title = "Please note that changes made to the data will not be reflected in the plot until the ‘Load and refresh mutation profile’ button is clicked on"))
 									)
 								)
 							)
@@ -557,7 +557,7 @@
 									fluidRow(column(12, HTML("<label for='dashline' style='font-size:12px'>Ruler line&nbsp;&nbsp;<span title='Activate ruler line function after onclick'><i class='fas fa-info-circle' style='font-size:10px'></i></span>&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;</label><input id='dashline' type='checkbox'>"))),
 									fluidRow(column(12, div(style="font-size:12px", HTML("<b>(*)</b> indicates required input")))),
 									br(),
-									actionButton("overview_on", "Plot / Refresh")
+									actionButton("overview_on", label = div("Plot / Refresh", title = "Please note that changes made to the data will not be reflected in the plot until the ‘plot/refresh’ button is clicked on"))
 								),
 								tabPanel("Sample",	
 									select_group_ui(
@@ -578,7 +578,7 @@
 										options = list(placeholder = 'Ensembl transcript id')),
 									fluidRow(column(12, div(style="font-size:12px", HTML("<b>(*)</b> indicates required input")))),
 									br(),
-									actionButton("individual_on", "Plot / Refresh")
+									actionButton("individual_on", label = div("Plot / Refresh", title = "Please note that changes made to the data will not be reflected in the plot until the ‘plot/refresh’ button is clicked on"))
 								),
 								tabPanel("Domain",
 									select_group_ui(
@@ -685,7 +685,7 @@
 							box(status="warning", width=3,
 								tabBox(id = "network_setting_tab", height = "100%", width = "100%",
 									tabPanel("RNA_SV_panel",
-										fluidRow(column(12, actionButton("net_rna_plot", "Plot / Refresh"))),
+										fluidRow(column(12, actionButton("net_rna_plot", label = div("Plot / Refresh", title = "Please note that changes made to the data will not be reflected in the plot until the ‘plot/refresh’ button is clicked on")))),
 										br(),
 										fluidRow(column(12, tags$p(tags$h5("Parameter Setting:", 
 														style="margin-left: 0em; text-align: left; font-weight: bold; text-decoration: underline")))),
@@ -704,7 +704,7 @@
 										br()
 									),
 									tabPanel("DNA_SV_panel",
-										fluidRow(column(12, actionButton("net_dna_plot", "Plot / Refresh"))),
+										fluidRow(column(12, actionButton("net_dna_plot", label = div("Plot / Refresh", title = "Please note that changes made to the data will not be reflected in the plot until the ‘plot/refresh’ button is clicked on")))),
 										br(),
 										fluidRow(column(12, tags$p(tags$h5("Parameter Setting:", 
 														style="margin-left: 0em; text-align: left; font-weight: bold; text-decoration: underline")))),
