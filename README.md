@@ -125,6 +125,8 @@ A full description of FuSViz documentation is available: &nbsp;&nbsp; [![Documen
 
 #### <ins>Online tutorial videos</ins>
 
+[![IMAGE ALT TEXT HERE](Tutorial_video_link.png)](https://www.youtube.com/watch?v=GAZInLru4y4&list=PLSOEIThRcIXUnPedL9VZWxuOJy3vU9y6a)
+
 ### Contact
 
 t.cytotoxic AT gmail.com
