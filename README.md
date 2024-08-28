@@ -1,7 +1,5 @@
 ![FuSviz_overview](logo_white_back.png)
 
-[![Build Status](https://travis-ci.com/senzhaocode/FuSViz.svg?branch=master)]
-
 ### Overview
 
 A shiny app to visualise, interpret and prioritise genomic/transcriptomic structural variations (SVs) of multiple samples. It provides multiple solutions and an interactive user interface to investigate the prevalence and recurrence of SVs and their relevant genes in a cohort of cases. The tool is designed for combining SVs called from DNA-seq (e.g. whole genome or target exome) and RNA-seq to illustrate a biological implication of SVs to the host genes and interested genomic regions in context of various annotations, and it can also integrate a mutation profile (SNVs/Indels) to reveal a connection between small variants and complex genomic aberrations. 
