@@ -123,6 +123,8 @@ A singularity container of FuSViz is available for [dowload](https://fusviz.s3.e
 
 A full description of FuSViz documentation is available: &nbsp;&nbsp; [![Documentation Status](https://readthedocs.org/projects/fusviz-docs/badge/?version=master)](https://fusviz-docs.readthedocs.io/en/master/index.html)
 
+#### <ins>Online tutorial videos</ins>
+
 ### Contact
 
 t.cytotoxic AT gmail.com
