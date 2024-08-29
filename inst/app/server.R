@@ -155,11 +155,11 @@ options(ucscChromosomeNames=FALSE)
 			if ( col_num_rna[11] != "strand2" || any(is.na(tumordata$strand2)) == T || any(tumordata$strand2 == "") == T ) { showModal(modalDialog(title = "Error message", "'strand2' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
 			if ( col_num_rna[12] != "untemplated_insert" || any(is.na(tumordata$untemplated_insert)) == T ) { showModal(modalDialog(title = "Error message", "'untemplated_insert' column has an incorrect header or NA value for RNA SVs!")); req(NULL); }
 			if ( database$organism == 'Human' ) {
-				if ( TRUE %in% grepl("[[:lower:]]+", tumordata$gene1) ||  TRUE %in% grepl("[[:lower:]]+", tumordata$gene2) ) { # lowercase present in symbol
+				if ( FALSE %in% grepl("^[A-Z][\\.A-Za-z0-9_-]+$", tumordata$gene1) ||  FALSE %in% grepl("^[A-Z][\\.A-Za-z0-9_-]+$", tumordata$gene2) ) { # lowercase present in symbol
 					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for human!")); req(NULL); 
 				}
 			} else if  ( database$organism == 'Mouse' ) {
-				if ( FALSE %in% grepl("^[[:upper:]][[:lower:]]+", tumordata$gene1) ||  FALSE %in% grepl("^[[:upper:]][[:lower:]]+", tumordata$gene2) ) { # lowercase no present in symbol
+				if ( FALSE %in% grepl("^[A-Z][\\.a-z0-9_-]+$", tumordata$gene1) ||  FALSE %in% grepl("^[A-Z][\\.a-z0-9_-]+$", tumordata$gene2) ) { # lowercase no present in symbol
 					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for mouse!")); req(NULL); 
 				}
 			}
@@ -256,11 +256,11 @@ options(ucscChromosomeNames=FALSE)
 			if ( col_num_dna[11] != "gene1" || any(is.na(dnadata$gene1)) == T || any(dnadata$gene1 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene1' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
 			if ( col_num_dna[12] != "gene2" || any(is.na(dnadata$gene2)) == T || any(dnadata$gene2 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene2' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
 			if ( database$organism == 'Human' ) {
-				if ( TRUE %in% grepl("[[:lower:]]+", dnadata$gene1) ||  TRUE %in% grepl("[[:lower:]]+", dnadata$gene2) ) { # lowercase present in symbol
+				if ( FALSE %in% grepl("^[A-Z][\\.A-Za-z0-9_-]+$|^\\*$", dnadata$gene1) ||  FALSE %in% grepl("^[A-Z][\\.A-Za-z0-9_-]+$|^\\*$", dnadata$gene2) ) { # lowercase present in symbol
 					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for human!")); req(NULL); 
 				}
 			} else if  ( database$organism == 'Mouse' ) {
-				if ( FALSE %in% grepl("^[[:upper:]][[:lower:]]+", dnadata$gene1) ||  FALSE %in% grepl("^[[:upper:]][[:lower:]]+", dnadata$gene2) ) { # lowercase no present in symbol
+				if ( FALSE %in% grepl("^[A-Z][\\.a-z0-9_-]+$|^\\*$", dnadata$gene1) ||  FALSE %in% grepl("^[A-Z][\\.a-z0-9_-]+$|^\\*$", dnadata$gene2) ) { # lowercase no present in symbol
 					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for mouse!")); req(NULL); 
 				}
 			}
@@ -1863,6 +1863,7 @@ options(ucscChromosomeNames=FALSE)
 			tmp = inputFile$rnadata[, c("gene1", "gene2", "name")];	tmp = as.data.frame(tmp);
 			assembly = FuSViz::network_process(tmp, "RNA", database$cancergenes, onco_color, supp_color, rela_color, intergenic_color, other_color);
 			if ( is.null(assembly$degree_score$nodes) ) {
+				showModal(modalDialog(title = "Warning message", "No oncogenes, tumor suppressors and cancer-related genes are available in RNA SV data OR gene symbols between RNA SV data and database resource do not match!")); req(NULL); 
 				return(NULL);
 			} else {
 				#// assemble final data.frame
@@ -1879,6 +1880,7 @@ options(ucscChromosomeNames=FALSE)
 			tmp = inputFile$dnadata[, c("gene1", "gene2", "name")];	tmp = as.data.frame(tmp);
 			assembly = FuSViz::network_process(tmp, "DNA", database$cancergenes, onco_color, supp_color, rela_color, intergenic_color, other_color);
 			if ( is.null(assembly$degree_score$nodes) ) {
+				showModal(modalDialog(title = "Warning message", "No oncogenes, tumor suppressors and cancer-related genes are available in DNA SV data OR gene symbols between DNA SV data and database resource do not match!")); req(NULL); 
 				return(NULL)
 			} else {
 				#// assemble final data.frame
@@ -2075,6 +2077,7 @@ options(ucscChromosomeNames=FALSE)
 
 		#// partner gene wordcloud of RNA SVs
 		output$wordcloud_rna <- wordcloud2::renderWordcloud2({
+			if ( is.null(wordcloud_svrna()$freq)	) { return(NULL); }
 			wordcloud2::wordcloud2(wordcloud_svrna()$freq, color=wordcloud_svrna()$colorlist, size=input$word_size_rna, shuffle=T, shape=input$word_shape_rna,
 				fontFamily = 'Calibri', fontWeight='normal', minRotation= -pi/2, maxRotation= -pi/2, ellipticity=1, rotateRatio=0)
 		})
@@ -2170,6 +2173,7 @@ options(ucscChromosomeNames=FALSE)
 
 		#// partner gene wordcloud of DNA SVs
 		output$wordcloud_dna <- wordcloud2::renderWordcloud2({
+			if ( is.null(wordcloud_svdna()$freq)	) { return(NULL); }
 			wordcloud2::wordcloud2(wordcloud_svdna()$freq, color=wordcloud_svdna()$colorlist, size=input$word_size_dna, shuffle=T, shape=input$word_shape_dna,
 				fontFamily = 'Calibri', fontWeight='normal', minRotation= -pi/2, maxRotation= -pi/2, ellipticity=1, rotateRatio=0)
 		})
