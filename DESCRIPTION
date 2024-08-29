@@ -22,7 +22,7 @@ Imports:
     htmlwidgets (>= 1.6.2),
     data.table,
     Gviz (>= 1.46.0),
-    GenomicFeatures (>= 1.54.0),
+    GenomicFeatures (>= 1.52.0),
     AnnotationDbi,
     GenomicRanges,
     IRanges,
