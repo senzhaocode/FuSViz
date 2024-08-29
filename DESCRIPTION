@@ -1,6 +1,6 @@
 Package: FuSViz
 Title: Visualization tool for structure variations (SVs) and fusion genes/transcripts.
-Version: 1.6.0
+Version: 1.7.0
 Author@R: c(
     person("Sen", "ZHAO", email = "t.cytotoxic@gmail.com", role = c("aut", "cre")))
 Maintainer: Sen ZHAO <t.cytotoxic@gmail.com>
