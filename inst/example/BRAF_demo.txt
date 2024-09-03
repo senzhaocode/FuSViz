@@ -1,0 +1,12 @@
+chrom1	pos1	gene1	chrom2	pos2	gene2	name	split	span	strand1	strand2	untemplated_insert
+chr1	38272527	YRDC	chr1	120539953	NOTCH2	sample1	69	82	-	-	
+chr7	121513610	PTPRZ1	chr7	116339124	MET	sample2	59	48	+	+	
+chr9	713461	KANK1	chr9	87482155	NTRK2	sample2	142	8	+	+	
+chr12	121416897	HNF1A	chr3	12645788	RAF1	sample3	52	2	+	-	
+chr6	152421909	ESR1	chr20	21355869	XRN2	sample3	7	0	+	+	
+chr4	83348343	HNRNPDL	chr7	140482957	BRAF	sample3	201	0	-	-	
+chr7	140487348	BRAF	chr4	83347786	HNRNPDL	sample3	82	0	-	-	
+chr4	1808661	FGFR3	chr4	1737458	TACC3	sample4	1580	0	+	+	
+chr2	42472828	EML4	chr2	42797576	MTA3	sample4	16	0	+	+	
+chr14	65270761	SPTB	chr9	139391577	NOTCH1	sample4	230	0	-	-	
+chr19	24102884	ZNF726	chr19	15289967	NOTCH3	sample4	42	0	+	-	
