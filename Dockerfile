@@ -1,6 +1,8 @@
-FROM rocker/shiny:4.3.3
+FROM bioconductor/shiny:3.18-R-4.3.3
 
 LABEL maintainer="Sen ZHAO <t.cytotoxic@gmail.com>"
+
+RUN dpkg --configure -a
 
 RUN apt-get update && apt-get install -y \
 	build-essential \
@@ -32,7 +34,7 @@ ENV LIBRARY_PATH=$LIBRARY_PATH:/usr/local/lib/R/lib/
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/R/lib/
 
 WORKDIR /tmp
-ARG htsversion=1.16
+ARG htsversion=1.19
 RUN curl -L https://github.com/samtools/htslib/releases/download/${htsversion}/htslib-${htsversion}.tar.bz2 | tar xj && \
     (cd htslib-${htsversion} && ./configure --enable-plugins --with-plugin-path='$(libexecdir)/htslib:/usr/libexec/htslib' && make install) && \
     ldconfig && \
