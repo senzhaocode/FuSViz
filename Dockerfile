@@ -4,7 +4,7 @@ LABEL maintainer="Sen ZHAO <t.cytotoxic@gmail.com>"
 
 RUN dpkg --configure -a
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y -f \
 	build-essential \
 	sudo \
 	unzip \
