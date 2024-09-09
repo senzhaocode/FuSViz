@@ -4,7 +4,7 @@ LABEL maintainer="Sen ZHAO <t.cytotoxic@gmail.com>"
 
 RUN dpkg --configure -a
 
-RUN apt-get update && apt-get install -y -f \
+RUN apt update && apt install -y -f \
 	build-essential \
 	sudo \
 	unzip \
@@ -12,7 +12,6 @@ RUN apt-get update && apt-get install -y -f \
 	curl \
 	git \
 	libbz2-dev \
-	zlib1g-dev \
 	libgsl0-dev \
 	liblzma-dev \
 	libglpk-dev \
