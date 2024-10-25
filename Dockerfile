@@ -1,4 +1,4 @@
-FROM bioconductor/shiny:3.18-R-4.3.3
+FROM rocker/shiny:4.4
 
 LABEL maintainer="Sen ZHAO <t.cytotoxic@gmail.com>"
 
