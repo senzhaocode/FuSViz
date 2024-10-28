@@ -13,7 +13,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 ##### Pull pre-built FuSViz image (release version) from docker hub
 
-Run `docker pull senzhao/fusviz_shiny_app:1.7.0`, then check the image by typing `docker images`
+Run `docker pull --platform=linux/amd64 senzhao/fusviz_shiny_app:1.7.0`, then check the image by typing `docker images`
 
 Optional: if user would like to build FuSViz image (developmental version), just download soruce code and change to directory `cd ~/FuSViz-master`; then run `docker build --platform=linux/amd64 --rm -t senzhao/fusviz_shiny_app:latest -f Dockerfile .`.
 
