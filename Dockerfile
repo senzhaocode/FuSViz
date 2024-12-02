@@ -46,7 +46,7 @@ RUN install2.r -e remotes
 RUN install2.r -e devtools
 # RUN installGithub.r "lchiffon/wordcloud2"
 # RUN installGithub.r "senzhaocode/FuSViz"
-RUN wget -t 0 -c "https://github.com/senzhaocode/FuSViz/archive/refs/tags/v1.7.0.tar.gz" && R -e "remotes::install_local('v1.7.0.tar.gz', dependencies=T)"
+RUN wget -t 0 -c "https://github.com/senzhaocode/FuSViz/archive/refs/tags/v1.8.0.tar.gz" && R -e "remotes::install_local('v1.8.0.tar.gz', dependencies=T)"
 RUN rm -rf /tmp/bcftools* && rm -rf /tmp/htslib-* && rm -rf /tmp/samtools-* && rm -rf /tmp/file* && rm -rf /tmp/shinyWidgets*
 
 RUN echo "local(options(shiny.port = 3838, shiny.host = '0.0.0.0'))" >> /usr/local/lib/R/etc/Rprofile.site
