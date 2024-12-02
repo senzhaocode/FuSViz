@@ -1,5 +1,14 @@
 // All alignments and annotation files are loaded directly from a user’s local file system, or via URL from web servers and cloud providers. 
 // They are run by the web browser and no data is ever uploaded to the host site.
+function myFunction(element) {
+	$('a[href="#shiny-tab-igv"]').on('shown.bs.tab', function() {
+		$('.sidebar-menu a').filter('a[href="#' + 'shiny-tab-igv' + '"]').tab('show');
+		if ( igv.browser != undefined && element != undefined ) {
+			igv.browser.search(element);
+			element = undefined;
+		}
+	});
+}
 
 function load() {
 	var fileobj = document.getElementById("uploadfile");
