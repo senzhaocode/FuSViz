@@ -10,9 +10,9 @@ options(ucscChromosomeNames=FALSE)
 		output$messageMenu <- renderMenu({
 			dropdownMenu(type = "messages",
 				#// 1st option
-				messageItem(from = "FuSViz in Github", message = "Code, Source, Documentation", icon = icon_g, href = "https://github.com/senzhaocode"),
+				messageItem(from = "FuSViz in Github", message = "Code, Source, Documentation", icon = icon_g, href = "https://github.com/senzhaocode/FuSViz"),
 				#// 2nd option
-				messageItem(from = "Issues", message = "Report issues and bugs", icon = icon("exclamation-circle", verify_fa = FALSE), href = "https://github.com/senzhaocode"),
+				messageItem(from = "Issues", message = "Report issues and bugs", icon = icon("exclamation-circle", verify_fa = FALSE), href = "https://github.com/senzhaocode/FuSViz/issues"),
 				badgeStatus = NULL,
 				icon = icon("info-circle", verify_fa = FALSE),
 				headerText = "App Information")
@@ -136,12 +136,11 @@ options(ucscChromosomeNames=FALSE)
 		observeEvent(input$file_rna_data$datapath, {
 			#// Avoid 'input$file_rna_data' infinite problem when no file loading; the req() basically aborts the rest of the block 
 			req(input$file_rna_data);
-			#// Upload and read inputfile of RNA SVs (11 columns)
+			#// Upload and read inputfile of RNA SVs (13 columns)
 			tumordata = read.csv(input$file_rna_data$datapath, header=TRUE, sep=input$sep_rna_file, quote="");
 			col_num_rna = colnames(tumordata);
-			if ( length(col_num_rna) < 12 ) { showModal(modalDialog(title = "Error message", "RNA SV input file does not meet requirement - column number MUST be 12!")); req(NULL); }
-			tumordata$untemplated_insert[is.na(tumordata$untemplated_insert)] = ""
-			#// NOTE: column1-11 (chrom1, pos1, gene1, chrom2, pos2, gene2, name, split, span, strand1, strand2) - NA unaccepted.
+			if ( length(col_num_rna) < 13 ) { showModal(modalDialog(title = "Error message", "RNA SV input file does not meet requirement - column number MUST be 12!")); req(NULL); }
+			#// NOTE: column1-11 (chrom1, pos1, gene1, chrom2, pos2, gene2, name, split, span, strand1, strand2, untemplated_insert, comment) - NA unaccepted.
 			if ( col_num_rna[1] != "chrom1" || any(is.na(tumordata$chrom1)) == T || any(tumordata$chrom1 == "") == T ) { showModal(modalDialog(title = "Error message", "'chrom1' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
 			if ( col_num_rna[2] != "pos1" || any(is.na(tumordata$pos1)) == T || any(tumordata$pos1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'pos1' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
 			if ( col_num_rna[3] != "gene1" || any(is.na(tumordata$gene1)) == T || any(tumordata$gene1 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene1' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
@@ -153,7 +152,12 @@ options(ucscChromosomeNames=FALSE)
 			if ( col_num_rna[9] != "span" || any(is.na(tumordata$span)) == T || any(tumordata$sapn < 0) == T ) { showModal(modalDialog(title = "Error message", "'span' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
 			if ( col_num_rna[10] != "strand1" || any(is.na(tumordata$strand1)) == T || any(tumordata$strand1 == "") == T ) { showModal(modalDialog(title = "Error message", "'strand1' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
 			if ( col_num_rna[11] != "strand2" || any(is.na(tumordata$strand2)) == T || any(tumordata$strand2 == "") == T ) { showModal(modalDialog(title = "Error message", "'strand2' column has an incorrect header or empty/NA value for RNA SVs!")); req(NULL); }
-			if ( col_num_rna[12] != "untemplated_insert" || any(is.na(tumordata$untemplated_insert)) == T ) { showModal(modalDialog(title = "Error message", "'untemplated_insert' column has an incorrect header or NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[12] != "untemplated_insert" ) { showModal(modalDialog(title = "Error message", "'untemplated_insert' column has an incorrect header for RNA SVs!")); req(NULL); }
+			tumordata$untemplated_insert[is.na(tumordata$untemplated_insert)] = ""; # if NA for untemplated_insert, fill in ""
+			if ( any(is.na(tumordata$untemplated_insert)) == T ) { showModal(modalDialog(title = "Error message", "'untemplated_insert' column has NA value for RNA SVs!")); req(NULL); }
+			if ( col_num_rna[13] != "comment" ) { showModal(modalDialog(title = "Error message", "'comment' column has an incorrect header for RNA SVs!")); req(NULL); }
+			tumordata$comment[is.na(tumordata$comment)] = ""; # if NA for comment, fill in ""
+			if ( any(is.na(tumordata$comment)) == T ) { showModal(modalDialog(title = "Error message", "'comment' column has NA value for RNA SVs!")); req(NULL); }
 			if ( database$organism == 'Human' ) {
 				if ( FALSE %in% grepl("^[A-Z][\\.A-Za-z0-9_-]+$", tumordata$gene1) ||  FALSE %in% grepl("^[A-Z][\\.A-Za-z0-9_-]+$", tumordata$gene2) ) { # lowercase present in symbol
 					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for human!")); req(NULL); 
@@ -210,7 +214,7 @@ options(ucscChromosomeNames=FALSE)
 					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
 					showModal(modalDialog(title = "Warning message", paste(input$RNAcontents_cell_edit$value, " is not a valid gene name! Please input valid gene name.", sep="")));
 				}
-			} else if ( rnaclmn == 7 || rnaclmn == 12 ) {
+			} else if ( rnaclmn == 7 || rnaclmn == 12 || rnaclmn == 13 ) {
 				if ( is(info[["value"]], "character") ) {
 					inputFile$rnadata <<- editData(inputFile$rnadata, info, 'RNAcontents')
 				} else {
@@ -237,12 +241,12 @@ options(ucscChromosomeNames=FALSE)
 		observeEvent(input$file_dna_data$datapath, {
 			#// Avoid 'input$file_dna_data' infinite problem when no file loading; the req() basically aborts the rest of the block
 			req(input$file_dna_data);
-			#// Upload and read inputfile of DNA SVs (12 columns)
+			#// Upload and read inputfile of DNA SVs (13 columns)
 			dnadata = data.table::fread(input$file_dna_data$datapath, sep=input$sep_dna_file, stringsAsFactors = FALSE, verbose = FALSE, data.table = TRUE,
 						header = TRUE, fill = TRUE, quote = "");
 			col_num_dna = colnames(dnadata);
-			if ( length(col_num_dna) < 12 ) { showModal(modalDialog(title = "Error message", "DNA SV input file does not meet requirement - column number MUST be 12!")); req(NULL); }
-			#// NOTE: column1-12 (chrom1, start1, end1, chrom2, start2, end2, name, type, split, span, gene1 and gene2) - no NA accepted.
+			if ( length(col_num_dna) < 13 ) { showModal(modalDialog(title = "Error message", "DNA SV input file does not meet requirement - column number MUST be 13!")); req(NULL); }
+			#// NOTE: column1-13 (chrom1, start1, end1, chrom2, start2, end2, name, type, split, span, gene1, gene2, comment) - no NA accepted.
 			if ( col_num_dna[1] != "chrom1" || any(is.na(dnadata$chrom1)) == T || any(dnadata$chrom1 == "") == T ) { showModal(modalDialog(title = "Error message", "'chrom1' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
 			if ( col_num_dna[2] != "start1" || any(is.na(dnadata$start1)) == T || any(dnadata$start1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'start1' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
 			if ( col_num_dna[3] != "end1" || any(is.na(dnadata$end1)) == T || any(dnadata$end1 <= 0) == T ) { showModal(modalDialog(title = "Error message", "'end1' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
@@ -255,6 +259,9 @@ options(ucscChromosomeNames=FALSE)
 			if ( col_num_dna[10] != "span" || any(is.na(dnadata$span)) == T || any(dnadata$sapn < 0) == T ) { showModal(modalDialog(title = "Error message", "'span' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
 			if ( col_num_dna[11] != "gene1" || any(is.na(dnadata$gene1)) == T || any(dnadata$gene1 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene1' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
 			if ( col_num_dna[12] != "gene2" || any(is.na(dnadata$gene2)) == T || any(dnadata$gene2 == "") == T ) { showModal(modalDialog(title = "Error message", "'gene2' column has an incorrect header or empty/NA value for DNA SVs!")); req(NULL); }
+			if ( col_num_dna[13] != "comment" ) { showModal(modalDialog(title = "Error message", "'comment' column has an incorrect header for DNA SVs!")); req(NULL); }			
+			dnadata$comment[is.na(dnadata$comment)] = ""; # if NA for comment, fill in ""
+			if ( any(is.na(dnadata$comment)) == T ) { showModal(modalDialog(title = "Error message", "'comment' column has NA value for DNA SVs!")); req(NULL); }			
 			if ( database$organism == 'Human' ) {
 				if ( FALSE %in% grepl("^[A-Z][\\.A-Za-z0-9_-]+$|^\\*$", dnadata$gene1) ||  FALSE %in% grepl("^[A-Z][\\.A-Za-z0-9_-]+$|^\\*$", dnadata$gene2) ) { # lowercase present in symbol
 					showModal(modalDialog(title = "Error message", "'gene1' and 'gene2' columns has invalid symbol names for human!")); req(NULL); 
@@ -310,7 +317,7 @@ options(ucscChromosomeNames=FALSE)
 						showModal(modalDialog(title = "Warning message", paste(input$DNAcontents_cell_edit$value, " is not a valid gene name! Please input valid gene name!", sep="")));
 					}
 				}
-			} else if ( dnaclmn == 7 ) {
+			} else if ( dnaclmn == 7 || dnaclmn == 13 ) {
 				if ( is(info[["value"]], "character") ) {
 					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
 				} else {
@@ -327,15 +334,6 @@ options(ucscChromosomeNames=FALSE)
 					info[["value"]] <- dnavalue;
 					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
 					showModal(modalDialog(title = "Warning message", paste(input$DNAcontents_cell_edit$value, " is not a valid SV type! NOTE: SV type should be 'BND, DEL, DUP, INS or INV'!", sep="")));
-				}
-			} else if ( dnaclmn == 10 ||  dnaclmn == 11 ) {
-				if ( info[["value"]] == '+' || info[["value"]] == '-' ) {
-					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
-				} else {
-					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
-					info[["value"]] <- dnavalue;
-					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
-					showModal(modalDialog(title = "Warning message", paste(input$DNAcontents_cell_edit$value, " is not a valid strand direction! NOTE: strand direction should be +/-!", sep="")));
 				}
 			}
     	})
@@ -543,7 +541,7 @@ options(ucscChromosomeNames=FALSE)
 		#// Create a class for Linear module for Mutation data //
 		#////////////////////////////////////////////////////////
 		input_twoway_mut_bed <- reactive({ # a data.frame class
-			if ( is.null(inputFile$mutationdata) ) { req(NULL); }
+			if ( is.null(inputFile$mutationdata) ) { return(NULL); }
 			#// Initialize data.frame class 'mutbed' and 'mutbedgraph' for RNA SVs
 			mutbed = data.frame(chr=as.character(inputFile$mutationdata$Chromosome), start=as.numeric(inputFile$mutationdata$Start_Position)-1, 
 								end=as.numeric(inputFile$mutationdata$End_Position), gene_id=as.character(inputFile$mutationdata$Hugo_Symbol), 
@@ -569,9 +567,9 @@ options(ucscChromosomeNames=FALSE)
 		#////////////////////////////////////////////////////////////////////////////////
 		#// 'input_twoway' has two elements: 'rnabed' - a data.frame class for bed format and 'rnabedgraph' - a data.frame class for tumorbedgraph format
 		input_twoway_rna_bed <- reactive({
-			if ( is.null(inputFile$rnadata) ) { req(NULL); }
 			#// Defined data.frame class 'rnabed' and 'rnabedgraph' for RNA SVs
 			rnabed = NULL;	rnabedgraph = NULL;
+			if ( is.null(inputFile$rnadata) ) { return(list(rnabed=NULL, rnabedgraph=NULL)) }
 			#// Set num of split and span reads for filtering control
 			rnatmp = inputFile$rnadata[inputFile$rnadata$split >= input$rna_split_bed & inputFile$rnadata$span >= input$rna_span_bed, ];
 			#// Assign SV type either 'Intra' or 'Inter''
@@ -609,7 +607,7 @@ options(ucscChromosomeNames=FALSE)
 		#///////////////////////////////////////////////////////////////////
 		#// 'input_twoway_rna_bedpe' has one element: 'rnabedpe' - a data.frame class for bedpe format 
 		rnabedpe_tmp <- reactive({
-			if ( is.null(inputFile$rnadata) ) { req(NULL); }
+			if ( is.null(inputFile$rnadata) ) { return(NULL); }
 			tmp = inputFile$rnadata[inputFile$rnadata$split >= input$rna_split_bedpe & inputFile$rnadata$span >= input$rna_span_bedpe, ];
 			#// remove translocs events / intra-events > a given distance
 			dis = apply(tmp, 1, function(x){
@@ -629,7 +627,8 @@ options(ucscChromosomeNames=FALSE)
 
 		input_twoway_rna_bedpe <- reactive({
 			#// Define data.frame class 'rnabedpe' for RNA SVs
-			rnabedpe =	rnabedpe_tmp();
+			if ( is.null(rnabedpe_tmp()) ) { return(NULL); }
+			rnabedpe = rnabedpe_tmp();
 			#// choose selected 'name'(samples) for control
 			if (! is.null(input$rna_sample_bedpe) ) {
 				if ( input$rna_sample_bedpe[1] != "" ) {
@@ -654,7 +653,7 @@ options(ucscChromosomeNames=FALSE)
 		#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		#// 'input_twoway_dna_bed' has two element: 'dnabed' - a data.frame class for bed format and 'dnabedgraph' - a data.frame class for bedgraph format
 		dnabed_tmp <- reactive({
-			if ( is.null(inputFile$dnadata) ) { req(NULL); }
+			if ( is.null(inputFile$dnadata) ) { return(NULL); }
 			tmp = inputFile$dnadata[inputFile$dnadata$split >= input$dna_split_bed & inputFile$dnadata$span >= input$dna_span_bed, ];
 			#// use distance of two SVs as control for filtering (translocs PASS)
 			dis_bed = apply(tmp, 1, function(x){
@@ -671,7 +670,9 @@ options(ucscChromosomeNames=FALSE)
 
 		input_twoway_dna_bed <- reactive({
 			#// Defined data.frame class 'dnabed' and 'dnabedgraph' for DNA SVs
-			dnabed = NULL;        dnabedgraph = NULL;		tmpbed = dnabed_tmp();
+			dnabed = NULL;        dnabedgraph = NULL;
+			if ( is.null(dnabed_tmp()) ) { return(list(dnabed=dnabed, dnabedgraph=dnabedgraph)); }
+			tmpbed = dnabed_tmp();
 			if (! is.null(input$dna_type_bed) ) {
 				if ( input$dna_type_bed[1] != "" ) {
 					tmpbed = tmpbed[which(tmpbed$type %in% input$dna_type_bed), ];
@@ -695,7 +696,7 @@ options(ucscChromosomeNames=FALSE)
 		#/////////////////////////////////////////////////////////////////////////////////////////////////////
 		#// 'input_twoway_dna_bedpe' has one element: 'dnabedpe' - a data.frame class for bedpe format
 		dnabedpe_tmp <- reactive({
-			if ( is.null(inputFile$dnadata) ) { req(NULL); }
+			if ( is.null(inputFile$dnadata) ) { return(NULL); }
 			tmp = inputFile$dnadata[inputFile$dnadata$split >= input$dna_split_bedpe & inputFile$dnadata$span >= input$dna_span_bedpe, ];
 			tmp = tmp[tmp$type != 'BND', ]; # remove translocs due to no support for IGV
 			#// use distance of two SVs as control for filtering (no translocs events included)
@@ -714,6 +715,7 @@ options(ucscChromosomeNames=FALSE)
 
 		input_twoway_dna_bedpe <- reactive({
 			#// defined data.frame class 'dnabedpe' for DNA SVs
+			if ( is.null(dnabedpe_tmp()) ) { return(NULL); }
 			dnabedpe = dnabedpe_tmp();
 			#// choose selected 'name'(samples) for control
 			if (! is.null(input$dna_sample_bedpe) ) {
@@ -743,7 +745,7 @@ options(ucscChromosomeNames=FALSE)
 		#//////////////////////////////////////////////////////////////////////////////////////////////
 		#// 'input_twoway_dna_seg' has one element: 'dnaseg' - a data.frame class for segment format 
 		dnaseg_tmp <- reactive({
-			if ( is.null(inputFile$dnadata) ) { req(NULL); }
+			if ( is.null(inputFile$dnadata) ) { return(NULL); }
 			tmp = inputFile$dnadata[inputFile$dnadata$split >= input$dna_split_seg & inputFile$dnadata$span >= input$dna_span_seg, ];
 			tmp = tmp[which(tmp$type %in% c('DUP','DEL')), ];
 			return(tmp);
@@ -755,6 +757,7 @@ options(ucscChromosomeNames=FALSE)
 
 		input_twoway_dna_seg <- reactive({
 			#// Defined data.frame class 'seg' for DNA SVs
+			if ( is.null(dnaseg_tmp()) ) { return(list(dup=NULL, del=NULL)); }
 			dnaseg_del = NULL;		dnaseg_dup = dnaseg_tmp();
 			dnaseg_del = dnaseg_dup[dnaseg_dup$type == "DEL", ];
 			dnaseg_dup = dnaseg_dup[dnaseg_dup$type == "DUP", ];
@@ -870,51 +873,53 @@ options(ucscChromosomeNames=FALSE)
 		})
 		
 		observeEvent(input$circos_plot_dna, {
-			if ( is.null(circle_data_final_dna()) ) { output$circle_2 = NULL;	return(); }
-			if ( nrow(circle_data_final_dna()) == 0 ) { output$circle_2 = NULL;	return(); }
-			if ( is.null(circle_gene_dna()) || is.null(circle_cytoband_dna()) ) { 
-				shiny::showModal(modalDialog(title = "Error message", "Genome annotation database is not loaded!")); req(NULL);
-			}
-			#// set SVs tracks
-			chrom_A = circle_data_final_dna()$chrom1;	chrom_B = circle_data_final_dna()$chrom2;
-			pos_A_s = circle_data_final_dna()$start1;	pos_A_e = circle_data_final_dna()$end1;
-			pos_B_s = circle_data_final_dna()$start2;   pos_B_e = circle_data_final_dna()$end2;
-			gene1 = circle_data_final_dna()$gene1;		gene2 = circle_data_final_dna()$gene2;
-			labels = paste(chrom_A, ":", pos_A_s, "-", pos_A_e, ":", gene1, " | ", chrom_B, ":", pos_B_s, "-", pos_B_e, ":", gene2, 
-						   " (", circle_data_final_dna()$value, ")", " [",circle_data_final_dna()$label, "]", sep="");
-			#// assemble tracklist for plotting
-			tracklist = BioCircos::BioCircosBackgroundTrack("BackgroundTrack", minRadius = 0, maxRadius = 0.73, borderSize = 0, fillColors = "#EEFFEE");
-			tracklist = tracklist + BioCircos::BioCircosBackgroundTrack("BackgroundTrack", minRadius = 0.75, maxRadius = 0.95, borderSize = 0, fillColors = "#FFFFFF");
-			tracklist = tracklist + BioCircos::BioCircosArcTrack("GeneTrack", minRadius = 1.3, maxRadius = 1.4, chromosomes = circle_gene_dna()$chr, starts = circle_gene_dna()$start,
-									ends = circle_gene_dna()$end, labels = circle_gene_dna()$gene, colors = "red");
-			tracklist = tracklist + BioCircos::BioCircosLinkTrack('LinkTrack', chrom_A, pos_A_s, pos_A_e, chrom_B, pos_B_s, pos_B_e, maxRadius=0.73, width="0.02em", 
-									labels=labels, displayLabel=F, color="red");
-			#// checkbox is true
-			if ( input$cirmutcheck_dna ) {
-				if (! is.null(circle_mutation_dna()) ) {
-					tracklist = tracklist + BioCircos::BioCircosSNPTrack('MutationTrack', circle_mutation_dna()$Chromosome, circle_mutation_dna()$Start_Position, circle_mutation_dna()$freq, 
-							labels = circle_mutation_dna()$anno_new, size = 1.4, maxRadius = 0.95, minRadius = 0.75, colors = "orange");
-				} else {
-					shiny::showModal(modalDialog(title = "Error message", "No mutation data in MAF format is loaded!"));	req(NULL);
-				}
-			}
-			#// if no selection, all chroms for visual
-			if ( is.null(input[['circle_set_dna-chr']]) && is.null(input[['circle_set_dna-gene']]) && is.null(input[['circle_set_dna-sample']]) ) { 
-				genome_select_dna$value = database$genome_cir;
-				tracklist = tracklist + BioCircos::BioCircosArcTrack("CytobanTrack", minRadius=1, maxRadius=1.15, chromosomes=database$karyto$chr, starts=database$karyto$start, 
-												ends=database$karyto$end, labels=database$karyto$name, colors=database$karyto$color);
+			shinycssloaders::showSpinner("circle_2")
+			circle_plot_object=NULL;
+			if ( is.null(circle_data_final_dna()) || nrow(circle_data_final_dna()) == 0 || is.null(circle_gene_dna()) || is.null(circle_cytoband_dna()) ) {
+				shiny::showModal(modalDialog(title = "Warning message", "No DNA SVs are available!"));
 			} else {
-				genome_select_dna$value = database$genome_cir[unique(circle_cytoband_dna()$chr)];
-				tracklist = tracklist + BioCircos::BioCircosArcTrack("CytobanTrack", minRadius=1, maxRadius=1.15, chromosomes=circle_cytoband_dna()$chr, starts=circle_cytoband_dna()$start,
+				#// set SVs tracks
+				chrom_A = circle_data_final_dna()$chrom1;	chrom_B = circle_data_final_dna()$chrom2;
+				pos_A_s = circle_data_final_dna()$start1;	pos_A_e = circle_data_final_dna()$end1;
+				pos_B_s = circle_data_final_dna()$start2;   pos_B_e = circle_data_final_dna()$end2;
+				gene1 = circle_data_final_dna()$gene1;		gene2 = circle_data_final_dna()$gene2;
+				labels = paste(chrom_A, ":", pos_A_s, "-", pos_A_e, ":", gene1, " | ", chrom_B, ":", pos_B_s, "-", pos_B_e, ":", gene2, 
+						   " (", circle_data_final_dna()$value, ")", " [",circle_data_final_dna()$label, "]", sep="");
+				#// assemble tracklist for plotting
+				tracklist = BioCircos::BioCircosBackgroundTrack("BackgroundTrack", minRadius = 0, maxRadius = 0.73, borderSize = 0, fillColors = "#EEFFEE");
+				tracklist = tracklist + BioCircos::BioCircosBackgroundTrack("BackgroundTrack", minRadius = 0.75, maxRadius = 0.95, borderSize = 0, fillColors = "#FFFFFF");
+				tracklist = tracklist + BioCircos::BioCircosArcTrack("GeneTrack", minRadius = 1.3, maxRadius = 1.4, chromosomes = circle_gene_dna()$chr, starts = circle_gene_dna()$start,
+									ends = circle_gene_dna()$end, labels = circle_gene_dna()$gene, colors = "red");
+				tracklist = tracklist + BioCircos::BioCircosLinkTrack('LinkTrack', chrom_A, pos_A_s, pos_A_e, chrom_B, pos_B_s, pos_B_e, maxRadius=0.73, width="0.15em", 
+									labels=labels, displayLabel=F, color="red");
+				#// checkbox is true
+				if ( input$cirmutcheck_dna ) {
+					if (! is.null(circle_mutation_dna()) ) {
+						tracklist = tracklist + BioCircos::BioCircosSNPTrack('MutationTrack', circle_mutation_dna()$Chromosome, circle_mutation_dna()$Start_Position, circle_mutation_dna()$freq, 
+							labels = circle_mutation_dna()$anno_new, size = 1.4, maxRadius = 0.95, minRadius = 0.75, colors = "orange");
+					} else {
+						shiny::showModal(modalDialog(title = "Warning message", "No mutation data in MAF format is loaded!"));
+					}
+				}
+				#// if no selection, all chroms for visual
+				if ( is.null(input[['circle_set_dna-chr']]) && is.null(input[['circle_set_dna-gene']]) && is.null(input[['circle_set_dna-sample']]) ) { 
+					genome_select_dna$value = database$genome_cir;
+					tracklist = tracklist + BioCircos::BioCircosArcTrack("CytobanTrack", minRadius=1, maxRadius=1.15, chromosomes=database$karyto$chr, starts=database$karyto$start, 
+												ends=database$karyto$end, labels=database$karyto$name, colors=database$karyto$color);
+				} else {
+					genome_select_dna$value = database$genome_cir[unique(circle_cytoband_dna()$chr)];
+					tracklist = tracklist + BioCircos::BioCircosArcTrack("CytobanTrack", minRadius=1, maxRadius=1.15, chromosomes=circle_cytoband_dna()$chr, starts=circle_cytoband_dna()$start,
 						ends=circle_cytoband_dna()$end, labels=circle_cytoband_dna()$name, colors=circle_cytoband_dna()$color);
+				}
+				circle_plot_object <- BioCircos::BioCircos(tracklist, genome=genome_select_dna$value, genomeFillColor=rep("white", length(genome_select_dna$value)), displayGenomeBorder=T,
+					SNPMouseOverTooltipsBorderWidth = "0.5px", SNPMouseOverCircleSize = 1, SNPMouseOverCircleOpacity = 0.5, 
+					ARCMouseOverTooltipsBorderWidth = "0.5px", ARCMouseOverArcOpacity = 0.5, 
+					LINKMouseOverTooltipsBorderWidth = "0.5px", LINKMouseOverOpacity = 0.5, LINKMouseOverStrokeWidth = 0.05,
+					genomeBorderSize=0.4, genomeBorderColor="black", genomeLabelTextSize="7pt", chrPad=0.02, genomeTicksLen=2, 
+					genomeTicksTextSize="0.5em", SNPMouseOverTooltipsHtml04="<br/>Anno: ", LINKMouseOverTooltipsHtml01="Link: ", 
+					ARCMouseOverTooltipsHtml04="<br/>Name: ", TEXTModuleDragEvent=T);
 			}
-			circle_plot_object <- BioCircos::BioCircos(tracklist, genome=genome_select_dna$value, genomeFillColor=rep("white", length(genome_select_dna$value)), displayGenomeBorder=T,
-				SNPMouseOverTooltipsBorderWidth = "0.5px", SNPMouseOverCircleSize = 1, SNPMouseOverCircleOpacity = 0.5, 
-				ARCMouseOverTooltipsBorderWidth = "0.5px", ARCMouseOverArcOpacity = 0.5, 
-				LINKMouseOverTooltipsBorderWidth = "0.5px", LINKMouseOverOpacity = 0.5, LINKMouseOverStrokeWidth = 1,
-				genomeBorderSize=0.4, genomeBorderColor="black", genomeLabelTextSize="7pt", chrPad=0.02, genomeTicksLen=2, 
-				genomeTicksTextSize="0.5em", SNPMouseOverTooltipsHtml04="<br/>Anno: ", LINKMouseOverTooltipsHtml01="Link: ", 
-				ARCMouseOverTooltipsHtml04="<br/>Name: ", TEXTModuleDragEvent=T);
+			shinycssloaders::hideSpinner("circle_2");
 			output$circle_2 <- BioCircos::renderBioCircos({ circle_plot_object });
 			output$CircleDownDNA <- downloadHandler(filename=function(){ paste("circle_plot_DNA", "html", sep =".") }, content=function(file){ saveWidget(circle_plot_object, file) });
 		})
@@ -985,51 +990,53 @@ options(ucscChromosomeNames=FALSE)
 		})
 
 		observeEvent(input$circos_plot, {
-			if ( is.null(circle_data_final()) ) { output$circle_1 = NULL;	return(); }
-			if ( nrow(circle_data_final()) == 0 ) { output$circle_1 = NULL;	return(); }
-			if ( is.null(circle_gene()) || is.null(circle_cytoband()) ) { 
-				shiny::showModal(modalDialog(title = "Error message", "Genome annotation database is not loaded!"));	req(NULL);
-			}
+			shinycssloaders::showSpinner("circle_1")
+			circle_plot_object=NULL;
+			if ( is.null(circle_data_final()) || nrow(circle_data_final()) == 0 || is.null(circle_gene()) || is.null(circle_cytoband()) ) { 
+				shiny::showModal(modalDialog(title = "Warning message", "No RNA SVs are available!"));
+			} else {
 			#// set SVs tracks
-			chrom_A = circle_data_final()$chrom1;	chrom_B = circle_data_final()$chrom2;
-			pos_A_s = circle_data_final()$pos1;		pos_A_e = circle_data_final()$pos1 + 1;
-			pos_B_s = circle_data_final()$pos2;		pos_B_e = circle_data_final()$pos2 + 1;
-			gene1 = circle_data_final()$gene1;		gene2 = circle_data_final()$gene2;
-			labels = paste(chrom_A, ":", pos_A_s, ":", gene1, " | ", chrom_B, ":", pos_B_s, ":", gene2, 
+				chrom_A = circle_data_final()$chrom1;	chrom_B = circle_data_final()$chrom2;
+				pos_A_s = circle_data_final()$pos1;		pos_A_e = circle_data_final()$pos1 + 1;
+				pos_B_s = circle_data_final()$pos2;		pos_B_e = circle_data_final()$pos2 + 1;
+				gene1 = circle_data_final()$gene1;		gene2 = circle_data_final()$gene2;
+				labels = paste(chrom_A, ":", pos_A_s, ":", gene1, " | ", chrom_B, ":", pos_B_s, ":", gene2, 
 					" (", circle_data_final()$value, ")", " [",circle_data_final()$label, "]", sep="");
-			#// assemble tracklist for plotting
-			tracklist = BioCircos::BioCircosBackgroundTrack("BackgroundTrack", minRadius = 0, maxRadius = 0.73, borderSize = 0, fillColors = "#EEFFEE");
-			tracklist = tracklist + BioCircos::BioCircosBackgroundTrack("BackgroundTrack", minRadius = 0.75, maxRadius = 0.95, borderSize = 0, fillColors = "#FFFFFF");
-			tracklist = tracklist + BioCircos::BioCircosArcTrack("GeneTrack", minRadius = 1.3, maxRadius = 1.4, chromosomes = circle_gene()$chr, starts = circle_gene()$start,
+				#// assemble tracklist for plotting
+				tracklist = BioCircos::BioCircosBackgroundTrack("BackgroundTrack", minRadius = 0, maxRadius = 0.73, borderSize = 0, fillColors = "#EEFFEE");
+				tracklist = tracklist + BioCircos::BioCircosBackgroundTrack("BackgroundTrack", minRadius = 0.75, maxRadius = 0.95, borderSize = 0, fillColors = "#FFFFFF");
+				tracklist = tracklist + BioCircos::BioCircosArcTrack("GeneTrack", minRadius = 1.3, maxRadius = 1.4, chromosomes = circle_gene()$chr, starts = circle_gene()$start,
 									ends = circle_gene()$end, labels = circle_gene()$gene, colors = "red");
-			tracklist = tracklist + BioCircos::BioCircosLinkTrack('LinkTrack', chrom_A, pos_A_s, pos_A_e, chrom_B, pos_B_s, pos_B_e, maxRadius=0.73, width="0.02em",
+				tracklist = tracklist + BioCircos::BioCircosLinkTrack('LinkTrack', chrom_A, pos_A_s, pos_A_e, chrom_B, pos_B_s, pos_B_e, maxRadius=0.73, width="0.15em",
 									labels=labels, displayLabel=F, color="red");
-			#// checkbox is true
-			if ( input$cirmutcheck ) {
-				if (! is.null(circle_mutation()) ) {
-					tracklist = tracklist + BioCircos::BioCircosSNPTrack('MutationTrack', circle_mutation()$Chromosome, circle_mutation()$Start_Position, circle_mutation()$freq, 
+				#// checkbox is true
+				if ( input$cirmutcheck ) {
+					if (! is.null(circle_mutation()) ) {
+						tracklist = tracklist + BioCircos::BioCircosSNPTrack('MutationTrack', circle_mutation()$Chromosome, circle_mutation()$Start_Position, circle_mutation()$freq, 
 							labels = circle_mutation()$anno_new, size = 1.4, maxRadius = 0.95, minRadius = 0.75, colors = "orange");
-				} else {
-					shiny::showModal(modalDialog(title = "Error message", "No mutation data in MAF format is loaded!"));	req(NULL);
+					} else {
+						shiny::showModal(modalDialog(title = "Warning message", "No mutation data in MAF format is loaded!"));
+					}
 				}
-			}
-			#// if no selection, use all chroms for visualization
-			if ( is.null(input[['circle_set-chr']]) && is.null(input[['circle_set-gene']]) && is.null(input[['circle_set-sample']]) ) { 
-				genome_select$value = database$genome_cir;
-				tracklist = tracklist + BioCircos::BioCircosArcTrack("CytobanTrack", minRadius=1, maxRadius=1.15, chromosomes=database$karyto$chr, starts=database$karyto$start, 
+				#// if no selection, use all chroms for visualization
+				if ( is.null(input[['circle_set-chr']]) && is.null(input[['circle_set-gene']]) && is.null(input[['circle_set-sample']]) ) { 
+					genome_select$value = database$genome_cir;
+					tracklist = tracklist + BioCircos::BioCircosArcTrack("CytobanTrack", minRadius=1, maxRadius=1.15, chromosomes=database$karyto$chr, starts=database$karyto$start, 
 							ends=database$karyto$end, labels=database$karyto$name, colors=database$karyto$color);
-			} else { #// use selected chromosomes for visualization
-				genome_select$value = database$genome_cir[unique(circle_cytoband()$chr)];
-				tracklist = tracklist + BioCircos::BioCircosArcTrack("CytobanTrack", minRadius=1, maxRadius=1.15, chromosomes=circle_cytoband()$chr, starts=circle_cytoband()$start,
+				} else { #// use selected chromosomes for visualization
+					genome_select$value = database$genome_cir[unique(circle_cytoband()$chr)];
+					tracklist = tracklist + BioCircos::BioCircosArcTrack("CytobanTrack", minRadius=1, maxRadius=1.15, chromosomes=circle_cytoband()$chr, starts=circle_cytoband()$start,
 							ends=circle_cytoband()$end, labels=circle_cytoband()$name, colors=circle_cytoband()$color);
+				}
+				circle_plot_object <- BioCircos::BioCircos(tracklist, genome=genome_select$value, genomeFillColor=rep("white", length(genome_select$value)), displayGenomeBorder=T,
+					SNPMouseOverTooltipsBorderWidth = "0.5px", SNPMouseOverCircleSize = 1, SNPMouseOverCircleOpacity = 0.5,
+					ARCMouseOverTooltipsBorderWidth = "0.5px", ARCMouseOverArcOpacity = 0.5,
+					LINKMouseOverTooltipsBorderWidth = "0.5px", LINKMouseOverOpacity = 0.5, LINKMouseOverStrokeWidth = 0.05,
+					genomeBorderSize=0.4, genomeBorderColor="black", genomeLabelTextSize="7pt", chrPad=0.02, genomeTicksLen=2, 
+					genomeTicksTextSize="0.5em", SNPMouseOverTooltipsHtml04="<br/>Anno: ", LINKMouseOverTooltipsHtml01="Link: ", 
+					ARCMouseOverTooltipsHtml04="<br/>Name: ", TEXTModuleDragEvent=T);
 			}
-			circle_plot_object <- BioCircos::BioCircos(tracklist, genome=genome_select$value, genomeFillColor=rep("white", length(genome_select$value)), displayGenomeBorder=T,
-				SNPMouseOverTooltipsBorderWidth = "0.5px", SNPMouseOverCircleSize = 1, SNPMouseOverCircleOpacity = 0.5,
-				ARCMouseOverTooltipsBorderWidth = "0.5px", ARCMouseOverArcOpacity = 0.5,
-				LINKMouseOverTooltipsBorderWidth = "0.5px", LINKMouseOverOpacity = 0.5, LINKMouseOverStrokeWidth = 1, 
-				genomeBorderSize=0.4, genomeBorderColor="black", genomeLabelTextSize="7pt", chrPad=0.02, genomeTicksLen=2, 
-				genomeTicksTextSize="0.5em", SNPMouseOverTooltipsHtml04="<br/>Anno: ", LINKMouseOverTooltipsHtml01="Link: ", 
-				ARCMouseOverTooltipsHtml04="<br/>Name: ", TEXTModuleDragEvent=T);
+			shinycssloaders::hideSpinner("circle_1");
 			output$circle_1 <- BioCircos::renderBioCircos({ circle_plot_object });
 			output$CircleDownRNA <- downloadHandler(filename=function(){ paste("circle_plot_RNA", "html", sep =".") }, content=function(file){ saveWidget(circle_plot_object, file) });
 		})
@@ -1152,7 +1159,9 @@ options(ucscChromosomeNames=FALSE)
 	})
     #// click button 'input$overview_on' for plotting
 	observeEvent(input$overview_on, {
-		if ( is.null(database$whole_txdb) || is.null(database$chrTrack) ) { showModal(modalDialog(title = "Error message", "Genome annotation database is not loaded!"));	req(NULL); }
+		shinycssloaders::showSpinner("chimerics_down");
+		overviewAB$geneA=NULL;	overviewAB$symbol_A=NULL;	overviewAB$geneB=NULL;	overviewAB$symbol_B=NULL;
+		if ( is.null(database$whole_txdb) || is.null(database$chrTrack) ) { showModal(modalDialog(title = "Error message", "Genome annotation database is not loaded!")); }
 		if ( !is.null(input[['overview1-gene1']]) && !is.null(input[['overview1-gene2']]) ) {
 			if ( !is.null(object_over_A$value) && !is.null(object_over_B$value) ) { #// make sure gene symbols match to valid ensembl_id for geneA and geneB
 				symbol_A = overview_tmp()[1,]$gene1
@@ -1201,22 +1210,24 @@ options(ucscChromosomeNames=FALSE)
 				if ( length(geneA) > 0 ) { 
 					geneA[sapply(geneA, is.null)] <- NULL; #// remove element with NULL in the list geneA (if all elements are NULL, geneA = NULL)
 				} else {
-					showModal(modalDialog(title = "Warning message", "No breakpoints within geneA or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!")); req(NULL)
+					showModal(modalDialog(title = "Warning message", "No breakpoints within geneA or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!"));
 				}
 				if ( length(geneB) > 0 ) { 
 					geneB[sapply(geneB, is.null)] <- NULL; #// remove element with NULL in the list geneB (if all elements are NULL, geneB = NULL)
 				} else {
-					showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)")); req(NULL)
+					showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)"));
 				}
 				overviewAB$geneA=geneA; overviewAB$symbol_A=symbol_A;
 				overviewAB$geneB=geneB; overviewAB$symbol_B=symbol_B;
                 overview_data_static$value = overview_data();	# set fusion breakpoint in static status
                 status_check$value = 1
 			} else {
-				showModal(modalDialog(title = "Warning message", paste("No or multiple geneA(", choice_geneA, ") / geneB(", choice_geneB, ") is present (check gene symbol!)", sep="")));	req(NULL)
+				showModal(modalDialog(title = "Warning message", paste("No or multiple geneA(", choice_geneA, ") / geneB(", choice_geneB, ") is present (check gene symbol!)", sep="")));
+				shinycssloaders::hideSpinner("chimerics_down")
 			}
 		} else {
-			showModal(modalDialog(title = "Warning message", "No gene symbols are chosen for fusion partners (choose gene symbol first!)")); req(NULL)
+			showModal(modalDialog(title = "Warning message", "No gene symbols are chosen for fusion partners (choose gene symbol first!)"));
+			shinycssloaders::hideSpinner("chimerics_down")
 		}
 	})
     
@@ -1225,8 +1236,14 @@ options(ucscChromosomeNames=FALSE)
 		if ( length(overviewAB$geneA) > 0 && length(overviewAB$geneB) > 0 ) {
 			print("start to plotting down overview fusion")
 			reactive_control = overview_size_down();
-			plotbody$collect = FuSViz::plot_separate_overview(overviewAB$geneA, overviewAB$symbol_A, overviewAB$geneB, overviewAB$symbol_B, database$chrTrack)
+			plotbody$collect = tryCatch(FuSViz::plot_separate_overview(overviewAB$geneA, overviewAB$symbol_A, overviewAB$geneB, overviewAB$symbol_B, database$chrTrack), error = function(e) {});
+			if ( is.null(plotbody$collect) ) {
+				showModal(modalDialog(title = "Warning message", paste("No enough space to draw all ", overviewAB$symbol_A, " / ", overviewAB$symbol_B, " transcript isoforms in the current layout device.", " Please increase the layout device size by pulling 'Zoom in/out' slide bar!", sep="")));
+			}
+		} else {
+			return(NULL);
 		}
+		shinycssloaders::hideSpinner("chimerics_down")
 	}, height = overview_size_down, width = overview_size_down)
 
 	observe({
@@ -1271,7 +1288,10 @@ options(ucscChromosomeNames=FALSE)
 				pdf(file, width = input$overview_width, height = input$overview_height)
 			}
 			if ( length(overviewAB$geneA) > 0 && length(overviewAB$geneB) > 0 && length(rownames(overview_data_static$value)) > 0 ) {
-				FuSViz::plot_separate_overview_download(overviewAB$geneA, overviewAB$symbol_A, overviewAB$geneB, overviewAB$symbol_B, database$chrTrack, overview_data())
+				overview_log = tryCatch(FuSViz::plot_separate_overview_download(overviewAB$geneA, overviewAB$symbol_A, overviewAB$geneB, overviewAB$symbol_B, database$chrTrack, overview_data()), error = function(e) {});
+				if ( is.null(overview_log) ) {
+					showModal(modalDialog(title = "Warning message", paste("Download an incomplete plot due to a small layout size. ", "Please increase height and width values in 'Layout_width' and 'Layout_height' boxes to get a full plot!", sep="")));
+				}
 			} else {
 				plot.new()
 			}
@@ -1376,6 +1396,8 @@ options(ucscChromosomeNames=FALSE)
 	})
     	#// click button 'input$individual_on' for plotting
 		observeEvent(input$individual_on, {
+			shinycssloaders::showSpinner("chimerics2");
+			individualAB$geneA=NULL; individualAB$symbol_A=NULL; individualAB$geneB=NULL; individualAB$symbol_B=NULL; individualAB$breakpoint_set=NULL;
 			if ( !is.null(object_individual_A$value) && !is.null(object_individual_B$value) ) { #// make sure gene symbols match to valid ensembl_id for geneA and geneB
 				if ( length(individual_data()[,1]) == 1 ) {
 					geneA = list(); geneB = list(); # // geneA and geneB are list structure
@@ -1414,29 +1436,38 @@ options(ucscChromosomeNames=FALSE)
 					if ( length(geneA) > 0 ) {
 						geneA[sapply(geneA, is.null)] <- NULL; #// remove element with NULL
 					} else {
-						showModal(modalDialog(title = "Warning message", "No breakpoints within geneA or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)")); req(NULL)
+						showModal(modalDialog(title = "Warning message", "No breakpoints within geneA or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)"));
 					}
 					if ( length(geneB) > 0 ) {
 						geneB[sapply(geneB, is.null)] <- NULL; #// remove element with NULL
 					} else {
-						showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)")); req(NULL)
+						showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)"));
 					}
 					individualAB$geneA=geneA;	individualAB$symbol_A=symbol_A;
 					individualAB$geneB=geneB;	individualAB$symbol_B=symbol_B;
 					individualAB$breakpoint_set=breakpoint_set;
 				} else {
-					showModal(modalDialog(title = "Warning message", "Multiple entries are not allowed!")); req(NULL)
+					showModal(modalDialog(title = "Warning message", "Multiple entries are not allowed!"));
+					shinycssloaders::hideSpinner("chimerics2")
 				}
 			} else {
-				showModal(modalDialog(title = "Warning message", "No gene symbols are chosen for fusion partners (choose gene symbol first!)")); req(NULL)
+				showModal(modalDialog(title = "Warning message", "No gene symbols are chosen for fusion partners (choose gene symbol first!)"));
+				shinycssloaders::hideSpinner("chimerics2");
 			}
 		})
     #// start persample_size
 	output$chimerics2 <- renderPlot({
 		if ( length(individualAB$geneA) > 0 && length(individualAB$geneB) > 0 ) {
 			print("start to plotting individual fusion");
-			FuSViz::plot_separate_individual(individualAB$geneA, individualAB$symbol_A, individualAB$geneB, individualAB$symbol_B, individualAB$breakpoint_set, database$chrTrack)
+			individual_control = persample_size_full();
+			individual_layout = tryCatch(FuSViz::plot_separate_individual(individualAB$geneA, individualAB$symbol_A, individualAB$geneB, individualAB$symbol_B, individualAB$breakpoint_set, database$chrTrack), error = function(e) {});
+			if ( is.null(individual_layout) ) {
+				showModal(modalDialog(title = "Warning message", paste("No enough space to draw all ", individualAB$symbol_A, " / ", individualAB$symbol_B, " transcript isoforms in the current layout device.", " Please increase the layout device size by pulling 'Zoom in/out' slide bar!", sep="")));
+			}
+		} else {
+			return(NULL);
 		}
+		shinycssloaders::hideSpinner("chimerics2");
 	}, height = persample_size_full, width = persample_size_full)
 	#// download persample plot
 	output$FusionDown2 <- downloadHandler(
@@ -1449,7 +1480,10 @@ options(ucscChromosomeNames=FALSE)
 				pdf(file, width = input$sample_width, height = input$sample_height)
 			}
 			if ( length(individualAB$geneA) > 0 && length(individualAB$geneB) > 0 ) {
-				FuSViz::plot_separate_individual(individualAB$geneA, individualAB$symbol_A, individualAB$geneB, individualAB$symbol_B, individualAB$breakpoint_set, database$chrTrack)
+				individual_output = tryCatch(FuSViz::plot_separate_individual(individualAB$geneA, individualAB$symbol_A, individualAB$geneB, individualAB$symbol_B, individualAB$breakpoint_set, database$chrTrack), error = function(e) {});
+				if ( is.null(individual_output) ) {
+					showModal(modalDialog(title = "Warning message", paste("Download an incomplete plot due to a small layout size. ", "Please increase height and width values in 'Layout_width' and 'Layout_height' boxes to get a full plot!", sep="")));
+				}
             } else {
 				plot.new()
 			}
@@ -1859,7 +1893,7 @@ options(ucscChromosomeNames=FALSE)
 		})
 
 		network_rna <- reactive({
-			if ( is.null(inputFile$rnadata) ) { req(NULL); }
+			if ( is.null(inputFile$rnadata) ) { return(NULL); }
 			tmp = inputFile$rnadata[, c("gene1", "gene2", "name")];	tmp = as.data.frame(tmp);
 			assembly = FuSViz::network_process(tmp, "RNA", database$cancergenes, onco_color, supp_color, rela_color, intergenic_color, other_color);
 			if ( is.null(assembly$degree_score$nodes) ) {
@@ -1876,7 +1910,7 @@ options(ucscChromosomeNames=FALSE)
 			}
 		})
 		network_dna <- reactive({
-			if ( is.null(inputFile$dnadata) ) { req(NULL); }
+			if ( is.null(inputFile$dnadata) ) { return(NULL); }
 			tmp = inputFile$dnadata[, c("gene1", "gene2", "name")];	tmp = as.data.frame(tmp);
 			assembly = FuSViz::network_process(tmp, "DNA", database$cancergenes, onco_color, supp_color, rela_color, intergenic_color, other_color);
 			if ( is.null(assembly$degree_score$nodes) ) {
@@ -1901,7 +1935,7 @@ options(ucscChromosomeNames=FALSE)
 		observeEvent(input$net_rna_plot, { 
 			#// create table for node hubs
 			output$RNAhubs <- DT::renderDataTable({
-				if ( is.null(network_rna()) ) { return(NULL); }
+				if ( is.null(network_rna()) ) { showModal(modalDialog(title = "Warning message", "No RNA SV data is available!"));	return(NULL); }
 				DT::datatable(network_rna()$degree_score, options = list(autoWidth = TRUE, initComplete = JS("function(settings, json) {",
 					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}"))) %>%
                     DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(database$cancergenes$oncogene), rep(onco_color, length(database$cancergenes$oncogene)))) %>%
@@ -1911,7 +1945,7 @@ options(ucscChromosomeNames=FALSE)
 
 			#// create the network for RNA SVs
 			output$network_rna <- visNetwork::renderVisNetwork({
-				if ( is.null(network_rna()) ) { return(NULL); }
+				if ( is.null(network_rna()) ) { showModal(modalDialog(title = "Warning message", "No RNA SV data is available!"));	return(NULL); }
 				vis_rna_object <- visNetwork::visNetwork(network_rna()$nodes, network_rna()$edges) %>%
 					visNetwork::visPhysics(solver="barnesHut", barnesHut=list(gravitationalConstant=-2000, centralGravity=0.3, springConstant=0.01), stabilization=FALSE) %>%
 					visNetwork::visIgraphLayout(layout="layout_nicely") %>% #// using igraph layout for visualization to reduce complexity
@@ -1961,7 +1995,7 @@ options(ucscChromosomeNames=FALSE)
 		observeEvent(input$net_dna_plot, { 
 			#// create table for node hubs
 			output$DNAhubs <- DT::renderDataTable({
-				if ( is.null(network_dna()) ) { return(NULL); }
+				if ( is.null(network_dna()) ) { showModal(modalDialog(title = "Warning message", "No DNA SV data is available!"));	return(NULL); }
 				DT::datatable(network_dna()$degree_score, options = list(autoWidth = TRUE, initComplete = JS("function(settings, json) {",
 					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}"))) %>%
 					DT::formatStyle(c('nodes'), backgroundColor = DT::styleEqual(names(database$cancergenes$oncogene), rep(onco_color, length(database$cancergenes$oncogene)))) %>%
@@ -1970,7 +2004,7 @@ options(ucscChromosomeNames=FALSE)
 
 			#// create the network for DNA SVs
 			output$network_dna <- visNetwork::renderVisNetwork({
-				if ( is.null(network_dna()) ) { return(NULL); }
+				if ( is.null(network_dna()) ) { showModal(modalDialog(title = "Warning message", "No DNA SV data is available!"));	return(NULL); }
 				vis_dna_object <- visNetwork::visNetwork(network_dna()$nodes, network_dna()$edges) %>%
 					visNetwork::visPhysics(solver="barnesHut", barnesHut=list(gravitationalConstant=-800, centralGravity=0.1, springConstant=0.02), stabilization = FALSE) %>%
 					visNetwork::visIgraphLayout(layout="layout_nicely") %>% #// using igraph layout for visualization to reduce complexity
@@ -2044,11 +2078,11 @@ options(ucscChromosomeNames=FALSE)
 			tmp$tag1=tag1;	tmp$tag2=tag2;
 			tmp$name = as.factor(tmp$name);	tmp$gene1 = as.factor(tmp$gene1);	tmp$gene2 = as.factor(tmp$gene2);
 			if ( nrow(tmp) > 0 ) {
-				attr(tmp, "row.names") = paste0('<a href=\'#shiny-tab-igv\' data-toggle=\'tab\' onclick=\'myFunction(\"', tmp$chrom1, ':', tmp$pos1-50, '-', tmp$pos1+50, ' ', tmp$chrom2, ':', tmp$pos2-50, '-', tmp$pos2+50, '\");\'>', rownames(tmp), '</a>');
+				attr(tmp, "row.names") = paste0('<a href=\'#shiny-tab-igv\' data-toggle=\'tab\' class=\'tablesenz\' onclick=\'myFunction(\"', tmp$chrom1, ':', tmp$pos1-50, '-', tmp$pos1+50, ' ', tmp$chrom2, ':', tmp$pos2-50, '-', tmp$pos2+50, '\");\'>', rownames(tmp), '</a>');
 				DT::datatable(tmp, escape = FALSE, editable = 'cell', extensions = 'Buttons', options = list(dom = 'Blfrtip', buttons = list(
 					list(extend = "collection", text = 'Download Data', action = DT::JS("function(e, dt, node, config) { Shiny.setInputValue('rnadownload', true, {priority: 'event'}); }")),
 					list(extend = "collection", text = 'Delete Row', action = DT::JS("function(e, dt, node, config) { Shiny.setInputValue('rnaDeleteRow', true, {priority: 'event'}); }"))),
-					autoWidth = TRUE, columnDefs = list(list(targets = c(13,14), visible = FALSE)), initComplete = JS("function(settings, json) { $(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")),
+					autoWidth = TRUE, columnDefs = list(list(targets = c(14,15), visible = FALSE)), initComplete = JS("function(settings, json) { $(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")),
 					filter = list(position = 'top', clear = FALSE, plain = TRUE)) %>% DT::formatStyle(names(tmp), fontSize = '11px') %>%
 					DT::formatStyle('gene1','tag1', backgroundColor = DT::styleInterval(c(2, 4, 6), c("#ff8566", "#00ccff", "#ffcc33", "white"))) %>%
 					DT::formatStyle('gene2','tag2', backgroundColor = DT::styleInterval(c(2, 4, 6), c("#ff8566", "#00ccff", "#ffcc33", "white")))
@@ -2144,7 +2178,7 @@ options(ucscChromosomeNames=FALSE)
 				DT::datatable(tmp, escape = FALSE, editable = 'cell', extensions = 'Buttons', options = list(dom = 'Blfrtip', buttons = list(
 					list(extend = "collection", text = 'Download Data', action = DT::JS("function(e, dt, node, config) { Shiny.setInputValue('dnadownload', true, {priority: 'event'}); }")),
 					list(extend = "collection", text = 'Delete Row', action = DT::JS("function(e, dt, node, config) { Shiny.setInputValue('dnaDeleteRow', true, {priority: 'event'}); }"))),
-					autoWidth = TRUE, columnDefs = list(list(targets = c(13,14), visible = FALSE)), initComplete = JS("function(settings, json) { $(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")),
+					autoWidth = TRUE, columnDefs = list(list(targets = c(14,15), visible = FALSE)), initComplete = JS("function(settings, json) { $(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")),
 					filter = list(position = 'top', clear = FALSE, plain = TRUE)) %>% DT::formatStyle(names(tmp), fontSize = '11px') %>%
 					DT::formatStyle('gene1','tag1', backgroundColor = DT::styleInterval(c(2, 4, 6), c("#ff8566", "#00ccff", "#ffcc33", "white"))) %>%
 					DT::formatStyle('gene2','tag2', backgroundColor = DT::styleInterval(c(2, 4, 6), c("#ff8566", "#00ccff", "#ffcc33", "white")))
@@ -2228,10 +2262,13 @@ options(ucscChromosomeNames=FALSE)
 			})
 			tmp$tag = tag;
 			tmp$Hugo_Symbol = as.factor(tmp$Hugo_Symbol);	tmp$Tumor_Sample_Barcode = as.factor(tmp$Tumor_Sample_Barcode);
-			DT::datatable(tmp, options = list(autoWidth = TRUE, columnDefs = list(list(targets = c(7), visible = FALSE)), initComplete = JS("function(settings, json) {",
-				"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")),
-				filter = list(position = 'top', clear = FALSE, plain = TRUE)) %>% DT::formatStyle(names(tmp), fontSize = '11px') %>%
-				DT::formatStyle('Hugo_Symbol', 'tag', backgroundColor = DT::styleInterval(c(2, 4, 6), c("#ff8566", "#00ccff", "#ffcc33", "white")))
+			if ( nrow(tmp) > 0 ) {
+				attr(tmp, "row.names") = paste0('<a href=\'#shiny-tab-igv\' data-toggle=\'tab\' onclick=\'myFunction(\"', tmp$Chromosome, ':', tmp$Start_Position-50, '-', tmp$Start_Position+50, '\");\'>', rownames(tmp), '</a>');
+				DT::datatable(tmp, escape = FALSE, options = list(autoWidth = TRUE, columnDefs = list(list(targets = c(7), visible = FALSE)), initComplete = JS("function(settings, json) {",
+					"$(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")),
+					filter = list(position = 'top', clear = FALSE, plain = TRUE)) %>% DT::formatStyle(names(tmp), fontSize = '11px') %>%
+					DT::formatStyle('Hugo_Symbol', 'tag', backgroundColor = DT::styleInterval(c(2, 4, 6), c("#ff8566", "#00ccff", "#ffcc33", "white")))
+			}
 		})
 		#// wordcloud of mutated genes
 		output$wordcloud_mut <- wordcloud2::renderWordcloud2({
@@ -2310,40 +2347,40 @@ options(ucscChromosomeNames=FALSE)
 		#// Load DNA SV events
 		observeEvent(input$addTrackButtonBed, {
 			print("@ Add Bed-Track and Bedgraph-Track for DNA-seq data@")
-			if ( is.null(input_twoway_dna_bed()) ) { return(); } 
+			if ( is.null(input_twoway_dna_bed()[["dnabed"]]) ) { showModal(modalDialog(title = "Warning message", "No DNA-SV data is loaded!")); req(NULL); } 
 			if ( nrow(input_twoway_dna_bed()[["dnabed"]]) > 0 ) {
 				FuSViz::TrackinBed(session, input_twoway_dna_bed()[["dnabed"]], name="DNA SV breakpoint", color="green")
 				FuSViz::TrackinBedGraph(session, input_twoway_dna_bed()[["dnabedgraph"]], name="DNA SV breakpoint freq", color="blue", autoscale=TRUE)
 			} else {
-				showModal(modalDialog(title = "Error message", "No DNA-SV data available for bed and bedgraph track after filtering control!")); req(NULL);
+				showModal(modalDialog(title = "Warning message", "No DNA-SV data available for bed and bedgraph track after filtering control!")); req(NULL);
 			}
 		})
 		observeEvent(input$addTrackButtonBedPe, {
 			print("@ Add Bedpe-Track for DNA-seq data@")
-			if ( is.null(input_twoway_dna_bedpe()) ) { return(); }
+			if ( is.null(input_twoway_dna_bedpe()) ) { showModal(modalDialog(title = "Warning message", "No DNA-SV data is loaded!")); req(NULL); }
 			if ( nrow(input_twoway_dna_bedpe()) > 0 ) {
 				FuSViz::TrackinBedPe(session, input_twoway_dna_bedpe(), name="DNA SV distribution", color="blue", logScale=TRUE)
 			} else {
-				showModal(modalDialog(title = "Error message", "No DNA-SV data available for bedpe track after filtering control!")); req(NULL);
+				showModal(modalDialog(title = "Warning message", "No DNA-SV data available for bedpe track after filtering control!")); req(NULL);
 			}
 		})
 		observeEvent(input$addTrackButtonSeg, {
 			print("@ Add Seg-Track for DNA-seq data@")
-			if ( is.null(input_twoway_dna_seg()) ) { return(); }
+			if ( is.null(input_twoway_dna_seg()[['dup']]) && is.null(input_twoway_dna_seg()[['del']]) ) { showModal(modalDialog(title = "Warning message", "No DNA-SV data is loaded!")); req(NULL); }
 			if ( nrow(input_twoway_dna_seg()[['dup']]) > 0 ) {
 				if ( nrow(input_twoway_dna_seg()[['del']]) > 0) {
 					FuSViz::TrackinSeg(session, input_twoway_dna_seg()[['dup']], name="DNA small CNV - DUP", trackHeight=100)
 					FuSViz::TrackinSeg(session, input_twoway_dna_seg()[['del']], name="DNA small CNV - DEL", trackHeight=100)
 				} else {
 					FuSViz::TrackinSeg(session, input_twoway_dna_seg()[['dup']], name="DNA small CNV - DUP", trackHeight=100)
-					showModal(modalDialog(title = "Error message", "No DEL SVs available for seg track after filtering control!")); req(NULL);
+					showModal(modalDialog(title = "Warning message", "No DEL SVs available for seg track after filtering control!")); req(NULL);
 				}
 			} else {
 				if ( nrow(input_twoway_dna_seg()[['del']]) > 0 ) {
 					FuSViz::TrackinSeg(session, input_twoway_dna_seg()[['del']], name="DNA small CNV - DEL", trackHeight=100)
-					showModal(modalDialog(title = "Error message", "No DUP SVs available for seg track after filtering control!")); req(NULL);
+					showModal(modalDialog(title = "Warning message", "No DUP SVs available for seg track after filtering control!")); req(NULL);
 				} else {
-					showModal(modalDialog(title = "Error message", "No DUP and DEL SVs available for seg track after filtering control!")); req(NULL);
+					showModal(modalDialog(title = "Warning message", "No DUP and DEL SVs available for seg track after filtering control!")); req(NULL);
 				}
 			}
 		})
@@ -2359,36 +2396,38 @@ options(ucscChromosomeNames=FALSE)
 			print("@ Add alignment tracks via URL@");
 			if (! is.null(input$BAM) && ! is.null(input$BAMindex) ) {
 				FuSViz::TrackinBAM(session, input$BAM, input$BAMindex)
+			} else {
+				showModal(modalDialog(title = "Warning message", "Either hosted BAM/CRAM alignment or its index file is not available!"));
 			}
 		})
 		#// Load RNA SV events
 		observeEvent(input$addTrackButtonRNABed, {
 			print("@ Add Bed-Track and Bedgraph-Track for RNA-seq data@")
-			if ( is.null(input_twoway_rna_bed()) ) { return() }
+			if ( is.null(input_twoway_rna_bed()[["rnabed"]]) ) { showModal(modalDialog(title = "Warning message", "No RNA-SV data is loaded!")); req(NULL); }
 			if ( nrow(input_twoway_rna_bed()[["rnabed"]]) > 0 ) {
 				FuSViz::TrackinBed(session, input_twoway_rna_bed()[["rnabed"]], name="RNA SV breakpoint", color="green")
 				FuSViz::TrackinBedGraph(session, input_twoway_rna_bed()[["rnabedgraph"]], name="RNA SV breakpoint freq", color="blue", autoscale=TRUE)
 			} else {
-				showModal(modalDialog(title = "Error message", "No RNA-SV data available for bed and bedgraph track after filtering control!")); req(NULL);
+				showModal(modalDialog(title = "Warning message", "No RNA-SV data available for bed and bedgraph track after filtering control!")); req(NULL);
 			}
 		})
 		observeEvent(input$addTrackButtonRNABedpe, {
 			print("@ Add Bedpe-Track for RNA-seq data@")
-			if ( is.null(input_twoway_rna_bedpe()) ) { return() }
+			if ( is.null(input_twoway_rna_bedpe()) ) { showModal(modalDialog(title = "Warning message", "No RNA-SV data is loaded!")); req(NULL); }
 			if ( nrow(input_twoway_rna_bedpe()) > 0 ) {
 				FuSViz::TrackinBedPe(session, input_twoway_rna_bedpe(), name="RNA SV distribution", color="blue", logScale=TRUE)
 			} else {
-				showModal(modalDialog(title = "Error message", "No RNA-SV data available for bedpe track after filtering control!")); req(NULL);
+				showModal(modalDialog(title = "Warning message", "No RNA-SV data available for bedpe track after filtering control!")); req(NULL);
 			}
 		})
 		#// Load mutation data
 		observeEvent(input$addTrackButtonMut, {
 			print("@ Add Bed-Track mutation data@")
-			if ( is.null(input_twoway_mut_bed()) ) { return() }
+			if ( is.null(input_twoway_mut_bed()) ) { showModal(modalDialog(title = "Warning message", "No small mutation data is loaded!")); req(NULL); }
 			if ( nrow(input_twoway_mut_bed()) > 0 ) {
 				FuSViz::TrackinBed(session, input_twoway_mut_bed(), name="Mutation profile", color="orange")
 			} else {
-				showModal(modalDialog(title = "Error message", "No mutation data available for bed after filtering control!")); req(NULL);
+				showModal(modalDialog(title = "Warning message", "No mutation data available for bed after filtering control!")); req(NULL);
 			}
 		})
 
