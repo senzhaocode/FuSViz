@@ -217,28 +217,28 @@ plot_separate_individual <- function(first, first_name, second, second_name, bre
 	second_vis_e = max(second[[1]]$transcript$GEnd) #// visualization start position of geneB
 
 	#// adjust font size of transcript_id (It can be adjusted by customers in UI in further version)
-	if ( length(first[[1]]$transcript$TXNAME) > 0 &&  length(first[[1]]$transcript$TXNAME) <= 5 ) { 
+	if ( length(unique(first[[1]]$select_region$transcript)) > 0 && length(unique(first[[1]]$select_region$transcript)) <= 5 ) { 
 		grTrack_f@dp@pars$fontsize.group = 12; 
-	} else if ( length(first[[1]]$transcript$TXNAME) > 5 &&	 length(first[[1]]$transcript$TXNAME) <= 15 ) { 
+	} else if ( length(unique(first[[1]]$select_region$transcript)) > 5 && length(unique(first[[1]]$select_region$transcript)) <= 15 ) { 
 		grTrack_f@dp@pars$fontsize.group = 11; 
-	} else if ( length(first[[1]]$transcript$TXNAME) > 15 &&  length(first[[1]]$transcript$TXNAME) <= 20 ) {
+	} else if ( length(unique(first[[1]]$select_region$transcript)) > 15 && length(unique(first[[1]]$select_region$transcript)) <= 20 ) {
 		grTrack_f@dp@pars$fontsize.group = 10; 
-	} else if ( length(first[[1]]$transcript$TXNAME) > 20 &&  length(first[[1]]$transcript$TXNAME) <= 25 ) {
+	} else if ( length(unique(first[[1]]$select_region$transcript)) > 20 && length(unique(first[[1]]$select_region$transcript)) <= 25 ) {
 		grTrack_f@dp@pars$fontsize.group = 9;
-	} else if ( length(first[[1]]$transcript$TXNAME) > 25 &&  length(first[[1]]$transcript$TXNAME) <= 30 ) {
+	} else if ( length(unique(first[[1]]$select_region$transcript)) > 25 && length(unique(first[[1]]$select_region$transcript)) <= 30 ) {
 		grTrack_f@dp@pars$fontsize.group = 8;
 	} else {
 		grTrack_f@dp@pars$fontsize.group = 6;
 	}
-	if ( length(second[[1]]$transcript$TXNAME) > 0 &&  length(second[[1]]$transcript$TXNAME) <= 5 ) { 
+	if ( length(unique(second[[1]]$select_region$transcript)) > 0 && length(unique(second[[1]]$select_region$transcript)) <= 5 ) { 
 		grTrack_s@dp@pars$fontsize.group = 12; 
-	} else if ( length(second[[1]]$transcript$TXNAME) > 5 &&  length(second[[1]]$transcript$TXNAME) <= 15 ) { 
+	} else if ( length(unique(second[[1]]$select_region$transcript)) > 5 && length(unique(second[[1]]$select_region$transcript)) <= 15 ) { 
 		grTrack_s@dp@pars$fontsize.group = 11; 
-	} else if ( length(second[[1]]$transcript$TXNAME) > 15 &&  length(second[[1]]$transcript$TXNAME) <= 20 ) {
+	} else if ( length(unique(second[[1]]$select_region$transcript)) > 15 && length(unique(second[[1]]$select_region$transcript)) <= 20 ) {
 		grTrack_s@dp@pars$fontsize.group = 10; 
-	} else if ( length(second[[1]]$transcript$TXNAME) > 20 &&  length(second[[1]]$transcript$TXNAME) <= 25 ) {
+	} else if ( length(unique(second[[1]]$select_region$transcript)) > 20 && length(unique(second[[1]]$select_region$transcript)) <= 25 ) {
 		grTrack_s@dp@pars$fontsize.group = 9;
-	} else if ( length(second[[1]]$transcript$TXNAME) > 25 &&  length(second[[1]]$transcript$TXNAME) <= 30 ) {
+	} else if ( length(unique(second[[1]]$select_region$transcript)) > 25 && length(unique(second[[1]]$select_region$transcript)) <= 30 ) {
 		grTrack_s@dp@pars$fontsize.group = 8;
 	} else {
 		grTrack_s@dp@pars$fontsize.group = 6;
@@ -377,5 +377,7 @@ plot_separate_individual <- function(first, first_name, second, second_name, bre
 	grid::grid.text(supporting_reads_text, x = number_position_x / grDevices::dev.size(units = "px")[1], y = 1 - number_position_y / grDevices::dev.size(units = "px")[2],
 			vp = grid::viewport(xscale = c(0, grDevices::dev.size(units = "px")[1]), yscale = c(grDevices::dev.size(units = "px")[2], 0)),
 			gp = grid::gpar(fontsize = 7));
+
+	return(1)
 }
 

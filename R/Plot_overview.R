@@ -35,28 +35,28 @@ plot_separate_overview <- function(first, first_name, second, second_name, cytob
 	second_vis_e = max(second[[1]]$transcript$GEnd) #// end position of geneB for visualization
 
 	#// adjust font size of transcript_id (it will probably be adjusted by customers in UI in further version)
-	if ( length(first[[1]]$transcript$TXNAME) > 0 &&  length(first[[1]]$transcript$TXNAME) <= 5 ) { 
+	if ( length(unique(first[[1]]$select_region$transcript)) > 0 &&  length(unique(first[[1]]$select_region$transcript)) <= 5 ) { 
 		grTrack_f@dp@pars$fontsize.group = 12; 
-	} else if ( length(first[[1]]$transcript$TXNAME) > 5 &&	 length(first[[1]]$transcript$TXNAME) <= 15 ) { 
+	} else if ( length(unique(first[[1]]$select_region$transcript)) > 5 && length(unique(first[[1]]$select_region$transcript)) <= 15 ) { 
 		grTrack_f@dp@pars$fontsize.group = 10; 
-	} else if ( length(first[[1]]$transcript$TXNAME) > 15 &&  length(first[[1]]$transcript$TXNAME) <= 20 ) {
+	} else if ( length(unique(first[[1]]$select_region$transcript)) > 15 && length(unique(first[[1]]$select_region$transcript)) <= 20 ) {
 		grTrack_f@dp@pars$fontsize.group = 9; 
-	} else if ( length(first[[1]]$transcript$TXNAME) > 20 &&  length(first[[1]]$transcript$TXNAME) <= 25 ) {
+	} else if ( length(unique(first[[1]]$select_region$transcript)) > 20 && length(unique(first[[1]]$select_region$transcript)) <= 25 ) {
 		grTrack_f@dp@pars$fontsize.group = 8;
-	} else if ( length(first[[1]]$transcript$TXNAME) > 25 &&  length(first[[1]]$transcript$TXNAME) <= 30 ) {
+	} else if ( length(unique(first[[1]]$select_region$transcript)) > 25 && length(unique(first[[1]]$select_region$transcript)) <= 30 ) {
 		grTrack_f@dp@pars$fontsize.group = 6;
 	} else {
 		grTrack_f@dp@pars$fontsize.group = 4;
 	}
-	if ( length(second[[1]]$transcript$TXNAME) > 0 &&  length(second[[1]]$transcript$TXNAME) <= 5 ) { 
+	if ( length(unique(second[[1]]$select_region$transcript)) > 0 && length(unique(second[[1]]$select_region$transcript)) <= 5 ) { 
 		grTrack_s@dp@pars$fontsize.group = 12; 
-	} else if ( length(second[[1]]$transcript$TXNAME) > 5 &&  length(second[[1]]$transcript$TXNAME) <= 15 ) { 
+	} else if ( length(unique(second[[1]]$select_region$transcript)) > 5 && length(unique(second[[1]]$select_region$transcript)) <= 15 ) { 
 		grTrack_s@dp@pars$fontsize.group = 10; 
-	} else if ( length(second[[1]]$transcript$TXNAME) > 15 &&  length(second[[1]]$transcript$TXNAME) <= 20 ) {
+	} else if ( length(unique(second[[1]]$select_region$transcript)) > 15 && length(unique(second[[1]]$select_region$transcript)) <= 20 ) {
 		grTrack_s@dp@pars$fontsize.group = 9; 
-	} else if ( length(second[[1]]$transcript$TXNAME) > 20 &&  length(second[[1]]$transcript$TXNAME) <= 25 ) {
+	} else if ( length(unique(second[[1]]$select_region$transcript)) > 20 && length(unique(second[[1]]$select_region$transcript)) <= 25 ) {
 		grTrack_s@dp@pars$fontsize.group = 8;
-	} else if ( length(second[[1]]$transcript$TXNAME) > 25 &&  length(second[[1]]$transcript$TXNAME) <= 30 ) {
+	} else if ( length(unique(second[[1]]$select_region$transcript)) > 25 && length(unique(second[[1]]$select_region$transcript)) <= 30 ) {
 		grTrack_s@dp@pars$fontsize.group = 6;
 	} else {
 		grTrack_s@dp@pars$fontsize.group = 4;
@@ -234,28 +234,28 @@ plot_separate_overview_download <- function(first, first_name, second, second_na
 	second_vis_e = max(second[[1]]$transcript$GEnd) #// end position of geneB for visualization
 
 	#// adjust font size of transcript_id (it will probably be adjusted by customers in UI in further version)
-	if ( length(first[[1]]$transcript$TXNAME) > 0 &&  length(first[[1]]$transcript$TXNAME) <= 5 ) { 
+	if ( length(unique(first[[1]]$select_region$transcript)) > 0 && length(unique(first[[1]]$select_region$transcript)) <= 5 ) { 
 		grTrack_f@dp@pars$fontsize.group = 11; 
-	} else if ( length(first[[1]]$transcript$TXNAME) > 5 &&  length(first[[1]]$transcript$TXNAME) <= 15 ) { 
+	} else if ( length(unique(first[[1]]$select_region$transcript)) > 5 && length(unique(first[[1]]$select_region$transcript)) <= 15 ) { 
 		grTrack_f@dp@pars$fontsize.group = 9; 
-	} else if ( length(first[[1]]$transcript$TXNAME) > 15 &&  length(first[[1]]$transcript$TXNAME) <= 20 ) {
+	} else if ( length(unique(first[[1]]$select_region$transcript)) > 15 && length(unique(first[[1]]$select_region$transcript)) <= 20 ) {
 		grTrack_f@dp@pars$fontsize.group = 8; 
-	} else if ( length(first[[1]]$transcript$TXNAME) > 20 &&  length(first[[1]]$transcript$TXNAME) <= 25 ) {
+	} else if ( length(unique(first[[1]]$select_region$transcript)) > 20 && length(unique(first[[1]]$select_region$transcript)) <= 25 ) {
 		grTrack_f@dp@pars$fontsize.group = 7;
-	} else if ( length(first[[1]]$transcript$TXNAME) > 25 &&  length(first[[1]]$transcript$TXNAME) <= 30 ) {
+	} else if ( length(unique(first[[1]]$select_region$transcript)) > 25 && length(unique(first[[1]]$select_region$transcript)) <= 30 ) {
 		grTrack_f@dp@pars$fontsize.group = 5;
 	} else {
 		grTrack_f@dp@pars$fontsize.group = 3;
 	}
-	if ( length(second[[1]]$transcript$TXNAME) > 0 &&  length(second[[1]]$transcript$TXNAME) <= 5 ) {
+	if ( length(unique(second[[1]]$select_region$transcript)) > 0 && length(unique(second[[1]]$select_region$transcript)) <= 5 ) {
 		grTrack_s@dp@pars$fontsize.group = 11;
-	} else if ( length(second[[1]]$transcript$TXNAME) > 5 &&  length(second[[1]]$transcript$TXNAME) <= 15 ) {
+	} else if ( length(unique(second[[1]]$select_region$transcript)) > 5 && length(unique(second[[1]]$select_region$transcript)) <= 15 ) {
 		grTrack_s@dp@pars$fontsize.group = 9;
-	} else if ( length(second[[1]]$transcript$TXNAME) > 15 &&  length(second[[1]]$transcript$TXNAME) <= 20 ) {
+	} else if ( length(unique(second[[1]]$select_region$transcript)) > 15 && length(unique(second[[1]]$select_region$transcript)) <= 20 ) {
 		grTrack_s@dp@pars$fontsize.group = 8;
-	} else if ( length(second[[1]]$transcript$TXNAME) > 20 &&  length(second[[1]]$transcript$TXNAME) <= 25 ) {
+	} else if ( length(unique(second[[1]]$select_region$transcript)) > 20 && length(unique(second[[1]]$select_region$transcript)) <= 25 ) {
 		grTrack_s@dp@pars$fontsize.group = 7;
-	} else if ( length(second[[1]]$transcript$TXNAME) > 25 &&  length(second[[1]]$transcript$TXNAME) <= 30 ) {
+	} else if ( length(unique(second[[1]]$select_region$transcript)) > 25 && length(unique(second[[1]]$select_region$transcript)) <= 30 ) {
 		grTrack_s@dp@pars$fontsize.group = 5;
 	} else {
 		grTrack_s@dp@pars$fontsize.group = 3;
@@ -371,5 +371,6 @@ plot_separate_overview_download <- function(first, first_name, second, second_na
 			}
 		}
 	}
+	return(1)
 }
 
