@@ -5,9 +5,9 @@ HTMLWidgets.widget({
 
 	factory: function(el, width, height) {
 		/*
-		 * igv.min.js v2.10.4 (modified version)
+		 * igv.min.js v2.10.5 (modified version)
 		 * (the raw code were modified to meet some requirements of SV visualization, then compiled by Nodejs)
-		 * igv.css v2.10.4
+		 * igv.css v2.10.5
 		 */
 
 		var widgets = null; // initilize widgets
