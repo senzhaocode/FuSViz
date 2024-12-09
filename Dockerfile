@@ -1,4 +1,4 @@
-FROM rocker/shiny:4.4
+FROM rocker/shiny:4.4.1
 
 LABEL maintainer="Sen ZHAO <t.cytotoxic@gmail.com>"
 
@@ -29,8 +29,8 @@ RUN apt update && apt install -y -f \
 	libssh2-1-dev \
     && rm -rf /var/lib/apt/lists/*
 
-ENV LIBRARY_PATH=$LIBRARY_PATH:/usr/local/lib/R/lib/
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/R/lib/
+ENV LIBRARY_PATH="$LIBRARY_PATH:/usr/local/lib/R/lib/"
+ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib/R/lib/"
 
 WORKDIR /tmp
 ARG htsversion=1.19
@@ -44,10 +44,11 @@ RUN curl -L https://github.com/samtools/htslib/releases/download/${htsversion}/h
 
 RUN install2.r -e remotes
 RUN install2.r -e devtools
+RUN R -e "install.packages('BiocManager'); BiocManager::install('Rhtslib'); BiocManager::install('GenomicFeatures'); BiocManager::install('AnnotationDbi'); BiocManager::install('GenomicRanges'); BiocManager::install('IRanges'); BiocManager::install('S4Vectors'); BiocManager::install('GenomicAlignments'); BiocManager::install('Rsamtools'); BiocManager::install('Biostrings'); BiocManager::install('Gviz');"
 # RUN installGithub.r "lchiffon/wordcloud2"
 # RUN installGithub.r "senzhaocode/FuSViz"
 RUN wget -t 0 -c "https://github.com/senzhaocode/FuSViz/archive/refs/tags/v1.8.0.tar.gz" && R -e "remotes::install_local('v1.8.0.tar.gz', dependencies=T)"
-RUN rm -rf /tmp/bcftools* && rm -rf /tmp/htslib-* && rm -rf /tmp/samtools-* && rm -rf /tmp/file* && rm -rf /tmp/shinyWidgets*
+RUN rm -rf /tmp/bcftools* && rm -rf /tmp/htslib-* && rm -rf /tmp/samtools-* && rm -rf /tmp/file* && rm -rf /tmp/*.tar.gz
 
 RUN echo "local(options(shiny.port = 3838, shiny.host = '0.0.0.0'))" >> /usr/local/lib/R/etc/Rprofile.site
 
