@@ -1068,7 +1068,7 @@ options(ucscChromosomeNames=FALSE)
     overview_data <- select_group_server(id = "overview2", data = reactive(filter_overview$value), vars = reactive(c("breakpoint_A", "breakpoint_B")))
 
     #// when input[['overview1-gene1']] NOT null, assign 'object_over_A$value' using FUNCTION "get_annotation_db_extend"
-	observe({
+	observeEvent(input[['overview1-gene1']], {
         if ( is.null(input[['overview1-gene1']]) || input[['overview1-gene1']] == "" ) {
             object_over_A$value = NULL
             updateSelectizeInput(session = session, inputId = "transA_overview", choices = "")
@@ -1113,7 +1113,7 @@ options(ucscChromosomeNames=FALSE)
         }
 	})
     #// when input[['overview1-gene2']] NOT null, assign 'object_over_B$value' using FUNCTION "get_annotation_db_extend"
-	observe({
+	observeEvent(input[['overview1-gene2']], {
         if ( is.null(input[['overview1-gene2']]) || input[['overview1-gene2']] == "" ) {
             object_over_B$value = NULL
             updateSelectizeInput(session = session, inputId = "transB_overview", choices = "")
