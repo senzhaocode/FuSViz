@@ -125,7 +125,7 @@ options(ucscChromosomeNames=FALSE)
         	} else {
             	session$sendCustomMessage(type="disablebutton", list(code=paste("$('.btn-file').removeAttr('disabled').attr('onclick', 'return true;')",sep="")))
        		}
-    	})
+		})
 		observe({ req(database$txdb); })
 
 		#// inputFile data structure stores upload rna SV, dna SV and mutation profile
@@ -233,7 +233,7 @@ options(ucscChromosomeNames=FALSE)
 					showModal(modalDialog(title = "Warning message", paste(input$RNAcontents_cell_edit$value, " is not a valid strand direction! NOTE: strand direction should be +/-!", sep="")));
 				}
 			}
-    	})
+		})
 
 		#/////////////////////////////////////////////////////////////
 		#// Load external DNA-seq sv files as the data.frame class  //
@@ -336,7 +336,7 @@ options(ucscChromosomeNames=FALSE)
 					showModal(modalDialog(title = "Warning message", paste(input$DNAcontents_cell_edit$value, " is not a valid SV type! NOTE: SV type should be 'BND, DEL, DUP, INS or INV'!", sep="")));
 				}
 			}
-    	})
+		})
 
 		#//////////////////////////////////
 		#// load drug target information //
@@ -1053,12 +1053,12 @@ options(ucscChromosomeNames=FALSE)
 	#// 'plotbody' is list class with two elements: A1_xy - exon coordinates of geneA, B1_xy - exon coordinates of geneB)
 	plotbody <- reactiveValues(collect=NULL)
 	overviewAB <- reactiveValues(geneA=NULL, symbol_A=NULL, geneB=NULL, symbol_B=NULL)
-    status_check <- reactiveValues(value=0) #// used for plotting
-    filter_overview <- reactiveValues(value=NULL)
-    overview_data_static <- reactiveValues(value=NULL)
+	status_check <- reactiveValues(value=0) #// used for plotting
+	filter_overview <- reactiveValues(value=NULL)
+	overview_data_static <- reactiveValues(value=NULL)
 
 	overview_tmp <- select_group_server(id = "overview1", data = reactive(inputFile$rnadata), vars = reactive(c("gene1", "gene2")))
-    observe({
+	observe({
 		if ( is.null(inputFile$rnadata) ) {
 			output$chimerics_up <- renderPlot({ return(NULL) }, height = overview_size_up, width = overview_size_down)
 			output$chimerics_down <- renderPlot({ return(NULL) }, height = overview_size_down, width = overview_size_down)
@@ -1067,41 +1067,41 @@ options(ucscChromosomeNames=FALSE)
 		if ( is.null(input[['overview1-gene1']]) || input[['overview1-gene1']] == "" ) {
 			if ( is.null(input[['overview1-gene2']]) || input[['overview1-gene2']] == "" ) {
 				object_over_B$value = NULL
-            	updateSelectizeInput(session = session, inputId = "transB_overview", choices = "")
+				updateSelectizeInput(session = session, inputId = "transB_overview", choices = "")
 				updateSelectizeInput(session = session, inputId = 'overview2-breakpoint_B', choices = "")
 				filter_origin = overview_tmp()[overview_tmp()$gene1 %in% input[['overview1-gene1']] & overview_tmp()$gene2 %in% input[['overview1-gene2']], ];
 			} else {
 				filter_origin = overview_tmp()[overview_tmp()$gene2 %in% input[['overview1-gene2']], ]
 			}
 			object_over_A$value = NULL
-            updateSelectizeInput(session = session, inputId = "transA_overview", choices = "")
+			updateSelectizeInput(session = session, inputId = "transA_overview", choices = "")
 			updateSelectizeInput(session = session, inputId = 'overview2-breakpoint_A', choices = "")
 			output$chimerics_down <- renderPlot({ return(NULL) }, height = overview_size_down, width = overview_size_down)
 			output$chimerics_up <- renderPlot({ return(NULL) }, height = overview_size_up, width = overview_size_down)
 		} else {
 			if ( is.null(input[['overview1-gene2']]) || input[['overview1-gene2']] == "" ) {
-            	object_over_B$value = NULL
-           		updateSelectizeInput(session = session, inputId = "transB_overview", choices = "")
+				object_over_B$value = NULL
+				updateSelectizeInput(session = session, inputId = "transB_overview", choices = "")
 				updateSelectizeInput(session = session, inputId = 'overview2-breakpoint_B', choices = "")
 				filter_origin = overview_tmp()[overview_tmp()$gene1 %in% input[['overview1-gene1']], ]
 				output$chimerics_down <- renderPlot({ return(NULL) }, height = overview_size_down, width = overview_size_down)
 				output$chimerics_up <- renderPlot({ return(NULL) }, height = overview_size_up, width = overview_size_down)
-        	} else {
+			} else {
 				filter_origin = overview_tmp()[overview_tmp()$gene1 %in% input[['overview1-gene1']] & overview_tmp()$gene2 %in% input[['overview1-gene2']], ];
 			}
 		}
-        filter_origin = filter_origin[filter_origin$split >= input$overview_split & filter_origin$span >= input$overview_span, ]
+		filter_origin = filter_origin[filter_origin$split >= input$overview_split & filter_origin$span >= input$overview_span, ]
 		filter_origin = data.table(breakpoint_A=as.character(filter_origin$pos1), breakpoint_B=as.character(filter_origin$pos2), 
 					count=rep(1, length(filter_origin$pos1)), stringsAsFactors=FALSE)
 		filter_overview$value = as.data.frame(filter_origin[, by=.(breakpoint_A, breakpoint_B), .(value = sum(count))]);
     })
     overview_data <- select_group_server(id = "overview2", data = reactive(filter_overview$value), vars = reactive(c("breakpoint_A", "breakpoint_B")))
 
-    #// when input[['overview1-gene1']] NOT null, assign 'object_over_A$value' using FUNCTION "get_annotation_db_extend"
+	#// when input[['overview1-gene1']] NOT null, assign 'object_over_A$value' using FUNCTION "get_annotation_db_extend"
 	observeEvent(input[['overview1-gene1']], {
 		shinycssloaders::showSpinner("chimerics_down");
 		if ( is.null(database$txdb) || is.null(database$grTrack) || is.null(database$whole_txdb) ) { req(NULL); }
-        status_check$value = 0
+		status_check$value = 0
 		if ( length(unique(as.character(overview_tmp()$gene1))) == 1 ) {
 			choice_geneA = unique(as.character(overview_tmp()$gene1))
 			ens_A = NULL;
@@ -1117,15 +1117,15 @@ options(ucscChromosomeNames=FALSE)
 					showModal(modalDialog(title = "Warning message", paste("GeneA(", choice_geneA, ") is not available in annotation database, and process stops here!", sep="")));	req(NULL)
 				} else {
 					#// update the choice values in selectInput
-                    canonical_transA = database$canonical[database$canonical$ensembl_gene_id == ens_A,]$ensembl_transcript_id
-                    selectinput_A = data.frame(TXNAME=object_over_A$value$dataset$TXNAME, TAG=object_over_A$value$dataset$TXNAME, stringsAsFactors=FALSE)
-                    if (! is.na(canonical_transA[1]) ) { #// transcripts with canonical are tagged
-                        if ( length(selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG) > 0 ) {
-                            selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG = paste("@", selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG, sep="");
-                        }
-                    }
-                    selectinput_A = as.list(setNames(selectinput_A$TAG, selectinput_A$TXNAME)); #// key is TAG; value is TXNAME
-                    updateSelectizeInput(session = session, inputId = "transA_overview", choices = selectinput_A, selected = NULL,
+					canonical_transA = database$canonical[database$canonical$ensembl_gene_id == ens_A,]$ensembl_transcript_id
+					selectinput_A = data.frame(TXNAME=object_over_A$value$dataset$TXNAME, TAG=object_over_A$value$dataset$TXNAME, stringsAsFactors=FALSE)
+					if (! is.na(canonical_transA[1]) ) { #// transcripts with canonical are tagged
+						if ( length(selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG) > 0 ) {
+							selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG = paste("@", selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG, sep="");
+						}
+					}
+					selectinput_A = as.list(setNames(selectinput_A$TAG, selectinput_A$TXNAME)); #// key is TAG; value is TXNAME
+					updateSelectizeInput(session = session, inputId = "transA_overview", choices = selectinput_A, selected = NULL,
 					options = list(placeholder = 'Ensembl transcript id', render = I('{ option: function(item, escape) {
 								const regExpStr = "@";
 								return RegExp(regExpStr, "g").test(item.value) ? "<div><u>" + escape(item.label) + "</u></div>" : "<div>" + escape(item.label) + "</div>"
@@ -1139,11 +1139,11 @@ options(ucscChromosomeNames=FALSE)
 		}
 		shinycssloaders::hideSpinner("chimerics_down")
 	})
-    #// when input[['overview1-gene2']] NOT null, assign 'object_over_B$value' using FUNCTION "get_annotation_db_extend"
+	#// when input[['overview1-gene2']] NOT null, assign 'object_over_B$value' using FUNCTION "get_annotation_db_extend"
 	observeEvent(input[['overview1-gene2']], {
 		shinycssloaders::showSpinner("chimerics_down");
 		if ( is.null(database$txdb) || is.null(database$grTrack) || is.null(database$whole_txdb) ) { req(NULL); }
-        status_check$value = 0
+		status_check$value = 0
 		if ( length(unique(as.character(overview_tmp()$gene2))) == 1 ) {
 			choice_geneB = unique(as.character(overview_tmp()$gene2))
 			ens_B = NULL;
@@ -1159,19 +1159,19 @@ options(ucscChromosomeNames=FALSE)
 					showModal(modalDialog(title = "Warning message", paste("GeneB(", choice_geneB, ") is not available in annotation database, and process stops here!", sep=""))); req(NULL);
 				} else {
 					#// update the choice values in selectInput
-                    canonical_transB = database$canonical[database$canonical$ensembl_gene_id == ens_B,]$ensembl_transcript_id
+					canonical_transB = database$canonical[database$canonical$ensembl_gene_id == ens_B,]$ensembl_transcript_id
 					selectinput_B = data.frame(TXNAME=object_over_B$value$dataset$TXNAME, TAG=object_over_B$value$dataset$TXNAME, stringsAsFactors=FALSE)
-                    if (! is.na(canonical_transB[1]) ) { #// transcripts with canonical are tagged
-                        if ( length(selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG) > 0 ) {
-                            selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG = paste("@", selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG, sep="");
-                        }
-                    }
-                    selectinput_B = as.list(setNames(selectinput_B$TAG, selectinput_B$TXNAME)); #// key is TAG; value is TXNAME
-                    updateSelectizeInput(session = session, inputId = "transB_overview", choices = selectinput_B, selected = NULL,
+					if (! is.na(canonical_transB[1]) ) { #// transcripts with canonical are tagged
+						if ( length(selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG) > 0 ) {
+							selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG = paste("@", selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG, sep="");
+						}
+					}
+					selectinput_B = as.list(setNames(selectinput_B$TAG, selectinput_B$TXNAME)); #// key is TAG; value is TXNAME
+					updateSelectizeInput(session = session, inputId = "transB_overview", choices = selectinput_B, selected = NULL,
 					options = list(placeholder = 'Ensembl transcript id', render = I('{ option: function(item, escape) {
 								const regExpStr = "@";
 								return RegExp(regExpStr, "g").test(item.value) ? "<div><u>" + escape(item.label) + "</u></div>" : "<div>" + escape(item.label) + "</div>"
-                    }}')))
+					}}')))
 				}
 			} else {
 				object_over_B$value = NULL
@@ -1181,7 +1181,7 @@ options(ucscChromosomeNames=FALSE)
 		}
 		shinycssloaders::hideSpinner("chimerics_down")
 	})
-    #// click button 'input$overview_on' for plotting
+	#// click button 'input$overview_on' for plotting
 	observeEvent(input$overview_on, {
 		shinycssloaders::showSpinner("chimerics_down");
 		overviewAB$geneA=NULL;	overviewAB$symbol_A=NULL;	overviewAB$geneB=NULL;	overviewAB$symbol_B=NULL;
@@ -1198,7 +1198,7 @@ options(ucscChromosomeNames=FALSE)
 				tmp_control_transA$value$end = object_over_A$value$end
 				tmp_control_transA$value$strand = object_over_A$value$strand
 				if (! is.null(input$transA_overview) ) { #// if selected transcript of geneA present
-                    name_transA = input$transA_overview;	name_transA = gsub('@', '', name_transA);
+					name_transA = input$transA_overview;	name_transA = gsub('@', '', name_transA);
 					tmp_control_transA$value$dataset = object_over_A$value$dataset[object_over_A$value$dataset$TXNAME %in% name_transA, ][1,] #// select the first row represent geneA
 					tmp_control_transA$value$txTr_f = object_over_A$value$txTr_f[object_over_A$value$txTr_f$transcript %in% name_transA, ]
 				} else {
@@ -1212,7 +1212,7 @@ options(ucscChromosomeNames=FALSE)
 				tmp_control_transB$value$end = object_over_B$value$end
 				tmp_control_transB$value$strand = object_over_B$value$strand
 				if (! is.null(input$transB_overview) ) { #// if selected transcript of geneB present
-                    name_transB = input$transB_overview;	name_transB = gsub('@', '', name_transB);
+					name_transB = input$transB_overview;	name_transB = gsub('@', '', name_transB);
 					tmp_control_transB$value$dataset = object_over_B$value$dataset[object_over_B$value$dataset$TXNAME %in% name_transB, ][1,] #// select the first row represent geneB
 					tmp_control_transB$value$txTr_f = object_over_B$value$txTr_f[object_over_B$value$txTr_f$transcript %in% name_transB, ]
 				} else {
@@ -1243,8 +1243,8 @@ options(ucscChromosomeNames=FALSE)
 				}
 				overviewAB$geneA=geneA; overviewAB$symbol_A=symbol_A;
 				overviewAB$geneB=geneB; overviewAB$symbol_B=symbol_B;
-                overview_data_static$value = overview_data();	# set fusion breakpoint in static status
-                status_check$value = 1
+				overview_data_static$value = overview_data();	# set fusion breakpoint in static status
+				status_check$value = 1
 				output$chimerics_down <- renderPlot({
 					if ( length(overviewAB$geneA) > 0 && length(overviewAB$geneB) > 0 ) {
 						print("start to plotting down overview fusion")
@@ -1275,8 +1275,8 @@ options(ucscChromosomeNames=FALSE)
 			shinycssloaders::hideSpinner("chimerics_down")
 		}
 	})
-    
-    #// start overview plotting
+
+	#// start overview plotting
 	observe({
 		output$chimerics_up <- renderPlot({
 			if ( length(overviewAB$geneA) > 0 && length(overviewAB$geneB) > 0 && length(plotbody$collect) > 0 ) {
@@ -1318,34 +1318,34 @@ options(ucscChromosomeNames=FALSE)
 		}
 	)
 
-    #------ For individual visualisation -----#
+	#------ For individual visualisation -----#
 	persample_size_full <- reactive({ return(500*input$persample_size); })
 	object_individual_A <- reactiveValues(value=NULL) #// 'object_individual_A$value' is list class with five elements:
 	object_individual_B <- reactiveValues(value=NULL) #// 'object_individual_B$value' is list class with five elements:
 	individualAB <- reactiveValues(geneA=NULL, symbol_A=NULL, geneB=NULL, symbol_B=NULL, breakpoint_set=NULL)
 	individual_data <- select_group_server(id = "individual", data = reactive(inputFile$rnadata), vars = reactive(c("gene1", "gene2", "pos1", "pos2", "name", "strand1", "strand2")))
-    #// when input[['individual-gene1']] NOT null, assign 'object_individual_A$value' using FUNCTION "get_annotation_db"
+	#// when input[['individual-gene1']] NOT null, assign 'object_individual_A$value' using FUNCTION "get_annotation_db"
 	observe({
 		if ( is.null(input[['individual-gene1']]) || input[['individual-gene1']] == "" ) {
-            object_individual_A = NULL
-            updateSelectizeInput(session = session, inputId = "transA_individual", choices = "")
+			object_individual_A = NULL
+			updateSelectizeInput(session = session, inputId = "transA_individual", choices = "")
 			updateVirtualSelect(session = session, inputId = 'individual-pos1', choices = "")
 			updateVirtualSelect(session = session, inputId = 'individual-strand1', choices = "")
 			updateVirtualSelect(session = session, inputId = 'individual-name', choices = "")
 			output$chimerics2 <- renderPlot({ return(NULL); }, height = persample_size_full, width = persample_size_full)
 		}
 		if ( is.null(input[['individual-gene2']]) || input[['individual-gene2']] == "" ) {
-            object_individual_B = NULL
-            updateSelectizeInput(session = session, inputId = "transB_individual", choices = "")
+			object_individual_B = NULL
+			updateSelectizeInput(session = session, inputId = "transB_individual", choices = "")
 			updateVirtualSelect(session = session, inputId = 'individual-pos2', choices = "")
 			updateVirtualSelect(session = session, inputId = 'individual-strand2', choices = "")
 			updateVirtualSelect(session = session, inputId = 'individual-name', choices = "")
 			output$chimerics2 <- renderPlot({ return(NULL); }, height = persample_size_full, width = persample_size_full)
-        }
+		}
 		if ( is.null(inputFile$rnadata) ) { req(NULL); }
 	})
 
-    observeEvent(input[['individual-gene1']], {
+	observeEvent(input[['individual-gene1']], {
 		if ( is.null(database$txdb) || is.null(database$grTrack) ) { req(NULL);}
 		if ( length(unique(as.character(individual_data()$gene1))) == 1 ) {
 			choice_geneA = unique(as.character(individual_data()$gene1))
@@ -1362,20 +1362,20 @@ options(ucscChromosomeNames=FALSE)
 					howModal(modalDialog(title = "Warning message", paste("GeneA(", choice_geneA, ") is not available in annotation database, and process stops here!", sep=""))); req(NULL)
 				} else {
 					#// update the choice values in selectInput
-                    canonical_transA = database$canonical[database$canonical$ensembl_gene_id == ens_A,]$ensembl_transcript_id
-                    selectinput_A = data.frame(TXNAME=object_individual_A$value$dataset$TXNAME, TAG=object_individual_A$value$dataset$TXNAME, stringsAsFactors=FALSE)
-                    if (! is.na(canonical_transA[1]) ) { #// transcripts with canonical are tagged
-                        if ( length(selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG) > 0 ) {
-                            selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG = paste("@", selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG, sep="");
-                        }
-                    }
-                    selectinput_A = as.list(setNames(selectinput_A$TAG, selectinput_A$TXNAME)); #// key is TAG; value is TXNAME
-                    updateSelectizeInput(session = session, inputId = "transA_individual", choices = selectinput_A, selected = NULL,
+					canonical_transA = database$canonical[database$canonical$ensembl_gene_id == ens_A,]$ensembl_transcript_id
+					selectinput_A = data.frame(TXNAME=object_individual_A$value$dataset$TXNAME, TAG=object_individual_A$value$dataset$TXNAME, stringsAsFactors=FALSE)
+					if (! is.na(canonical_transA[1]) ) { #// transcripts with canonical are tagged
+						if ( length(selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG) > 0 ) {
+							selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG = paste("@", selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG, sep="");
+						}
+					}
+					selectinput_A = as.list(setNames(selectinput_A$TAG, selectinput_A$TXNAME)); #// key is TAG; value is TXNAME
+					updateSelectizeInput(session = session, inputId = "transA_individual", choices = selectinput_A, selected = NULL,
 					options = list(placeholder = 'Ensembl transcript id', render = I('{ option: function(item, escape) {
 							const regExpStr = "@";
 							return RegExp(regExpStr, "g").test(item.value) ? "<div><u>" + escape(item.label) + "</u></div>" : "<div>" + escape(item.label) + "</div>"
 					}}')))
-                }
+				}
 			} else {
 				object_individual_A$value = NULL
 				updateSelectizeInput(session = session, inputId = "transA_individual", choices = "") #// NOTE: set choices = "" not (NULL)
@@ -1383,7 +1383,7 @@ options(ucscChromosomeNames=FALSE)
 			}
 		}
 	})
-    #// when input[['individual-gene2']] NOT null, assign 'object_individual_B$value' using FUNCTION "get_annotation_db"
+	#// when input[['individual-gene2']] NOT null, assign 'object_individual_B$value' using FUNCTION "get_annotation_db"
 	observeEvent(input[['individual-gene2']], {
 		if ( is.null(database$txdb) || is.null(database$grTrack) ) { req(NULL); }
 		if ( length(unique(as.character(individual_data()$gene2))) == 1 ) {
@@ -1401,19 +1401,19 @@ options(ucscChromosomeNames=FALSE)
 					howModal(modalDialog(title = "Warning message", paste("GeneB(", choice_geneB, ") is not available in annotation database, and process stops here!", sep="")));	req(NULL)
 				} else {
 					#// update the choice values in selectInput
-                    canonical_transB = database$canonical[database$canonical$ensembl_gene_id == ens_B,]$ensembl_transcript_id
+					canonical_transB = database$canonical[database$canonical$ensembl_gene_id == ens_B,]$ensembl_transcript_id
 					selectinput_B = data.frame(TXNAME=object_individual_B$value$dataset$TXNAME, TAG=object_individual_B$value$dataset$TXNAME, stringsAsFactors=FALSE)
-                    if (! is.na(canonical_transB[1]) ) { #// transcripts with canonical are tagged
-                        if ( length(selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG) > 0 ) {
-                            selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG = paste("@", selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG, sep="");
-                        }
-                    }
-                    selectinput_B = as.list(setNames(selectinput_B$TAG, selectinput_B$TXNAME)); #// key is TAG; value is TXNAME
-                    updateSelectizeInput(session = session, inputId = "transB_individual", choices = selectinput_B, selected = NULL,
+					if (! is.na(canonical_transB[1]) ) { #// transcripts with canonical are tagged
+						if ( length(selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG) > 0 ) {
+							selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG = paste("@", selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG, sep="");
+						}
+					}
+					selectinput_B = as.list(setNames(selectinput_B$TAG, selectinput_B$TXNAME)); #// key is TAG; value is TXNAME
+					updateSelectizeInput(session = session, inputId = "transB_individual", choices = selectinput_B, selected = NULL,
 					options = list(placeholder = 'Ensembl transcript id', render = I('{ option: function(item, escape) {
 								const regExpStr = "@";
 								return RegExp(regExpStr, "g").test(item.value) ? "<div><u>" + escape(item.label) + "</u></div>" : "<div>" + escape(item.label) + "</div>"
-                    }}')))
+					}}')))
 				}
 			} else {
 				object_individual_B$value = NULL
@@ -1422,7 +1422,7 @@ options(ucscChromosomeNames=FALSE)
 			}
 		}
 	})
-    #// click button 'input$individual_on' for plotting
+	#// click button 'input$individual_on' for plotting
 	observeEvent(input$individual_on, {
 		shinycssloaders::showSpinner("chimerics2");
 		individualAB$geneA=NULL; individualAB$symbol_A=NULL; individualAB$geneB=NULL; individualAB$symbol_B=NULL; individualAB$breakpoint_set=NULL;
@@ -1441,7 +1441,7 @@ options(ucscChromosomeNames=FALSE)
 				mytmp_A$value$end = object_individual_A$value$end; 
 				mytmp_A$value$strand = object_individual_A$value$strand; 
 				if (! is.null(input$transA_individual) ) { #// if selected transcript of geneA present
-                    name_transA = input$transA_individual;	name_transA = gsub('@', '', name_transA);
+					name_transA = input$transA_individual;	name_transA = gsub('@', '', name_transA);
 					mytmp_A$value$dataset = object_individual_A$value$dataset[object_individual_A$value$dataset$TXNAME %in% name_transA, ]
 				} else {
 					mytmp_A$value$dataset = object_individual_A$value$dataset
@@ -1454,7 +1454,7 @@ options(ucscChromosomeNames=FALSE)
 				mytmp_B$value$end = object_individual_B$value$end; 
 				mytmp_B$value$strand = object_individual_B$value$strand; 
 				if (! is.null(input$transB_individual) ) { #// if selected transcript of geneB present
-                    name_transB = input$transB_individual;	name_transB = gsub('@', '', name_transB);
+					name_transB = input$transB_individual;	name_transB = gsub('@', '', name_transB);
 					mytmp_B$value$dataset = object_individual_B$value$dataset[object_individual_B$value$dataset$TXNAME %in% name_transB, ]
 				} else {
 					mytmp_B$value$dataset = object_individual_B$value$dataset
@@ -1511,21 +1511,21 @@ options(ucscChromosomeNames=FALSE)
 				if ( is.null(individual_output) ) {
 					showModal(modalDialog(title = "Warning message", paste("Download an incomplete plot due to a small layout size. ", "Please increase height and width values in 'Layout_width' and 'Layout_height' boxes to get a full plot!", sep="")));
 				}
-            } else {
+			} else {
 				plot.new()
 			}
 			dev.off()
 		}
 	)
 
-    #------ For domain visualization -----#
-    object_domain_A <- reactiveValues(value=NULL) #// 'object_domain_A$value' is list class with 6 elements:
+	#------ For domain visualization -----#
+	object_domain_A <- reactiveValues(value=NULL) #// 'object_domain_A$value' is list class with 6 elements:
 	object_domain_B <- reactiveValues(value=NULL) #// 'object_domain_B$value' is list class with 6 elements:
 	control_break_AB <- reactiveValues(A=NULL, B=NULL) #// 'control_break_AB$A' and 'control_break_AB$B' are vector of breakpoints for geneA and geneB
 	domain_plotA <- reactiveValues(geneA=NULL, symbol_A=NULL, domainA=NULL, motifA=NULL)
 	domain_plotB <- reactiveValues(geneB=NULL, symbol_B=NULL, domainB=NULL, motifB=NULL)
 	domain_plot_link <- reactiveValues(A1_xy=NULL, B1_xy=NULL)
-    domain_filter <- reactiveValues(value=NULL)
+	domain_filter <- reactiveValues(value=NULL)
 
     domain_1 <- select_group_server(id = "domain1", data = reactive(inputFile$rnadata), vars = reactive(c("gene1", "gene2")))
     #// filter breakpoints (i.e. keep breakpoints inside of the selected transcript_id of geneA and geneB)
@@ -1539,7 +1539,7 @@ options(ucscChromosomeNames=FALSE)
 		if ( is.null(input[['domain1-gene1']]) || input[['domain1-gene1']] == "" ) {
 			if ( is.null(input[['domain1-gene2']]) || input[['domain1-gene2']] == "" ) {
 				object_domain_B$value = NULL
-         		domain_plot_link$B1_xy = NULL
+				domain_plot_link$B1_xy = NULL
 				control_break_AB$B = NULL
 				updateSelectizeInput(session = session, inputId = "domainB", choices = "")
 				updateNumericInput(session = session, inputId = "offset_base_B", value = 5)
@@ -1550,24 +1550,24 @@ options(ucscChromosomeNames=FALSE)
 				domain_break = domain_1()[domain_1()$gene2 %in% input[['domain1-gene2']], ]
 			}
 			object_domain_A$value = NULL
-            domain_plot_link$A1_xy = NULL
+			domain_plot_link$A1_xy = NULL
 			control_break_AB$A = NULL
 			updateSelectizeInput(session = session, inputId = "domainA", choices = "")
-            updateNumericInput(session = session, inputId = "offset_base_A", value = 5)
+			updateNumericInput(session = session, inputId = "offset_base_A", value = 5)
 			updateSelectizeInput(session = session, inputId = "domain2-pos1", choices = "")
 			output$linking <- renderPlot({ return(NULL); })
-            output$domain_up <- renderPlot({ return(NULL); }) 
-        } else {
+			output$domain_up <- renderPlot({ return(NULL); }) 
+		} else {
 			if ( is.null(input[['domain1-gene2']]) || input[['domain1-gene2']] == "" ) {
 				object_domain_B$value = NULL
-         		domain_plot_link$B1_xy = NULL
+				domain_plot_link$B1_xy = NULL
 				control_break_AB$B = NULL
 				updateSelectizeInput(session = session, inputId = "domainB", choices = "")
-            	updateNumericInput(session = session, inputId = "offset_base_B", value = 5)
+				updateNumericInput(session = session, inputId = "offset_base_B", value = 5)
 				domain_break = domain_1()[domain_1()$gene1 %in% input[['domain1-gene1']], ]
 				updateSelectizeInput(session = session, inputId = "domain2-pos2", choices = "")
-            	output$linking <- renderPlot({ return(NULL); })
-            	output$domain_down <- renderPlot({ return(NULL); })
+				output$linking <- renderPlot({ return(NULL); })
+				output$domain_down <- renderPlot({ return(NULL); })
 			} else {
 				domain_break = domain_1()[domain_1()$gene1 %in% input[['domain1-gene1']] & domain_1()$gene2 %in% input[['domain1-gene2']], ]
 			}
@@ -1591,146 +1591,146 @@ options(ucscChromosomeNames=FALSE)
 
     #// if gene symbol is selected in input[['domain1-gene1']], set'control_break_AB$A', 'control_break_AB$B' and 'domain_plotA$geneA' as NULL when only one symbol selected
     observeEvent(input[['domain1-gene1']], {
-		    if ( is.null(database$txdb) || is.null(database$grTrack) || is.null(database$domain) || is.null(database$motif) ) { req(NULL); }
-            if ( length(unique(as.character(domain_1()$gene1))) == 1 ) { #// make sure only one symbol of geneA selected
-            	choice_geneA = unique(as.character(domain_1()$gene1))
-				ens_A = NULL;
-				if ( grepl("ENSG00", choice_geneA) || grepl("ENSMUSG0", choice_geneA) ) {
-					ens_A = database$ensembl_id[database$ensembl_id == choice_geneA];
+		if ( is.null(database$txdb) || is.null(database$grTrack) || is.null(database$domain) || is.null(database$motif) ) { req(NULL); }
+		if ( length(unique(as.character(domain_1()$gene1))) == 1 ) { #// make sure only one symbol of geneA selected
+			choice_geneA = unique(as.character(domain_1()$gene1))
+			ens_A = NULL;
+			if ( grepl("ENSG00", choice_geneA) || grepl("ENSMUSG0", choice_geneA) ) {
+				ens_A = database$ensembl_id[database$ensembl_id == choice_geneA];
+			} else {
+				ens_A = names(database$symbol_ensem[database$symbol_ensem == choice_geneA])
+			}
+			if ( length(ens_A) == 1 ) { #// if gene symbol matches to ensembl_id
+				object_domain_A$value <- FuSViz::get_annotation_db(ens_A, database$txdb, database$grTrack)
+				if ( is.null(object_domain_A$value) ) {
+					updateSelectizeInput(session = session, inputId = "domainA", choices = "") 
+					showModal(modalDialog(title = "Warning message", paste("GeneA(", choice_geneA, ") is not available in annotation database, and process stops here!", sep=""))); req(NULL)
 				} else {
-					ens_A = names(database$symbol_ensem[database$symbol_ensem == choice_geneA])
-				}
-				if ( length(ens_A) == 1 ) { #// if gene symbol matches to ensembl_id
-					object_domain_A$value <- FuSViz::get_annotation_db(ens_A, database$txdb, database$grTrack)
-					if ( is.null(object_domain_A$value) ) {
-						updateSelectizeInput(session = session, inputId = "domainA", choices = "") 
-						showModal(modalDialog(title = "Warning message", paste("GeneA(", choice_geneA, ") is not available in annotation database, and process stops here!", sep=""))); req(NULL)
-					} else {
-						domain_geneA = database$domain[database$domain$Gene_id == ens_A, ]
-						motif_geneA = database$motif[database$motif$Gene_id == ens_A, ]
-						#// get transcript_id with domain or motif annotation
-						DM_transA = unique(c(as.character(domain_geneA$Transcript_id), as.character(motif_geneA$Transcript_id)))
-                   		canonical_transA = database$canonical[database$canonical$ensembl_gene_id == ens_A,]$ensembl_transcript_id
-						#// only keep transcripts of geneA that harbor breakpoints
-						break_max_A = max(domain_1()$pos1)
-						break_min_A = min(domain_1()$pos1)
-						tmp_AA = object_domain_A$value$dataset
-						tmp_AA = object_domain_A$value$dataset[break_max_A >= object_domain_A$value$dataset$TXSTART & break_min_A <= object_domain_A$value$dataset$TXEND, ]
-						if ( length(dim(tmp_AA)[1]) == 0 ) { #// judge whether 0-row in tmp_AA
-							showModal(modalDialog(title = "Warning message", "No breakpoints within geneA or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)")); req(NULL);
+					domain_geneA = database$domain[database$domain$Gene_id == ens_A, ]
+					motif_geneA = database$motif[database$motif$Gene_id == ens_A, ]
+					#// get transcript_id with domain or motif annotation
+					DM_transA = unique(c(as.character(domain_geneA$Transcript_id), as.character(motif_geneA$Transcript_id)))
+					canonical_transA = database$canonical[database$canonical$ensembl_gene_id == ens_A,]$ensembl_transcript_id
+					#// only keep transcripts of geneA that harbor breakpoints
+					break_max_A = max(domain_1()$pos1)
+					break_min_A = min(domain_1()$pos1)
+					tmp_AA = object_domain_A$value$dataset
+					tmp_AA = object_domain_A$value$dataset[break_max_A >= object_domain_A$value$dataset$TXSTART & break_min_A <= object_domain_A$value$dataset$TXEND, ]
+					if ( length(dim(tmp_AA)[1]) == 0 ) { #// judge whether 0-row in tmp_AA
+						showModal(modalDialog(title = "Warning message", "No breakpoints within geneA or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)")); req(NULL);
+					}
+					selectinput_A = data.frame(TXNAME=tmp_AA$TXNAME, TAG=tmp_AA$TXNAME, stringsAsFactors=FALSE)
+					if (! is.na(DM_transA[1]) ) { #// transcripts harboring domain/motif are present
+						if ( length(selectinput_A[selectinput_A$TXNAME %in% DM_transA, ]$TAG) > 0 ) {
+							selectinput_A[selectinput_A$TXNAME %in% DM_transA, ]$TAG = paste("-", selectinput_A[selectinput_A$TXNAME %in% DM_transA, ]$TAG, sep="");
 						}
-						selectinput_A = data.frame(TXNAME=tmp_AA$TXNAME, TAG=tmp_AA$TXNAME, stringsAsFactors=FALSE)
-						if (! is.na(DM_transA[1]) ) { #// transcripts harboring domain/motif are present
-							if ( length(selectinput_A[selectinput_A$TXNAME %in% DM_transA, ]$TAG) > 0 ) {
-								selectinput_A[selectinput_A$TXNAME %in% DM_transA, ]$TAG = paste("-", selectinput_A[selectinput_A$TXNAME %in% DM_transA, ]$TAG, sep="");
-							}
+					}
+					if (! is.na(canonical_transA[1]) ) { #// transcripts with canonical are tagged
+						if ( length(selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG) > 0 ) {
+							selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG = paste("@", selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG, sep="");
 						}
-                    	if (! is.na(canonical_transA[1]) ) { #// transcripts with canonical are tagged
-                        	if ( length(selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG) > 0 ) {
-                            	selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG = paste("@", selectinput_A[selectinput_A$TXNAME %in% canonical_transA, ]$TAG, sep="");
-                        	}
-                    	}
-						selectinput_A = as.list(setNames(selectinput_A$TAG, selectinput_A$TXNAME)); #// key is TAG; value is TXNAME
-						#// font of transcript_id harboring domain/motif is bold
-						updateSelectizeInput(session = session, inputId = "domainA", choices = selectinput_A, selected = NULL,
-							options = list(placeholder = 'Ensembl transcript id', maxItems = 1, render = I('{ option: function(item, escape) {
-                                const regExpStr_dm = "-";
-                                const regExpStr_can = "@";
+					}
+					selectinput_A = as.list(setNames(selectinput_A$TAG, selectinput_A$TXNAME)); #// key is TAG; value is TXNAME
+					#// font of transcript_id harboring domain/motif is bold
+					updateSelectizeInput(session = session, inputId = "domainA", choices = selectinput_A, selected = NULL,
+						options = list(placeholder = 'Ensembl transcript id', maxItems = 1, render = I('{ option: function(item, escape) {
+							const regExpStr_dm = "-";
+							const regExpStr_can = "@";
 								if ( RegExp(regExpStr_dm, "g").test(item.value) === true ) {
-                                    if ( RegExp(regExpStr_can, "g").test(item.value) === true ) {
-                                        return("<div><b><u>" + escape(item.label) + "</u></b></div>")
-                                    } else {
-                                        return("<div><b>" + escape(item.label) + "</b></div>")
-                                    }
-                                } else {
-                                    if ( RegExp(regExpStr_can, "g").test(item.value) ) {
-                                        return("<div><u>" + escape(item.label) + "</u></div>")
-                                    } else {
-                                        return("<div>" + escape(item.label) + "</div>")
-                                    }
-                            	}
+									if ( RegExp(regExpStr_can, "g").test(item.value) === true ) {
+										return("<div><b><u>" + escape(item.label) + "</u></b></div>")
+									} else {
+										return("<div><b>" + escape(item.label) + "</b></div>")
+									}
+								} else {
+									if ( RegExp(regExpStr_can, "g").test(item.value) ) {
+										return("<div><u>" + escape(item.label) + "</u></div>")
+									} else {
+										return("<div>" + escape(item.label) + "</div>")
+									}
+								}
 						}}')))
-					}
-				} else {
-					object_domain_A$value = NULL
-					updateSelectizeInput(session = session, inputId = "domainA", choices = "")
-					showModal(modalDialog(title = "Warning message", paste("No or multiple geneA(", choice_geneA, ") is present (check gene symbol!)", sep="")));	req(NULL);
 				}
+			} else {
+				object_domain_A$value = NULL
+				updateSelectizeInput(session = session, inputId = "domainA", choices = "")
+				showModal(modalDialog(title = "Warning message", paste("No or multiple geneA(", choice_geneA, ") is present (check gene symbol!)", sep="")));	req(NULL);
 			}
+		}
 	})
-    #// if gene symbol is selected in input[['domain1-gene2']], set 'control_break_AB$A', 'control_break_AB$B' and 'domain_plotB$geneB' as NULL when only one symbol selected
+	#// if gene symbol is selected in input[['domain1-gene2']], set 'control_break_AB$A', 'control_break_AB$B' and 'domain_plotB$geneB' as NULL when only one symbol selected
 	observeEvent(input[['domain1-gene2']], {
-		    if ( is.null(database$txdb) || is.null(database$grTrack) || is.null(database$domain) || is.null(database$motif) ) { req(NULL); }
-            if ( length(unique(as.character(domain_1()$gene2))) == 1 ) { #// make sure only one symbol of geneB selected
-				choice_geneB = unique(as.character(domain_1()$gene2))
-				ens_B = NULL;
-				if ( grepl("ENSG00", choice_geneB) || grepl("ENSMUSG0", choice_geneB) ) {
-					ens_B = database$ensembl_id[database$ensembl_id == choice_geneB];
+		if ( is.null(database$txdb) || is.null(database$grTrack) || is.null(database$domain) || is.null(database$motif) ) { req(NULL); }
+		if ( length(unique(as.character(domain_1()$gene2))) == 1 ) { #// make sure only one symbol of geneB selected
+			choice_geneB = unique(as.character(domain_1()$gene2))
+			ens_B = NULL;
+			if ( grepl("ENSG00", choice_geneB) || grepl("ENSMUSG0", choice_geneB) ) {
+				ens_B = database$ensembl_id[database$ensembl_id == choice_geneB];
+			} else {
+				ens_B = names(database$symbol_ensem[database$symbol_ensem == choice_geneB])
+			}
+			if ( length(ens_B) == 1 ) { #// if gene symbol matches to ensembl_id
+				object_domain_B$value <- FuSViz::get_annotation_db(ens_B, database$txdb, database$grTrack)
+				if ( is.null(object_domain_B$value) ) {
+					updateSelectizeInput(session = session, inputId = "domainB", choices = "")
+					showModal(modalDialog(title = "Warning message", paste("GeneB ", choice_geneB, " is not available in annotation database, and process stops here!", sep=""))); req(NULL)
 				} else {
-					ens_B = names(database$symbol_ensem[database$symbol_ensem == choice_geneB])
-				}
-				if ( length(ens_B) == 1 ) { #// if gene symbol matches to ensembl_id
-					object_domain_B$value <- FuSViz::get_annotation_db(ens_B, database$txdb, database$grTrack)
-					if ( is.null(object_domain_B$value) ) {
-						updateSelectizeInput(session = session, inputId = "domainB", choices = "")
-						showModal(modalDialog(title = "Warning message", paste("GeneB ", choice_geneB, " is not available in annotation database, and process stops here!", sep=""))); req(NULL)
-					} else {
-						domain_geneB = database$domain[database$domain$Gene_id == ens_B, ]
-						motif_geneB = database$motif[database$motif$Gene_id == ens_B, ]
-						DM_transB = unique(c(as.character(domain_geneB$Transcript_id), as.character(motif_geneB$Transcript_id))) #// get transcript_id with domain or motif annotation
-                    	canonical_transB = database$canonical[database$canonical$ensembl_gene_id == ens_B,]$ensembl_transcript_id
-						#// only keep transcripts of geneB that harbor breakpoints
-						break_max_B = max(domain_1()$pos2)
-						break_min_B = min(domain_1()$pos2)
-						tmp_BB = object_domain_B$value$dataset
-						tmp_BB = object_domain_B$value$dataset[break_max_B >= object_domain_B$value$dataset$TXSTART & break_min_B <= object_domain_B$value$dataset$TXEND, ]
-						if ( length(dim(tmp_BB)[1]) == 0 ) { #// judge whether 0-row in tmp_BB 
-							showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)")); req(NULL);
+					domain_geneB = database$domain[database$domain$Gene_id == ens_B, ]
+					motif_geneB = database$motif[database$motif$Gene_id == ens_B, ]
+					DM_transB = unique(c(as.character(domain_geneB$Transcript_id), as.character(motif_geneB$Transcript_id))) #// get transcript_id with domain or motif annotation
+					canonical_transB = database$canonical[database$canonical$ensembl_gene_id == ens_B,]$ensembl_transcript_id
+					#// only keep transcripts of geneB that harbor breakpoints
+					break_max_B = max(domain_1()$pos2)
+					break_min_B = min(domain_1()$pos2)
+					tmp_BB = object_domain_B$value$dataset
+					tmp_BB = object_domain_B$value$dataset[break_max_B >= object_domain_B$value$dataset$TXSTART & break_min_B <= object_domain_B$value$dataset$TXEND, ]
+					if ( length(dim(tmp_BB)[1]) == 0 ) { #// judge whether 0-row in tmp_BB 
+						showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)")); req(NULL);
+					}
+					selectinput_B = data.frame(TXNAME=tmp_BB$TXNAME, TAG=tmp_BB$TXNAME, stringsAsFactors=FALSE)
+					if (! is.na(DM_transB[1]) ) { #// transcript harboring domain/motif are present
+						if ( length(selectinput_B[selectinput_B$TXNAME %in% DM_transB, ]$TAG) > 0 ) {
+							selectinput_B[selectinput_B$TXNAME %in% DM_transB, ]$TAG = paste("-", selectinput_B[selectinput_B$TXNAME %in% DM_transB, ]$TAG, sep="");
 						}
-						selectinput_B = data.frame(TXNAME=tmp_BB$TXNAME, TAG=tmp_BB$TXNAME, stringsAsFactors=FALSE)
-						if (! is.na(DM_transB[1]) ) { #// transcript harboring domain/motif are present
-							if ( length(selectinput_B[selectinput_B$TXNAME %in% DM_transB, ]$TAG) > 0 ) {
-								selectinput_B[selectinput_B$TXNAME %in% DM_transB, ]$TAG = paste("-", selectinput_B[selectinput_B$TXNAME %in% DM_transB, ]$TAG, sep="");
+					}
+					if (! is.na(canonical_transB[1]) ) { #// transcripts with canonical are tagged
+						if ( length(selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG) > 0 ) {
+							selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG = paste("@", selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG, sep="");
+						}
+					}
+					selectinput_B = as.list(setNames(selectinput_B$TAG, selectinput_B$TXNAME))
+					#// font of transcript_id harboring domain/motif is bold
+					updateSelectizeInput(session = session, inputId = "domainB", choices = selectinput_B, selected = NULL,
+					options = list(placeholder = 'Ensembl transcript id', maxItems = 1, render = I('{ option: function(item, escape) {
+						const regExpStr_dm = "-";
+						const regExpStr_can = "@";
+						if ( RegExp(regExpStr_dm, "g").test(item.value) === true ) {
+							if ( RegExp(regExpStr_can, "g").test(item.value) === true ) {
+								return("<div><b><u>" + escape(item.label) + "</u></b></div>")
+							} else {
+								return("<div><b>" + escape(item.label) + "</b></div>")
+							}
+						} else {
+							if ( RegExp(regExpStr_can, "g").test(item.value) ) {
+								return("<div><u>" + escape(item.label) + "</u></div>")
+							} else {
+								return("<div>" + escape(item.label) + "</div>")
 							}
 						}
-                    	if (! is.na(canonical_transB[1]) ) { #// transcripts with canonical are tagged
-                        	if ( length(selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG) > 0 ) {
-                        		selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG = paste("@", selectinput_B[selectinput_B$TXNAME %in% canonical_transB, ]$TAG, sep="");
-                        	}
-                    	}
-						selectinput_B = as.list(setNames(selectinput_B$TAG, selectinput_B$TXNAME))
-						#// font of transcript_id harboring domain/motif is bold
-						updateSelectizeInput(session = session, inputId = "domainB", choices = selectinput_B, selected = NULL,
-							options = list(placeholder = 'Ensembl transcript id', maxItems = 1, render = I('{ option: function(item, escape) {
-								const regExpStr_dm = "-";
-                                const regExpStr_can = "@";
-								if ( RegExp(regExpStr_dm, "g").test(item.value) === true ) {
-                                    if ( RegExp(regExpStr_can, "g").test(item.value) === true ) {
-                                        return("<div><b><u>" + escape(item.label) + "</u></b></div>")
-                                    } else {
-                                        return("<div><b>" + escape(item.label) + "</b></div>")
-                                    }
-                                } else {
-                                    if ( RegExp(regExpStr_can, "g").test(item.value) ) {
-                                        return("<div><u>" + escape(item.label) + "</u></div>")
-                                    } else {
-                                        return("<div>" + escape(item.label) + "</div>")
-                                    }
-                                }
-							}}')))
-					}
-				} else {
-					object_domain_B$value = NULL
-					updateSelectizeInput(session = session, inputId = "domainB", choices = "")
-					showModal(modalDialog(title = "Warning message", paste("No or multiple geneB(", choice_geneB, ") is present (check gene symbol!)", sep="")));	req(NULL);
+					}}')))
 				}
+			} else {
+				object_domain_B$value = NULL
+				updateSelectizeInput(session = session, inputId = "domainB", choices = "")
+				showModal(modalDialog(title = "Warning message", paste("No or multiple geneB(", choice_geneB, ") is present (check gene symbol!)", sep="")));	req(NULL);
 			}
+		}
 	})
-    #// select transcript_id of geneA
+	#// select transcript_id of geneA
 	observeEvent(input$domainA, {
 		if ( is.null(object_domain_A$value) || is.null(input$domainA) || input$domainA == "" ) { #// if 'object_domain_A$value' is NULL, set 'domain_plotA$geneA, $symbol_A, $domainA, $motifA' as NULL
 			domain_plotA$geneA = NULL; domain_plotA$symbol_A = NULL; domain_plotA$domainA = NULL; domain_plotA$motifA = NULL;
-            domain_plot_link$A1_xy = NULL;
+			domain_plot_link$A1_xy = NULL;
 		} else {
 			name_domainA = input$domainA;	name_domainA = gsub('-', '', name_domainA); name_domainA = gsub('@', '', name_domainA);
 			#// a subset transcript of geneA after update the choice values in selectInput
@@ -1758,144 +1758,144 @@ options(ucscChromosomeNames=FALSE)
 			domain_plotA$symbol_A=symbol_A
 			domain_plotA$domainA=database$domain[database$domain$Transcript_id %in% name_domainA, ]
 			domain_plotA$motifA=database$motif[database$motif$Transcript_id %in% name_domainA, ]
-        	if ( length(domain_plotA$geneA) > 0 ) {
+			if ( length(domain_plotA$geneA) > 0 ) {
 				output$domain_up <- renderPlot({
 					print("start to plotting domain of upstream gene")
 					domain_plot_link$A1_xy = FuSViz::plot_separate_domain_geneA(domain_plotA$geneA, domain_plotA$symbol_A, domain_plotA$domainA, domain_plotA$motifA)
 				})
-        	}
-        }
-	})
-    observeEvent(input$offset_base_A, {
-		if ( is.null(object_domain_A$value) || is.null(input$domainA) || input$domainA == "" ) { #// if 'object_domain_A$value' is NULL, set 'domain_plotA$geneA, $symbol_A, $domainA, $motifA' as NULL
-			domain_plotA$geneA = NULL; domain_plotA$symbol_A = NULL; domain_plotA$domainA = NULL; domain_plotA$motifA = NULL;
-            domain_plot_link$A1_xy = NULL;
-		} else {
-			name_domainA = input$domainA;	name_domainA = gsub('-', '', name_domainA); name_domainA = gsub('@', '', name_domainA);
-			#// a subset transcript of geneA after update the choice values in selectInput
-			mytmp_A = list(); #// a subset of 'object_domain_A' (for selected transcripts of geneA)
-			mytmp_A$value$dataset = object_domain_A$value$dataset[object_domain_A$value$dataset$TXNAME %in% name_domainA, ]; 
-			mytmp_A$value$txTr_f = object_domain_A$value$txTr_f; 
-			mytmp_A$value$chr = object_domain_A$value$chr; 
-			mytmp_A$value$start = object_domain_A$value$start;
-			mytmp_A$value$end = object_domain_A$value$end; 
-			mytmp_A$value$strand = object_domain_A$value$strand;
-
-			geneA = list(); #// geneA is a list class
-			symbol_A = domain_1()[1,]$gene1
-			breakpoint_set = unique(domain_1()$pos1)
-			for (i in 1:length(breakpoint_set)) { # print(paste("start domain A loop: ", i))
-				if (! exists(as.character(breakpoint_set[i]), where=geneA) ) {
-					geneA[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_A$value, database$whole_txdb, "upstream", input$offset_base_A) #// For geneA; 
-				}
 			}
-			#// remove the elements in the list where breakpoint outside transcript region of geneA
-			if ( length(geneA) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneA or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!")); req(NULL); }
-			geneA = Filter(Negate(function(x) is.null(unlist(x))), geneA)
-			control_break_AB$A = as.numeric(names(geneA)); # print(paste("selected breakpoint for geneA: ", as.numeric(names(geneA))));
-			domain_plotA$geneA=geneA
-			domain_plotA$symbol_A=symbol_A
-			domain_plotA$domainA=database$domain[database$domain$Transcript_id %in% name_domainA, ]
-			domain_plotA$motifA=database$motif[database$motif$Transcript_id %in% name_domainA, ]
-       		if ( length(domain_plotA$geneA) > 0 ) {
-				output$domain_up <- renderPlot({
-					print("start to plotting domain of upstream gene")
-					domain_plot_link$A1_xy = FuSViz::plot_separate_domain_geneA(domain_plotA$geneA, domain_plotA$symbol_A, domain_plotA$domainA, domain_plotA$motifA)
-				})
-        	}
-        }
-	})
-    #// select transcript_id of geneB
-    observeEvent(input$domainB, {
-		if ( is.null(object_domain_B$value) || is.null(input$domainB) || input$domainB == "" ) { #// if 'object_domain_B$value' is NULL, set 'domain_plotB$geneB, $symbol_B, $domainB, $motifB' as NULL
-			domain_plotB$geneB = NULL; domain_plotB$symbol_B = NULL; domain_plotB$domainB = NULL; domain_plotB$motifB = NULL;
-            domain_plot_link$B1_xy = NULL;
-		} else {
-			name_domainB = input$domainB;	name_domainB = gsub('-', '', name_domainB); name_domainB = gsub('@', '', name_domainB);
-			#// a subset transcript of geneB after update the choice values in selectInput
-			mytmp_B = list(); #// a subset of 'object_domain_B' (for selected transcripts of geneB)
-			mytmp_B$value$dataset = object_domain_B$value$dataset[object_domain_B$value$dataset$TXNAME %in% name_domainB, ];
-			mytmp_B$value$txTr_f = object_domain_B$value$txTr_f; 
-			mytmp_B$value$chr = object_domain_B$value$chr; 
-			mytmp_B$value$start = object_domain_B$value$start;
-			mytmp_B$value$end = object_domain_B$value$end; 
-			mytmp_B$value$strand = object_domain_B$value$strand;
-
-			geneB = list(); #// geneB is a list class
-			symbol_B = domain_1()[1,]$gene2
-			breakpoint_set = unique(domain_1()$pos2)
-			for (i in 1:length(breakpoint_set)) { # print(paste("start domain B loop: ", i))
-				if (! exists(as.character(breakpoint_set[i]), where=geneB) ) {
-					geneB[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_B$value, database$whole_txdb, "downstream", input$offset_base_B) #// For geneB
-				}
-			}
-			#// remove the elements in the list where breakpoint outside transcript region of geneB
-			if ( length(geneB) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!")); req(NULL); }
-			geneB = Filter(Negate(function(x) is.null(unlist(x))), geneB)
-			control_break_AB$B = as.numeric(names(geneB)); # print(paste("selected breakpoint for gene2: ", as.numeric(names(geneB)))); 
-			domain_plotB$geneB=geneB
-			domain_plotB$symbol_B=symbol_B
-			domain_plotB$domainB=database$domain[database$domain$Transcript_id %in% name_domainB, ]
-			domain_plotB$motifB=database$motif[database$motif$Transcript_id %in% name_domainB, ]
-        	if ( length(domain_plotB$geneB) > 0 ) {
-				output$domain_down <- renderPlot({
-					print("start to plotting domain of downstream gene")
-					domain_plot_link$B1_xy = FuSViz::plot_separate_domain_geneB(domain_plotB$geneB, domain_plotB$symbol_B, domain_plotB$domainB, domain_plotB$motifB)
-				})
-        	}
-        }
-	})
-    observeEvent(input$offset_base_B, {
-		if ( is.null(object_domain_B$value) || is.null(input$domainB) || input$domainB == "" ) { #// if 'object_domain_B$value' is NULL, set 'domain_plotB$geneB, $symbol_B, $domainB, $motifB' as NULL
-			domain_plotB$geneB = NULL; domain_plotB$symbol_B = NULL; domain_plotB$domainB = NULL; domain_plotB$motifB = NULL;
-            domain_plot_link$B1_xy = NULL;
-		} else {
-			name_domainB = input$domainB;	name_domainB = gsub('-', '', name_domainB); name_domainB = gsub('@', '', name_domainB);
-			#// a subset transcript of geneB after update the choice values in selectInput
-			mytmp_B = list(); #// a subset of 'object_domain_B' (for selected transcripts of geneB)
-			mytmp_B$value$dataset = object_domain_B$value$dataset[object_domain_B$value$dataset$TXNAME %in% name_domainB, ];
-			mytmp_B$value$txTr_f = object_domain_B$value$txTr_f; 
-			mytmp_B$value$chr = object_domain_B$value$chr; 
-			mytmp_B$value$start = object_domain_B$value$start;
-			mytmp_B$value$end = object_domain_B$value$end; 
-			mytmp_B$value$strand = object_domain_B$value$strand;
-
-			geneB = list(); #// geneB is a list class
-			symbol_B = domain_1()[1,]$gene2
-			breakpoint_set = unique(domain_1()$pos2)
-			for (i in 1:length(breakpoint_set)) { # print(paste("start domain B loop: ", i))
-				if (! exists(as.character(breakpoint_set[i]), where=geneB) ) {
-					geneB[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_B$value, database$whole_txdb, "downstream", input$offset_base_B) #// For geneB
-				}
-			}
-			#// remove the elements in the list where breakpoint outside transcript region of geneB
-			if ( length(geneB) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!")); req(NULL); }
-			geneB = Filter(Negate(function(x) is.null(unlist(x))), geneB)
-			control_break_AB$B = as.numeric(names(geneB)); # print(paste("selected breakpoint for gene2: ", as.numeric(names(geneB)))); 
-			domain_plotB$geneB=geneB
-			domain_plotB$symbol_B=symbol_B
-			domain_plotB$domainB=database$domain[database$domain$Transcript_id %in% name_domainB, ]
-			domain_plotB$motifB=database$motif[database$motif$Transcript_id %in% name_domainB, ]
-        	if ( length(domain_plotB$geneB) > 0 ) {
-				output$domain_down <- renderPlot({
-					print("start to plotting domain of downstream gene")
-					domain_plot_link$B1_xy = FuSViz::plot_separate_domain_geneB(domain_plotB$geneB, domain_plotB$symbol_B, domain_plotB$domainB, domain_plotB$motifB)
-				})
-        	}
-        }
-	})
-
-    observe({
-		if ( length(domain_plotA$geneA) > 0 && length(domain_plotB$geneB) > 0 && !is.null(domain_plot_link$A1_xy) && !is.null(domain_plot_link$B1_xy) ) {
-            if ( length(rownames(domain_data())) > 0 ) {
-                output$linking <- renderPlot({
-					print("start to plotting rows to connect partner genes")
-					FuSViz::plot_separate_domain_arrow(domain_plot_link$A1_xy, domain_plot_link$B1_xy, domain_plotA$geneA, domain_plotB$geneB, domain_data())
-                })
-            }
 		}
 	})
-    #// download domain plot
+	observeEvent(input$offset_base_A, {
+		if ( is.null(object_domain_A$value) || is.null(input$domainA) || input$domainA == "" ) { #// if 'object_domain_A$value' is NULL, set 'domain_plotA$geneA, $symbol_A, $domainA, $motifA' as NULL
+			domain_plotA$geneA = NULL; domain_plotA$symbol_A = NULL; domain_plotA$domainA = NULL; domain_plotA$motifA = NULL;
+			domain_plot_link$A1_xy = NULL;
+		} else {
+			name_domainA = input$domainA;	name_domainA = gsub('-', '', name_domainA); name_domainA = gsub('@', '', name_domainA);
+			#// a subset transcript of geneA after update the choice values in selectInput
+			mytmp_A = list(); #// a subset of 'object_domain_A' (for selected transcripts of geneA)
+			mytmp_A$value$dataset = object_domain_A$value$dataset[object_domain_A$value$dataset$TXNAME %in% name_domainA, ]; 
+			mytmp_A$value$txTr_f = object_domain_A$value$txTr_f; 
+			mytmp_A$value$chr = object_domain_A$value$chr; 
+			mytmp_A$value$start = object_domain_A$value$start;
+			mytmp_A$value$end = object_domain_A$value$end; 
+			mytmp_A$value$strand = object_domain_A$value$strand;
+
+			geneA = list(); #// geneA is a list class
+			symbol_A = domain_1()[1,]$gene1
+			breakpoint_set = unique(domain_1()$pos1)
+			for (i in 1:length(breakpoint_set)) { # print(paste("start domain A loop: ", i))
+				if (! exists(as.character(breakpoint_set[i]), where=geneA) ) {
+					geneA[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_A$value, database$whole_txdb, "upstream", input$offset_base_A) #// For geneA; 
+				}
+			}
+			#// remove the elements in the list where breakpoint outside transcript region of geneA
+			if ( length(geneA) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneA or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!")); req(NULL); }
+			geneA = Filter(Negate(function(x) is.null(unlist(x))), geneA)
+			control_break_AB$A = as.numeric(names(geneA)); # print(paste("selected breakpoint for geneA: ", as.numeric(names(geneA))));
+			domain_plotA$geneA=geneA
+			domain_plotA$symbol_A=symbol_A
+			domain_plotA$domainA=database$domain[database$domain$Transcript_id %in% name_domainA, ]
+			domain_plotA$motifA=database$motif[database$motif$Transcript_id %in% name_domainA, ]
+			if ( length(domain_plotA$geneA) > 0 ) {
+				output$domain_up <- renderPlot({
+					print("start to plotting domain of upstream gene")
+					domain_plot_link$A1_xy = FuSViz::plot_separate_domain_geneA(domain_plotA$geneA, domain_plotA$symbol_A, domain_plotA$domainA, domain_plotA$motifA)
+				})
+			}
+		}
+	})
+	#// select transcript_id of geneB
+	observeEvent(input$domainB, {
+		if ( is.null(object_domain_B$value) || is.null(input$domainB) || input$domainB == "" ) { #// if 'object_domain_B$value' is NULL, set 'domain_plotB$geneB, $symbol_B, $domainB, $motifB' as NULL
+			domain_plotB$geneB = NULL; domain_plotB$symbol_B = NULL; domain_plotB$domainB = NULL; domain_plotB$motifB = NULL;
+			domain_plot_link$B1_xy = NULL;
+		} else {
+			name_domainB = input$domainB;	name_domainB = gsub('-', '', name_domainB); name_domainB = gsub('@', '', name_domainB);
+			#// a subset transcript of geneB after update the choice values in selectInput
+			mytmp_B = list(); #// a subset of 'object_domain_B' (for selected transcripts of geneB)
+			mytmp_B$value$dataset = object_domain_B$value$dataset[object_domain_B$value$dataset$TXNAME %in% name_domainB, ];
+			mytmp_B$value$txTr_f = object_domain_B$value$txTr_f; 
+			mytmp_B$value$chr = object_domain_B$value$chr; 
+			mytmp_B$value$start = object_domain_B$value$start;
+			mytmp_B$value$end = object_domain_B$value$end; 
+			mytmp_B$value$strand = object_domain_B$value$strand;
+
+			geneB = list(); #// geneB is a list class
+			symbol_B = domain_1()[1,]$gene2
+			breakpoint_set = unique(domain_1()$pos2)
+			for (i in 1:length(breakpoint_set)) { # print(paste("start domain B loop: ", i))
+				if (! exists(as.character(breakpoint_set[i]), where=geneB) ) {
+					geneB[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_B$value, database$whole_txdb, "downstream", input$offset_base_B) #// For geneB
+				}
+			}
+			#// remove the elements in the list where breakpoint outside transcript region of geneB
+			if ( length(geneB) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!")); req(NULL); }
+			geneB = Filter(Negate(function(x) is.null(unlist(x))), geneB)
+			control_break_AB$B = as.numeric(names(geneB)); # print(paste("selected breakpoint for gene2: ", as.numeric(names(geneB)))); 
+			domain_plotB$geneB=geneB
+			domain_plotB$symbol_B=symbol_B
+			domain_plotB$domainB=database$domain[database$domain$Transcript_id %in% name_domainB, ]
+			domain_plotB$motifB=database$motif[database$motif$Transcript_id %in% name_domainB, ]
+			if ( length(domain_plotB$geneB) > 0 ) {
+				output$domain_down <- renderPlot({
+					print("start to plotting domain of downstream gene")
+					domain_plot_link$B1_xy = FuSViz::plot_separate_domain_geneB(domain_plotB$geneB, domain_plotB$symbol_B, domain_plotB$domainB, domain_plotB$motifB)
+				})
+			}
+		}
+	})
+	observeEvent(input$offset_base_B, {
+		if ( is.null(object_domain_B$value) || is.null(input$domainB) || input$domainB == "" ) { #// if 'object_domain_B$value' is NULL, set 'domain_plotB$geneB, $symbol_B, $domainB, $motifB' as NULL
+			domain_plotB$geneB = NULL; domain_plotB$symbol_B = NULL; domain_plotB$domainB = NULL; domain_plotB$motifB = NULL;
+			domain_plot_link$B1_xy = NULL;
+		} else {
+			name_domainB = input$domainB;	name_domainB = gsub('-', '', name_domainB); name_domainB = gsub('@', '', name_domainB);
+			#// a subset transcript of geneB after update the choice values in selectInput
+			mytmp_B = list(); #// a subset of 'object_domain_B' (for selected transcripts of geneB)
+			mytmp_B$value$dataset = object_domain_B$value$dataset[object_domain_B$value$dataset$TXNAME %in% name_domainB, ];
+			mytmp_B$value$txTr_f = object_domain_B$value$txTr_f; 
+			mytmp_B$value$chr = object_domain_B$value$chr; 
+			mytmp_B$value$start = object_domain_B$value$start;
+			mytmp_B$value$end = object_domain_B$value$end; 
+			mytmp_B$value$strand = object_domain_B$value$strand;
+
+			geneB = list(); #// geneB is a list class
+			symbol_B = domain_1()[1,]$gene2
+			breakpoint_set = unique(domain_1()$pos2)
+			for (i in 1:length(breakpoint_set)) { # print(paste("start domain B loop: ", i))
+				if (! exists(as.character(breakpoint_set[i]), where=geneB) ) {
+					geneB[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_B$value, database$whole_txdb, "downstream", input$offset_base_B) #// For geneB
+				}
+			}
+			#// remove the elements in the list where breakpoint outside transcript region of geneB
+			if ( length(geneB) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!")); req(NULL); }
+			geneB = Filter(Negate(function(x) is.null(unlist(x))), geneB)
+			control_break_AB$B = as.numeric(names(geneB)); # print(paste("selected breakpoint for gene2: ", as.numeric(names(geneB)))); 
+			domain_plotB$geneB=geneB
+			domain_plotB$symbol_B=symbol_B
+			domain_plotB$domainB=database$domain[database$domain$Transcript_id %in% name_domainB, ]
+			domain_plotB$motifB=database$motif[database$motif$Transcript_id %in% name_domainB, ]
+			if ( length(domain_plotB$geneB) > 0 ) {
+				output$domain_down <- renderPlot({
+					print("start to plotting domain of downstream gene")
+					domain_plot_link$B1_xy = FuSViz::plot_separate_domain_geneB(domain_plotB$geneB, domain_plotB$symbol_B, domain_plotB$domainB, domain_plotB$motifB)
+				})
+			}
+		}
+	})
+
+	observe({
+		if ( length(domain_plotA$geneA) > 0 && length(domain_plotB$geneB) > 0 && !is.null(domain_plot_link$A1_xy) && !is.null(domain_plot_link$B1_xy) ) {
+			if ( length(rownames(domain_data())) > 0 ) {
+				output$linking <- renderPlot({
+					print("start to plotting rows to connect partner genes")
+					FuSViz::plot_separate_domain_arrow(domain_plot_link$A1_xy, domain_plot_link$B1_xy, domain_plotA$geneA, domain_plotB$geneB, domain_data())
+				})
+			}
+		}
+	})
+	#// download domain plot
 	output$FusionDown3 <- downloadHandler(
 		filename = function(){ paste("Two-way_domain_plot", tolower(input$file_fusion3), sep =".") },
 		content = function(file){
@@ -1907,7 +1907,7 @@ options(ucscChromosomeNames=FALSE)
 			}
             if ( !is.null(object_domain_A$value) && !is.null(object_domain_B$value) ) {
 			    FuSViz::plot_separate_domain_download(domain_plotA$geneA, domain_plotA$symbol_A, domain_plotA$domainA, domain_plotA$motifA,
-							domain_plotB$geneB, domain_plotB$symbol_B, domain_plotB$domainB, domain_plotB$motifB, domain_data())
+						domain_plotB$geneB, domain_plotB$symbol_B, domain_plotB$domainB, domain_plotB$motifB, domain_data())
             } else {
                 plot.new()
             }
