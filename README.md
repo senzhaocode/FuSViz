@@ -29,7 +29,7 @@ Run `docker run --platform=linux/amd64 --rm -p 4000:3838 senzhao/fusviz_shiny_ap
 
 #### <ins>Deploy with apptainer/singularity for Linux distribution</ins>
 
-A apptainer/singularity container of *FuSViz* is available for [dowload](https://fusviz.s3.eu-north-1.amazonaws.com/fusviz_v1.7.0.sif), and we recommend run it using singularity version (>= 3.7.3):
+A apptainer/singularity container of *FuSViz* is available for [dowload](https://fusviz.s3.eu-north-1.amazonaws.com/fusviz_v1.8.0.sif), and we recommend run it using singularity version (>= 3.7.3):
 
 `singularity run fusviz_v1.7.0.sif 4000`, then open web browser and input address.
 
