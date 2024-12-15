@@ -9,6 +9,10 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 ### Getting a quick start
 
+#### <ins>A prerequisite for running FuSViz</ins>
+
+A minimum of 4GB physical memory is required for running FuSViz in user's machine (we recommend physical memory >= 8GB). 
+
 #### <ins>Deploy with docker</ins>
 
 ##### Pull pre-built FuSViz image (release version) from docker hub
@@ -29,7 +33,7 @@ A apptainer/singularity container of FuSViz is available for [dowload](https://f
 
 `singularity run fusviz_v1.7.0.sif 4000`, then open web browser and input address.
 
-NOTE: the FuSViz apptainer/singularity container is specific for running under Linux OS (e.g. Debian, Ubuntu, Redhat and CentOS), which is incompatible with Apple M1/M2 machine. Users have to use the Docker/Podman container to run FuSViz under Mac OS.
+<ins>NOTE:</ins> the FuSViz apptainer/singularity container is specific for running under **Linux OS (e.g. Debian, Ubuntu, Redhat and CentOS)**, which is incompatible with **Apple M1/M2 machine**. Users have to use the **Docker/Podman** container to run FuSViz under Mac OS.
 
 #### <ins>Deploy without container</ins>
 
