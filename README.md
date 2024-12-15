@@ -13,7 +13,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 A minimum of 4GB physical memory is required for running *FuSViz* in user's machine (we recommend physical memory >= 8GB). 
 
-#### <ins>Deploy with docker</ins>
+#### <ins>Deploy with docker/podman</ins>
 
 ##### Pull pre-built FuSViz image (release version) from docker hub
 
