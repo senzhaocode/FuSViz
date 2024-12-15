@@ -13,21 +13,23 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 ##### Pull pre-built FuSViz image (release version) from docker hub
 
-Run `docker pull senzhao/fusviz_shiny_app:1.8.0` (For Apple M1/M2 machine, please run `docker pull --platform=linux/amd64 senzhao/fusviz_shiny_app:1.8.0`), then check the image by typing `docker images`
+Run `docker pull --platform=linux/amd64 senzhao/fusviz_shiny_app:1.8.0`, then check the image by typing `docker images`
 
 Optional: if user would like to build FuSViz image (developmental version), just download soruce code and change to directory `cd ~/FuSViz-master`; then run `docker build --platform=linux/amd64 --rm -t senzhao/fusviz_shiny_app:latest -f Dockerfile .`.
 
 ##### Launch FuSViz app
 
-Run `docker run --rm -p 4000:3838 senzhao/fusviz_shiny_app:1.7.0`; then open web browser and input address `127.0.0.1:4000`
+Run `docker run --platform=linux/amd64 --rm -p 4000:3838 senzhao/fusviz_shiny_app:1.8.0`; then open web browser and input address `127.0.0.1:4000`. If TCP port 4000 on 127.0.0.1 of the host is occupied, users can use other port values to bind port 3838 of the container.
 
 NOTE: *FuSViz* docker image is built under amd64 platform, which may show [a poor and slow performance](https://stackoverflow.com/questions/70765522/docker-amd64-warning-on-apple-m1-computer) in Apple M1/M2 machine (arm64 platform). Before pulling and running the image, we recommend enable the feature of **Use Rosetta for x86/amd64 emulation on Apple Silicon** for Docker Desktop - Navigate to **Settings** in Docker Desktop and check **Use Rosetta for x86/amd64 emulation on Apple Silicon** in the **General** tab.
 
-#### <ins>Deploy with singularity for Linux OS (e.g., Debian, Ubuntu, Redhat and CentOS)</ins>
+#### <ins>Deploy with apptainer/singularity for Linux distribution</ins>
 
-A singularity container of FuSViz is available for [dowload](https://fusviz.s3.eu-north-1.amazonaws.com/fusviz_v1.7.0.sif), and we recommend run it using singularity version (>= 3.7.3):
+A apptainer/singularity container of FuSViz is available for [dowload](https://fusviz.s3.eu-north-1.amazonaws.com/fusviz_v1.7.0.sif), and we recommend run it using singularity version (>= 3.7.3):
 
 `singularity run fusviz_v1.7.0.sif 4000`, then open web browser and input address.
+
+NOTE: the FuSViz apptainer/singularity container is specific for running under Linux OS (e.g. Debian, Ubuntu, Redhat and CentOS), which is incompatible with Apple M1/M2 machine. Users have to use the Docker/Podman container to run FuSViz under Mac OS.
 
 #### <ins>Deploy without container</ins>
 
@@ -35,7 +37,6 @@ A singularity container of FuSViz is available for [dowload](https://fusviz.s3.e
 
 * R (>=4.0.0): https://www.r-project.org/; [RStudio](https://rstudio.com/products/rstudio/download/#download) is recommended but not mandatory. 
 * For windows users, if an earlier version of R (< 4.0) is present in the system, please uninstall it firstly and make sure only R >=4.0 is available.
-* System requirement with a recommendation: >=4 GB physical memory.
 
 ##### Installation
 
