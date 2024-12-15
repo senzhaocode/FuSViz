@@ -11,7 +11,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 #### <ins>A prerequisite for running FuSViz</ins>
 
-A minimum of 4GB physical memory is required for running FuSViz in user's machine (we recommend physical memory >= 8GB). 
+A minimum of 4GB physical memory is required for running *FuSViz* in user's machine (we recommend physical memory >= 8GB). 
 
 #### <ins>Deploy with docker</ins>
 
@@ -19,25 +19,25 @@ A minimum of 4GB physical memory is required for running FuSViz in user's machin
 
 Run `docker pull --platform=linux/amd64 senzhao/fusviz_shiny_app:1.8.0`, then check the image by typing `docker images`
 
-Optional: if user would like to build FuSViz image (developmental version), just download soruce code and change to directory `cd ~/FuSViz-master`; then run `docker build --platform=linux/amd64 --rm -t senzhao/fusviz_shiny_app:latest -f Dockerfile .`.
+Optional: if user would like to build *FuSViz* image (developmental version), just download soruce code and change to directory `cd ~/FuSViz-master`; then run `docker build --platform=linux/amd64 --rm -t senzhao/fusviz_shiny_app:latest -f Dockerfile .`.
 
 ##### Launch FuSViz app
 
 Run `docker run --platform=linux/amd64 --rm -p 4000:3838 senzhao/fusviz_shiny_app:1.8.0`; then open web browser and input address `127.0.0.1:4000`. If TCP port 4000 on 127.0.0.1 of the host is occupied, users can use other port values to bind port 3838 of the container.
 
-NOTE: *FuSViz* docker image is built under amd64 platform, which may show [a poor and slow performance](https://stackoverflow.com/questions/70765522/docker-amd64-warning-on-apple-m1-computer) in Apple M1/M2 machine (arm64 platform). Before pulling and running the image, we recommend enable the feature of **Use Rosetta for x86/amd64 emulation on Apple Silicon** for Docker Desktop - Navigate to **Settings** in Docker Desktop and check **Use Rosetta for x86/amd64 emulation on Apple Silicon** in the **General** tab.
+<ins>NOTE:</ins> *FuSViz* docker image is built under amd64 platform, which may show [a poor and slow performance](https://stackoverflow.com/questions/70765522/docker-amd64-warning-on-apple-m1-computer) in Apple M1/M2 machine (arm64 platform). Before pulling and running the image, we recommend enable the feature of **Use Rosetta for x86/amd64 emulation on Apple Silicon** for Docker Desktop - Navigate to **Settings** in Docker Desktop and check **Use Rosetta for x86/amd64 emulation on Apple Silicon** in the **General** tab.
 
 #### <ins>Deploy with apptainer/singularity for Linux distribution</ins>
 
-A apptainer/singularity container of FuSViz is available for [dowload](https://fusviz.s3.eu-north-1.amazonaws.com/fusviz_v1.7.0.sif), and we recommend run it using singularity version (>= 3.7.3):
+A apptainer/singularity container of *FuSViz* is available for [dowload](https://fusviz.s3.eu-north-1.amazonaws.com/fusviz_v1.7.0.sif), and we recommend run it using singularity version (>= 3.7.3):
 
 `singularity run fusviz_v1.7.0.sif 4000`, then open web browser and input address.
 
-<ins>NOTE:</ins> the FuSViz apptainer/singularity container is specific for running under **Linux OS (e.g. Debian, Ubuntu, Redhat and CentOS)**, which is incompatible with **Apple M1/M2 machine**. Users have to use the **Docker/Podman** container to run FuSViz under Mac OS.
+<ins>NOTE:</ins> the *FuSViz* apptainer/singularity container is specific for running under **Linux OS (e.g. Debian, Ubuntu, Redhat and CentOS)**, which is incompatible with **Apple M1/M2 machine**. Users have to use the **Docker/Podman** container to run *FuSViz* under Mac OS.
 
 #### <ins>Deploy without container</ins>
 
-##### Prerequisite
+##### Requirement
 
 * R (>=4.0.0): https://www.r-project.org/; [RStudio](https://rstudio.com/products/rstudio/download/#download) is recommended but not mandatory. 
 * For windows users, if an earlier version of R (< 4.0) is present in the system, please uninstall it firstly and make sure only R >=4.0 is available.
@@ -112,7 +112,7 @@ A apptainer/singularity container of FuSViz is available for [dowload](https://f
 
     * Need for **Debian or Ubuntu**: `sudo apt install libcurl4-openssl-dev`
 
-6. If users have a problem to install the dependency R package [**stringi**](https://github.com/gagolews/stringi) (the latest release) for **CentOS or RHEL** automatically before FuSViz setup, 
+6. If users have a problem to install the dependency R package [**stringi**](https://github.com/gagolews/stringi) (the latest release) for **CentOS or RHEL** automatically before *FuSViz* setup, 
 
     * Download [the latest release](https://github.com/gagolews/stringi/releases) **stringi** in \*.tar.gz format locally, and run `R CMD INSTALL *.tar.gz`
 
@@ -123,7 +123,7 @@ A apptainer/singularity container of FuSViz is available for [dowload](https://f
 
 #### <ins>Usage & manual</ins>
 
-A full description of FuSViz documentation is available: &nbsp;&nbsp; [![Documentation Status](https://readthedocs.org/projects/fusviz-docs/badge/?version=master)](https://fusviz-docs.readthedocs.io/en/master/index.html)
+A full description of *FuSViz* documentation is available: &nbsp;&nbsp; [![Documentation Status](https://readthedocs.org/projects/fusviz-docs/badge/?version=master)](https://fusviz-docs.readthedocs.io/en/master/index.html)
 
 #### <ins>Online tutorial videos</ins>
 
