@@ -13,7 +13,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 ##### Pull pre-built FuSViz image (release version) from docker hub
 
-Run `docker pull --platform=linux/amd64 senzhao/fusviz_shiny_app:1.7.0`, then check the image by typing `docker images`
+Run `docker pull senzhao/fusviz_shiny_app:1.8.0` (For Apple M1/M2 machine, please run `docker pull --platform=linux/amd64 senzhao/fusviz_shiny_app:1.8.0`), then check the image by typing `docker images`
 
 Optional: if user would like to build FuSViz image (developmental version), just download soruce code and change to directory `cd ~/FuSViz-master`; then run `docker build --platform=linux/amd64 --rm -t senzhao/fusviz_shiny_app:latest -f Dockerfile .`.
 
@@ -21,9 +21,9 @@ Optional: if user would like to build FuSViz image (developmental version), just
 
 Run `docker run --rm -p 4000:3838 senzhao/fusviz_shiny_app:1.7.0`; then open web browser and input address `127.0.0.1:4000`
 
-NOTE: *FuSViz* docker image is built under amd64 platform, which may show [a poor and slow performance](https://stackoverflow.com/questions/70765522/docker-amd64-warning-on-apple-m1-computer) in Apple M1 machine (arm64 platform). Before pulling and running the image, we recommend enable the feature of **Use Rosetta for x86/amd64 emulation on Apple Silicon** for Docker Desktop - Navigate to **Settings** in Docker Desktop and check **Use Rosetta for x86/amd64 emulation on Apple Silicon** in the **General** tab.
+NOTE: *FuSViz* docker image is built under amd64 platform, which may show [a poor and slow performance](https://stackoverflow.com/questions/70765522/docker-amd64-warning-on-apple-m1-computer) in Apple M1/M2 machine (arm64 platform). Before pulling and running the image, we recommend enable the feature of **Use Rosetta for x86/amd64 emulation on Apple Silicon** for Docker Desktop - Navigate to **Settings** in Docker Desktop and check **Use Rosetta for x86/amd64 emulation on Apple Silicon** in the **General** tab.
 
-#### <ins>Deploy with singularity for Linux users</ins>
+#### <ins>Deploy with singularity for Linux OS (e.g., Debian, Ubuntu, Redhat and CentOS)</ins>
 
 A singularity container of FuSViz is available for [dowload](https://fusviz.s3.eu-north-1.amazonaws.com/fusviz_v1.7.0.sif), and we recommend run it using singularity version (>= 3.7.3):
 
