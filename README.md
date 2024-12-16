@@ -11,7 +11,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 #### <ins>A prerequisite for running FuSViz</ins>
 
-A minimum of 4GB physical memory is required for running *FuSViz* in user's machine (we recommend physical memory >= 8GB). 
+A minimum of **4GB** physical memory is required for running *FuSViz* in user's machine (we recommend physical memory **>= 8GB**). 
 
 #### <ins>Deploy with docker/podman</ins>
 
@@ -61,6 +61,8 @@ A apptainer/singularity container of *FuSViz* is available for [dowload](https:/
             export C_INCLUDE_PATH
             LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OpenSSL_path/lib
             export LD_LIBRARY_PATH
+            LIBRARY_PATH=$LIBRARY_PATH:/OpenSSL_path/lib
+            export LIBRARY_PATH
             
     * Install R package [openssl](https://cran.r-project.org/web/packages/openssl/index.html): `install.packages("openssl")`
 
@@ -77,6 +79,8 @@ A apptainer/singularity container of *FuSViz* is available for [dowload](https:/
             export CPLUS_INCLUDE_PATH
             LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/libxml2_path/lib
             export LD_LIBRARY_PATH
+            LIBRARY_PATH=$LIBRARY_PATH:/libxml2_path/lib
+            export LIBRARY_PATH
     
     * Install R package [xml2](https://cran.r-project.org/web/packages/XML/index.html): `install.packages("xml2")`
 
@@ -91,6 +95,8 @@ A apptainer/singularity container of *FuSViz* is available for [dowload](https:/
             export C_INCLUDE_PATH
             LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/libjpeg_path/lib
             export LD_LIBRARY_PATH
+            LIBRARY_PATH=$LIBRARY_PATH:/libjpeg_path/lib
+            export LIBRARY_PATH
             
      * Install R package [jpeg](https://cran.r-project.org/web/packages/jpeg/index.html): `install.packages("jpeg")`
 
@@ -105,6 +111,8 @@ A apptainer/singularity container of *FuSViz* is available for [dowload](https:/
             export C_INCLUDE_PATH
             LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/libpng_path/lib
             export LD_LIBRARY_PATH
+            LIBRARY_PATH=$LIBRARY_PATH:/libpng_path/lib
+            export LIBRARY_PATH
             
      * Install R package [png](https://cran.r-project.org/web/packages/png/index.html): `install.packages("png")`
  
