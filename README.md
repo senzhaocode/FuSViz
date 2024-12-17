@@ -9,7 +9,7 @@ A shiny app to visualise, interpret and prioritise genomic/transcriptomic struct
 
 ### Getting a quick start
 
-#### <ins>A prerequisite for running FuSViz</ins>
+#### <ins>Prerequisite for FuSViz running</ins>
 
 A minimum of **4GB** physical memory is required for running *FuSViz* in user's machine (we recommend physical memory **>= 8GB**). 
 
