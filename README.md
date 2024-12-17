@@ -131,7 +131,7 @@ A apptainer/singularity container of *FuSViz* is available for [dowload](https:/
 
 #### <ins>Usage & manual</ins>
 
-A full description of *FuSViz* documentation is available: &nbsp;&nbsp; [![Documentation Status](https://readthedocs.org/projects/fusviz-docs/badge/?version=master)](https://fusviz-docs.readthedocs.io/en/master/index.html)
+A full description of *FuSViz* documentation is available: &nbsp;&nbsp; [![Documentation Status](https://readthedocs.org/projects/fusviz-docs/badge/?version=master)](https://fusviz-docs.readthedocs.io/en/master/)
 
 #### <ins>Online tutorial videos</ins>
 
