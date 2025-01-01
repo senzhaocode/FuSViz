@@ -222,7 +222,7 @@ Shiny.addCustomMessageHandler("TrackinBAM",
 		if ( bam.endsWith(".bam") && bamindex.endsWith(".bam.bai") ) { // BAM format
 			bam_name = bam.split(/\/|\\/).pop();
 			bam_type = "bam";
-		} else if ( bam.endsWith(".bam.cram") && bamindex.endsWith(".bam.cram.crai")  ) { // CRAM format
+		} else if ( bam.endsWith(".cram") && bamindex.endsWith(".cram.crai")  ) { // CRAM format
 			bam_name = bam.split(/\/|\\/).pop();
 			bam_type = "cram";
 		} else {
