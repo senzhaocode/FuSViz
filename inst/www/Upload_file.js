@@ -39,7 +39,7 @@ function load() {
 			localref["index"] = one;
 		} else if ( one.name.startsWith("cytoBand") ) {
 			localref["cytoband"] = one;
-		} else if ( one.name.startsWith(".cram") ) {
+		} else if ( one.name.endsWith(".cram") ) {
 			if ( one.name in cram ) {
 				cram[one.name]["file"] = one;
 			} else {
