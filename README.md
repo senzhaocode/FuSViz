@@ -31,7 +31,7 @@ Run `docker run --platform=linux/amd64 --rm -p 4000:3838 senzhao/fusviz_shiny_ap
 
 A apptainer/singularity container of *FuSViz* is available for [dowload](https://fusviz.s3.eu-north-1.amazonaws.com/fusviz_v1.8.0.sif), and we recommend run it using singularity version (>= 3.7.3):
 
-`singularity run fusviz_v1.7.0.sif 4000`, then open web browser and input address.
+`singularity run fusviz_v1.8.0.sif 4000`, then open web browser and input address.
 
 <ins>NOTE:</ins> the *FuSViz* apptainer/singularity container is specific for running under **Linux OS (e.g. Debian, Ubuntu, Redhat and CentOS)**, which is incompatible with **Apple M1/M2 machine**. Users have to use the **Docker/Podman** container to run *FuSViz* under Mac OS.
 
