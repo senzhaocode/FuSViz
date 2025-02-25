@@ -137,6 +137,10 @@ A full description of *FuSViz* documentation is available: &nbsp;&nbsp; [![Docum
 
 [![IMAGE ALT TEXT HERE](Tutorial_video_link.png)](https://www.youtube.com/watch?v=GAZInLru4y4&list=PLSOEIThRcIXUnPedL9VZWxuOJy3vU9y6a)
 
+##### Citation
+
+Sen Zhao, Sigve Nakken, Daniel Vodak, Eivind Hovig, **FuSViz—visualization and interpretation of structural variation using cancer genomics and transcriptomics data**, *Nucleic Acids Research*, Volume 53, Issue 4, 28 February 2025, gkaf078, https://doi.org/10.1093/nar/gkaf078
+
 ### Contact
 
 t.cytotoxic AT gmail.com
