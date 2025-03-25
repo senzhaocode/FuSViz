@@ -649,6 +649,11 @@
 				        			column(6, numericInput("offset_base_A", label = div("Offset base for breakpointA", style = "display:inline-block; font-size:12px", title = "Offset value is the adjusted number of bases for provisional breakpoint coordinate of upstream parnter gene to match the genomic coordinate of nearby exon boundary in the codon frame calculation [default value: 5 - do offset adjustment if a distance between the coordinates of provisional breakpoint and nearby exon boundary <= 5 bases]", icon("info-circle", style="font-size: 10px")), value=5, min=0, max=10)),
 				        			column(6, numericInput("offset_base_B", label = div("Offset base for breakpointB", style = "display:inline-block; font-size:12px", title = "Offset value is the adjusted number of bases for provisional breakpoint coordinate of downstream parnter gene to match the genomic coordinate of nearby exon boundary in the codon frame calculation [default value: 5 - do offset adjustment if a distance between the coordinates of provisional breakpoint and nearby exon boundary <= 5 bases]", icon("info-circle", style="font-size: 10px")), value=5, min=0, max=10))
 			        			),
+								br(),
+								fluidRow(
+									column(6, checkboxInput(inputId="index_A", label = div("Display exon index of geneA", style = "display:inline-block; font-size:12px", title = "Exon index of geneA is shown in plot after clicking on ", icon("info-circle", style="font-size: 11px")), TRUE)),
+									column(6, checkboxInput(inputId="index_B", label = div("Display exon index of geneB", style = "display:inline-block; font-size:12px", title = "Exon index of geneB is shown in plot after clicking on ", icon("info-circle", style="font-size: 11px")), TRUE))
+								),
 			        			fluidRow(column(12, div(style="font-size:12px", HTML("<b>(*)</b> indicates required input for plotting")))),
 			        			br()
 							),

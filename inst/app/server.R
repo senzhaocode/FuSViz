@@ -724,7 +724,8 @@ options(ucscChromosomeNames=FALSE)
 				}
 			}
 			#// adjust genomic coordinate of start1 and start2
-			dnabedpe$start1 = dnabedpe$start1 - 1;	dnabedpe$start2 = dnabedpe$start2 - 1;
+			if ( dnabedpe$start1 == dnabedpe$end1 ) { dnabedpe$start1 = dnabedpe$start1 - 1; }
+			if ( dnabedpe$start2 == dnabedpe$end2 ) { dnabedpe$start2 = dnabedpe$start2 - 1; }
 			#// Adding a new column 'label' by concatenating 'names' grouped by 'chrom1'-'start1'-'end1'-'chrom2'-'start2'-'end2'
 			dnabedpe = dnabedpe[, by=.(chrom1, start1, end1, chrom2, start2, end2), label := paste(name, collapse= ',')];
 			#// Create a new data.frame class after removing duplicate record 'chrom1'-'start1'-'end1'-'chrom2'-'start2'-'end2'-'label'-'type'
@@ -880,8 +881,16 @@ options(ucscChromosomeNames=FALSE)
 			} else {
 				#// set SVs tracks
 				chrom_A = circle_data_final_dna()$chrom1;	chrom_B = circle_data_final_dna()$chrom2;
-				pos_A_s = circle_data_final_dna()$start1;	pos_A_e = circle_data_final_dna()$end1;
-				pos_B_s = circle_data_final_dna()$start2;   pos_B_e = circle_data_final_dna()$end2;
+				if ( circle_data_final_dna()$start1 == circle_data_final_dna()$end1 ) {
+					pos_A_s = circle_data_final_dna()$start1 - 1;	pos_A_e = circle_data_final_dna()$end1;
+				} else {
+					pos_A_s = circle_data_final_dna()$start1;	pos_A_e = circle_data_final_dna()$end1;
+				}
+				if ( circle_data_final_dna()$start2 == circle_data_final_dna()$end2 ) {
+					pos_B_s = circle_data_final_dna()$start2 - 1;	pos_B_e = circle_data_final_dna()$end2;
+				} else {
+					pos_B_s = circle_data_final_dna()$start2;	pos_B_e = circle_data_final_dna()$end2;
+				}
 				gene1 = circle_data_final_dna()$gene1;		gene2 = circle_data_final_dna()$gene2;
 				labels = paste(chrom_A, ":", pos_A_s, "-", pos_A_e, ":", gene1, " | ", chrom_B, ":", pos_B_s, "-", pos_B_e, ":", gene2, 
 						   " (", circle_data_final_dna()$value, ")", " [",circle_data_final_dna()$label, "]", sep="");
@@ -997,8 +1006,8 @@ options(ucscChromosomeNames=FALSE)
 			} else {
 			#// set SVs tracks
 				chrom_A = circle_data_final()$chrom1;	chrom_B = circle_data_final()$chrom2;
-				pos_A_s = circle_data_final()$pos1;		pos_A_e = circle_data_final()$pos1 + 1;
-				pos_B_s = circle_data_final()$pos2;		pos_B_e = circle_data_final()$pos2 + 1;
+				pos_A_s = circle_data_final()$pos1 - 1;		pos_A_e = circle_data_final()$pos1;
+				pos_B_s = circle_data_final()$pos2 - 1;		pos_B_e = circle_data_final()$pos2;
 				gene1 = circle_data_final()$gene1;		gene2 = circle_data_final()$gene2;
 				labels = paste(chrom_A, ":", pos_A_s, ":", gene1, " | ", chrom_B, ":", pos_B_s, ":", gene2, 
 					" (", circle_data_final()$value, ")", " [",circle_data_final()$label, "]", sep="");
@@ -1588,6 +1597,15 @@ options(ucscChromosomeNames=FALSE)
 		}
 	})
     domain_data <- select_group_server(id = "domain2", data = reactive(domain_filter$value), vars = reactive(c("pos1", "pos2")))
+	# convert input$domainA and input$domainB to numeric type
+	Trans_domainA <- reactive({
+		if ( is.null(input$domainA) ) { return(0); } else { tmp_A=as.numeric(gsub('[A-Za-z@-]+[0]+', '', input$domainA)); 
+			if ( is.na(tmp_A) ) { return(0); } else { return(tmp_A); }}
+	})
+	Trans_domainB <- reactive({
+		if ( is.null(input$domainB) ) { return(0); } else { tmp_B=as.numeric(gsub('[A-Za-z@-]+[0]+', '', input$domainB));
+			if ( is.na(tmp_B) ) { return(0); } else { return(tmp_B); }}
+	})
 
     #// if gene symbol is selected in input[['domain1-gene1']], set'control_break_AB$A', 'control_break_AB$B' and 'domain_plotA$geneA' as NULL when only one symbol selected
     observeEvent(input[['domain1-gene1']], {
@@ -1616,7 +1634,7 @@ options(ucscChromosomeNames=FALSE)
 					break_min_A = min(domain_1()$pos1)
 					tmp_AA = object_domain_A$value$dataset
 					tmp_AA = object_domain_A$value$dataset[break_max_A >= object_domain_A$value$dataset$TXSTART & break_min_A <= object_domain_A$value$dataset$TXEND, ]
-					if ( length(dim(tmp_AA)[1]) == 0 ) { #// judge whether 0-row in tmp_AA
+					if ( dim(tmp_AA)[1] == 0 ) { #// judge whether 0-row in tmp_AA
 						showModal(modalDialog(title = "Warning message", "No breakpoints within geneA or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)")); req(NULL);
 					}
 					selectinput_A = data.frame(TXNAME=tmp_AA$TXNAME, TAG=tmp_AA$TXNAME, stringsAsFactors=FALSE)
@@ -1684,7 +1702,7 @@ options(ucscChromosomeNames=FALSE)
 					break_min_B = min(domain_1()$pos2)
 					tmp_BB = object_domain_B$value$dataset
 					tmp_BB = object_domain_B$value$dataset[break_max_B >= object_domain_B$value$dataset$TXSTART & break_min_B <= object_domain_B$value$dataset$TXEND, ]
-					if ( length(dim(tmp_BB)[1]) == 0 ) { #// judge whether 0-row in tmp_BB 
+					if ( dim(tmp_BB)[1] == 0 ) { #// judge whether 0-row in tmp_BB 
 						showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!)")); req(NULL);
 					}
 					selectinput_B = data.frame(TXNAME=tmp_BB$TXNAME, TAG=tmp_BB$TXNAME, stringsAsFactors=FALSE)
@@ -1727,7 +1745,7 @@ options(ucscChromosomeNames=FALSE)
 		}
 	})
 	#// select transcript_id of geneA
-	observeEvent(input$domainA, {
+	observeEvent(Trans_domainA() | input$offset_base_A | input$index_A, {
 		if ( is.null(object_domain_A$value) || is.null(input$domainA) || input$domainA == "" ) { #// if 'object_domain_A$value' is NULL, set 'domain_plotA$geneA, $symbol_A, $domainA, $motifA' as NULL
 			domain_plotA$geneA = NULL; domain_plotA$symbol_A = NULL; domain_plotA$domainA = NULL; domain_plotA$motifA = NULL;
 			domain_plot_link$A1_xy = NULL;
@@ -1761,52 +1779,18 @@ options(ucscChromosomeNames=FALSE)
 			if ( length(domain_plotA$geneA) > 0 ) {
 				output$domain_up <- renderPlot({
 					print("start to plotting domain of upstream gene")
-					domain_plot_link$A1_xy = FuSViz::plot_separate_domain_geneA(domain_plotA$geneA, domain_plotA$symbol_A, domain_plotA$domainA, domain_plotA$motifA)
+					domain_plot_link$A1_xy = FuSViz::plot_separate_domain_geneA(domain_plotA$geneA, domain_plotA$symbol_A, domain_plotA$domainA, domain_plotA$motifA, exon_index=input$index_A)
 				})
+			} else {
+				output$domain_up <- renderPlot({ return(NULL); })
+				showModal(modalDialog(title = "Warning message", paste("Breakpoint coordinates out of ", name_domainA, " bound (please try alternative transcript isoforms)!", sep="")));
+				domain_plot_link$A1_xy=NULL;
 			}
 		}
 	})
-	observeEvent(input$offset_base_A, {
-		if ( is.null(object_domain_A$value) || is.null(input$domainA) || input$domainA == "" ) { #// if 'object_domain_A$value' is NULL, set 'domain_plotA$geneA, $symbol_A, $domainA, $motifA' as NULL
-			domain_plotA$geneA = NULL; domain_plotA$symbol_A = NULL; domain_plotA$domainA = NULL; domain_plotA$motifA = NULL;
-			domain_plot_link$A1_xy = NULL;
-		} else {
-			name_domainA = input$domainA;	name_domainA = gsub('-', '', name_domainA); name_domainA = gsub('@', '', name_domainA);
-			#// a subset transcript of geneA after update the choice values in selectInput
-			mytmp_A = list(); #// a subset of 'object_domain_A' (for selected transcripts of geneA)
-			mytmp_A$value$dataset = object_domain_A$value$dataset[object_domain_A$value$dataset$TXNAME %in% name_domainA, ]; 
-			mytmp_A$value$txTr_f = object_domain_A$value$txTr_f; 
-			mytmp_A$value$chr = object_domain_A$value$chr; 
-			mytmp_A$value$start = object_domain_A$value$start;
-			mytmp_A$value$end = object_domain_A$value$end; 
-			mytmp_A$value$strand = object_domain_A$value$strand;
 
-			geneA = list(); #// geneA is a list class
-			symbol_A = domain_1()[1,]$gene1
-			breakpoint_set = unique(domain_1()$pos1)
-			for (i in 1:length(breakpoint_set)) { # print(paste("start domain A loop: ", i))
-				if (! exists(as.character(breakpoint_set[i]), where=geneA) ) {
-					geneA[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_A$value, database$whole_txdb, "upstream", input$offset_base_A) #// For geneA; 
-				}
-			}
-			#// remove the elements in the list where breakpoint outside transcript region of geneA
-			if ( length(geneA) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneA or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!")); req(NULL); }
-			geneA = Filter(Negate(function(x) is.null(unlist(x))), geneA)
-			control_break_AB$A = as.numeric(names(geneA)); # print(paste("selected breakpoint for geneA: ", as.numeric(names(geneA))));
-			domain_plotA$geneA=geneA
-			domain_plotA$symbol_A=symbol_A
-			domain_plotA$domainA=database$domain[database$domain$Transcript_id %in% name_domainA, ]
-			domain_plotA$motifA=database$motif[database$motif$Transcript_id %in% name_domainA, ]
-			if ( length(domain_plotA$geneA) > 0 ) {
-				output$domain_up <- renderPlot({
-					print("start to plotting domain of upstream gene")
-					domain_plot_link$A1_xy = FuSViz::plot_separate_domain_geneA(domain_plotA$geneA, domain_plotA$symbol_A, domain_plotA$domainA, domain_plotA$motifA)
-				})
-			}
-		}
-	})
 	#// select transcript_id of geneB
-	observeEvent(input$domainB, {
+	observeEvent(Trans_domainB() | input$offset_base_B | input$index_B, {
 		if ( is.null(object_domain_B$value) || is.null(input$domainB) || input$domainB == "" ) { #// if 'object_domain_B$value' is NULL, set 'domain_plotB$geneB, $symbol_B, $domainB, $motifB' as NULL
 			domain_plotB$geneB = NULL; domain_plotB$symbol_B = NULL; domain_plotB$domainB = NULL; domain_plotB$motifB = NULL;
 			domain_plot_link$B1_xy = NULL;
@@ -1840,47 +1824,12 @@ options(ucscChromosomeNames=FALSE)
 			if ( length(domain_plotB$geneB) > 0 ) {
 				output$domain_down <- renderPlot({
 					print("start to plotting domain of downstream gene")
-					domain_plot_link$B1_xy = FuSViz::plot_separate_domain_geneB(domain_plotB$geneB, domain_plotB$symbol_B, domain_plotB$domainB, domain_plotB$motifB)
+					domain_plot_link$B1_xy = FuSViz::plot_separate_domain_geneB(domain_plotB$geneB, domain_plotB$symbol_B, domain_plotB$domainB, domain_plotB$motifB, exon_index=input$index_B)
 				})
-			}
-		}
-	})
-	observeEvent(input$offset_base_B, {
-		if ( is.null(object_domain_B$value) || is.null(input$domainB) || input$domainB == "" ) { #// if 'object_domain_B$value' is NULL, set 'domain_plotB$geneB, $symbol_B, $domainB, $motifB' as NULL
-			domain_plotB$geneB = NULL; domain_plotB$symbol_B = NULL; domain_plotB$domainB = NULL; domain_plotB$motifB = NULL;
-			domain_plot_link$B1_xy = NULL;
-		} else {
-			name_domainB = input$domainB;	name_domainB = gsub('-', '', name_domainB); name_domainB = gsub('@', '', name_domainB);
-			#// a subset transcript of geneB after update the choice values in selectInput
-			mytmp_B = list(); #// a subset of 'object_domain_B' (for selected transcripts of geneB)
-			mytmp_B$value$dataset = object_domain_B$value$dataset[object_domain_B$value$dataset$TXNAME %in% name_domainB, ];
-			mytmp_B$value$txTr_f = object_domain_B$value$txTr_f; 
-			mytmp_B$value$chr = object_domain_B$value$chr; 
-			mytmp_B$value$start = object_domain_B$value$start;
-			mytmp_B$value$end = object_domain_B$value$end; 
-			mytmp_B$value$strand = object_domain_B$value$strand;
-
-			geneB = list(); #// geneB is a list class
-			symbol_B = domain_1()[1,]$gene2
-			breakpoint_set = unique(domain_1()$pos2)
-			for (i in 1:length(breakpoint_set)) { # print(paste("start domain B loop: ", i))
-				if (! exists(as.character(breakpoint_set[i]), where=geneB) ) {
-					geneB[[as.character(breakpoint_set[i])]] <- FuSViz::gene_trans_ex_reduce(breakpoint_set[i], mytmp_B$value, database$whole_txdb, "downstream", input$offset_base_B) #// For geneB
-				}
-			}
-			#// remove the elements in the list where breakpoint outside transcript region of geneB
-			if ( length(geneB) == 0 ) { showModal(modalDialog(title = "Warning message", "No breakpoints within geneB or breakpoint coordinates do not match the genome version of imported annotation resource. Plot stops and please check coordinates!")); req(NULL); }
-			geneB = Filter(Negate(function(x) is.null(unlist(x))), geneB)
-			control_break_AB$B = as.numeric(names(geneB)); # print(paste("selected breakpoint for gene2: ", as.numeric(names(geneB)))); 
-			domain_plotB$geneB=geneB
-			domain_plotB$symbol_B=symbol_B
-			domain_plotB$domainB=database$domain[database$domain$Transcript_id %in% name_domainB, ]
-			domain_plotB$motifB=database$motif[database$motif$Transcript_id %in% name_domainB, ]
-			if ( length(domain_plotB$geneB) > 0 ) {
-				output$domain_down <- renderPlot({
-					print("start to plotting domain of downstream gene")
-					domain_plot_link$B1_xy = FuSViz::plot_separate_domain_geneB(domain_plotB$geneB, domain_plotB$symbol_B, domain_plotB$domainB, domain_plotB$motifB)
-				})
+			} else {
+				output$domain_down <- renderPlot({ return(NULL); })
+				showModal(modalDialog(title = "Warning message", paste("Breakpoint coordinates out of ", name_domainB, " bound (please try alternative transcript isoforms)!", sep="")));
+				domain_plot_link$B1_xy=NULL;
 			}
 		}
 	})
@@ -1892,7 +1841,11 @@ options(ucscChromosomeNames=FALSE)
 					print("start to plotting rows to connect partner genes")
 					FuSViz::plot_separate_domain_arrow(domain_plot_link$A1_xy, domain_plot_link$B1_xy, domain_plotA$geneA, domain_plotB$geneB, domain_data())
 				})
+			} else {
+				output$linking <- renderPlot({ NULL; })
 			}
+		} else {
+			output$linking <- renderPlot({ NULL; })
 		}
 	})
 	#// download domain plot
@@ -1906,9 +1859,13 @@ options(ucscChromosomeNames=FALSE)
 				pdf(file, width=input$domain_width, height=input$domain_height)
 			}
             if ( !is.null(object_domain_A$value) && !is.null(object_domain_B$value) ) {
-			    FuSViz::plot_separate_domain_download(domain_plotA$geneA, domain_plotA$symbol_A, domain_plotA$domainA, domain_plotA$motifA,
-						domain_plotB$geneB, domain_plotB$symbol_B, domain_plotB$domainB, domain_plotB$motifB, domain_data())
-            } else {
+				if ( length(domain_plotA$geneA) > 0 && length(domain_plotB$geneB) > 0 && length(rownames(domain_data())) > 0 ) {
+			    	FuSViz::plot_separate_domain_download(domain_plotA$geneA, domain_plotA$symbol_A, domain_plotA$domainA, domain_plotA$motifA,
+						domain_plotB$geneB, domain_plotB$symbol_B, domain_plotB$domainB, domain_plotB$motifB, domain_data(), exon_index_A=input$index_A, exon_index_B=input$index_B)
+				} else {
+					plot.new()
+				}
+			} else {
                 plot.new()
             }
 			dev.off()
@@ -2118,7 +2075,8 @@ options(ucscChromosomeNames=FALSE)
 				attr(tmp, "row.names") = paste0('<a href=\'#shiny-tab-igv\' data-toggle=\'tab\' class=\'tablesenz\' onclick=\'myFunction(\"', tmp$chrom1, ':', tmp$pos1-50, '-', tmp$pos1+50, ' ', tmp$chrom2, ':', tmp$pos2-50, '-', tmp$pos2+50, '\");\'>', rownames(tmp), '</a>');
 				DT::datatable(tmp, escape = FALSE, editable = 'cell', extensions = 'Buttons', options = list(dom = 'Blfrtip', buttons = list(
 					list(extend = "collection", text = 'Download Data', action = DT::JS("function(e, dt, node, config) { Shiny.setInputValue('rnadownload', true, {priority: 'event'}); }")),
-					list(extend = "collection", text = 'Delete Row', action = DT::JS("function(e, dt, node, config) { Shiny.setInputValue('rnaDeleteRow', true, {priority: 'event'}); }"))),
+					list(extend = "collection", text = 'Delete Row', action = DT::JS("function(e, dt, node, config) { Shiny.setInputValue('rnaDeleteRow', true, {priority: 'event'}); }")),
+					list(extend = "collection", text = 'Insert Row', action = DT::JS("function(e, dt, node, config) { Shiny.setInputValue('rnaInsertRow', true, {priority: 'event'}); }"))),
 					autoWidth = TRUE, columnDefs = list(list(targets = c(14,15), visible = FALSE)), initComplete = JS("function(settings, json) { $(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")),
 					filter = list(position = 'top', clear = FALSE, plain = TRUE)) %>% DT::formatStyle(names(tmp), fontSize = '11px') %>%
 					DT::formatStyle('gene1','tag1', backgroundColor = DT::styleInterval(c(2, 4, 6), c("#ff8566", "#00ccff", "#ffcc33", "white"))) %>%
@@ -2144,6 +2102,102 @@ options(ucscChromosomeNames=FALSE)
 				rrr <- rrr[-as.numeric(input$RNAcontents_rows_selected),]
 			}
 			inputFile$rnadata = rrr
+		})
+		
+		# Add row data for RNA SVs
+		Addrow_data <- reactiveValues(chrom1="", pos1=0, gene1="", chrom2="", pos2=0, gene2="", rna_name="", rna_split=0, rna_span=0, rna_strand1="", rna_strand2="", untemplated_insert="", rna_comment="");
+
+		InsertRow <- function(chrom1, pos1, gene1, chrom2, pos2, gene2, rna_name, rna_split, rna_span, rna_strand1, rna_strand2, untemplated_insert, rna_comment, tag = 0)  {
+			modalDialog(
+				selectizeInput("add_rna_chrom1", label = div("chrom1 (*)", title = "Chromosome name of the upstream partner (must start with 'chr')", icon("info-circle", style="font-size: 11px")), 
+					choices = c("", "chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY", "chrM"), multiple = F, selected=chrom1),
+				numericInput("add_rna_pos1", label = div("pos1 (*)", title = "Genomic coordinate of the upstream partner breakpoint", icon("info-circle", style="font-size: 11px")), value=pos1, min=0, max=500000000), 
+				textInput("add_rna_gene1", label = div("gene1 (*)", title = "Gene symbol / ensembl id of the upstream partner gene", icon("info-circle", style="font-size: 11px")), value=gene1, placeholder = "e.g. TP53 or Trp53"),
+				selectizeInput("add_rna_chrom2", label = div("chrom2 (*)", title = "Chromosome name of the downstream partner (must start with 'chr')", icon("info-circle", style="font-size: 11px")), 
+					choices = c("", "chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY", "chrM"), multiple = F, selected=chrom2),
+				numericInput("add_rna_pos2", label = div("pos2 (*)", title = "Genomic coordinate of the downstream partner breakpoint", icon("info-circle", style="font-size: 11px")), value=pos2, min=0, max=500000000),
+				textInput("add_rna_gene2", label = div("gene2 (*)", title = "Gene symbol / ensembl id of the downstream partner gene", icon("info-circle", style="font-size: 11px")), value=gene2, placeholder = "e.g. TP53 or Trp53"),
+				textInput("add_rna_name", label = div("name (*)", title = "Sample/Patient/Case ID", icon("info-circle", style="font-size: 11px")), value=rna_name),
+				numericInput("add_rna_split", label = div("split (*)", title = "The number of support reads across the breakpoint of SV", icon("info-circle", style="font-size: 11px")), value=rna_split, min=0, max=100000),
+				numericInput("add_rna_span", label = div("span (*)", title = "The number of discordant read pairs supporting the SV", icon("info-circle", style="font-size: 11px")), value=rna_span, min=0, max=100000),
+				selectizeInput("add_rna_strand1", label = div("strand1 (*)", title = "Strand direction of upstream fusion sequence (e.g. + or -)", icon("info-circle", style="font-size: 11px")), 
+					choices = c("", "+", "-"), multiple = F, selected=rna_strand1),
+				selectizeInput("add_rna_strand2", label = div("strand2 (*)", title = "Strand direction of downstream fusion sequence (e.g. + or -)", icon("info-circle", style="font-size: 11px")), 
+					choices = c("", "+", "-"), multiple = F, selected=rna_strand2),
+				textInput("add_untemplated_insert", label = div("untemplated_insert", title = 'The untemplated insert sequence (default: "")', icon("info-circle", style="font-size: 11px")), value=untemplated_insert, placeholder = "e.g. AGTGGA"),
+				textInput("add_rna_comment", label = div("comment", title = 'Additional comment on SV entry (default: "")', icon("info-circle", style="font-size: 11px")), value=rna_comment),
+				span('(*) indicates required field!', style = "font-size: 12px; color: black;"),
+				if ( tag == 1 )
+					div(tags$b('Invalid value of "chrom1", please check input format!', style = "color: red;")),
+				if ( tag == 2 )
+					div(tags$b('Invalid value of "pos1", please check input format!', style = "color: red;")),
+				if ( tag == 3 )
+					div(tags$b('Invalid value of "gene1", please input valid gene symbol / ensembl id!', style = "color: red;")),
+				if ( tag == 4 )
+					div(tags$b('Invalid value of "chrom2", please check input format!', style = "color: red;")),
+				if ( tag == 5 )
+					div(tags$b('Invalid value of "pos2", please check input format!', style = "color: red;")),
+				if ( tag == 6 )
+					div(tags$b('Invalid value of "gene2", please input valid gene symbol / ensembl id!', style = "color: red;")),
+				if ( tag == 7 )
+					div(tags$b('Invalid value of "name", please check input format!', style = "color: red;")),
+				if ( tag == 8 )
+					div(tags$b('Invalid value of "split" (must be > 0), please check input format!', style = "color: red;")),
+				if ( tag == 10 )
+					div(tags$b('Invalid value of "strand1" (must be + or -), please check input format!', style = "color: red;")),
+				if ( tag == 11 )
+					div(tags$b('Invalid value of "strand2" (must be + or -), please check input format!', style = "color: red;")),
+				if ( tag == 12 )
+					div(tags$b('Invalid characters (execpt A, T, C, G and N) are present in "untemplated_insert", please check input format!', style = "color: red;")),
+				footer = tagList(
+          			modalButton("Cancel"),
+          			actionButton("radd_rna_submit", "OK")
+        		)
+			)
+		}
+
+		observeEvent(input$rnaInsertRow,{
+			showModal(InsertRow("", 0, "", "", 0, "", "", 0, 0, "", "", "", "", tag = 0));
+		})
+
+		observeEvent(input$radd_rna_submit, {
+			if ( is.null(inputFile$rnadata) ) { req(NULL); }
+			Addrow_data$chrom1=input$add_rna_chrom1;	Addrow_data$pos1=input$add_rna_pos1;	Addrow_data$gene1=input$add_rna_gene1;
+			Addrow_data$chrom2=input$add_rna_chrom2;	Addrow_data$pos2=input$add_rna_pos2;	Addrow_data$gene2=input$add_rna_gene2;
+			Addrow_data$rna_name=input$add_rna_name;	Addrow_data$rna_split=input$add_rna_split;	Addrow_data$rna_span=input$add_rna_span;
+			Addrow_data$rna_strand1=input$add_rna_strand1;	Addrow_data$rna_strand2=input$add_rna_strand2;
+			Addrow_data$untemplated_insert=input$add_untemplated_insert;	Addrow_data$rna_comment=input$add_rna_comment;
+			#// check the input value
+			if ( input$add_rna_chrom1=="" ) {
+				showModal(InsertRow(Addrow_data$chrom1, Addrow_data$pos1, Addrow_data$gene1, Addrow_data$chrom2, Addrow_data$pos2, Addrow_data$gene2, Addrow_data$rna_name, Addrow_data$rna_split, Addrow_data$rna_span, Addrow_data$rna_strand1, Addrow_data$rna_strand2, Addrow_data$untemplated_insert, Addrow_data$rna_comment, tag = 1));
+			} else if ( input$add_rna_pos1==0 ) {
+				showModal(InsertRow(Addrow_data$chrom1, Addrow_data$pos1, Addrow_data$gene1, Addrow_data$chrom2, Addrow_data$pos2, Addrow_data$gene2, Addrow_data$rna_name, Addrow_data$rna_split, Addrow_data$rna_span, Addrow_data$rna_strand1, Addrow_data$rna_strand2, Addrow_data$untemplated_insert, Addrow_data$rna_comment, tag = 2));
+			} else if ( input$add_rna_gene1=="" || FALSE %in% grepl("^[A-Z][\\.A-Za-z0-9_-]+$", input$add_rna_gene1) ) {
+				showModal(InsertRow(Addrow_data$chrom1, Addrow_data$pos1, Addrow_data$gene1, Addrow_data$chrom2, Addrow_data$pos2, Addrow_data$gene2, Addrow_data$rna_name, Addrow_data$rna_split, Addrow_data$rna_span, Addrow_data$rna_strand1, Addrow_data$rna_strand2, Addrow_data$untemplated_insert, Addrow_data$rna_comment, tag = 3));
+			} else if ( input$add_rna_chrom2=="" ) {
+				showModal(InsertRow(Addrow_data$chrom1, Addrow_data$pos1, Addrow_data$gene1, Addrow_data$chrom2, Addrow_data$pos2, Addrow_data$gene2, Addrow_data$rna_name, Addrow_data$rna_split, Addrow_data$rna_span, Addrow_data$rna_strand1, Addrow_data$rna_strand2, Addrow_data$untemplated_insert, Addrow_data$rna_comment, tag = 4));
+			} else if ( input$add_rna_pos2==0 ) {
+				showModal(InsertRow(Addrow_data$chrom1, Addrow_data$pos1, Addrow_data$gene1, Addrow_data$chrom2, Addrow_data$pos2, Addrow_data$gene2, Addrow_data$rna_name, Addrow_data$rna_split, Addrow_data$rna_span, Addrow_data$rna_strand1, Addrow_data$rna_strand2, Addrow_data$untemplated_insert, Addrow_data$rna_comment, tag = 5));
+			} else if ( input$add_rna_gene2=="" || FALSE %in% grepl("^[A-Z][\\.A-Za-z0-9_-]+$", input$add_rna_gene2) ) {
+				showModal(InsertRow(Addrow_data$chrom1, Addrow_data$pos1, Addrow_data$gene1, Addrow_data$chrom2, Addrow_data$pos2, Addrow_data$gene2, Addrow_data$rna_name, Addrow_data$rna_split, Addrow_data$rna_span, Addrow_data$rna_strand1, Addrow_data$rna_strand2, Addrow_data$untemplated_insert, Addrow_data$rna_comment, tag = 6));
+			} else if ( input$add_rna_name=="" ) {
+				showModal(InsertRow(Addrow_data$chrom1, Addrow_data$pos1, Addrow_data$gene1, Addrow_data$chrom2, Addrow_data$pos2, Addrow_data$gene2, Addrow_data$rna_name, Addrow_data$rna_split, Addrow_data$rna_span, Addrow_data$rna_strand1, Addrow_data$rna_strand2, Addrow_data$untemplated_insert, Addrow_data$rna_comment, tag = 7));
+			} else if ( input$add_rna_split==0 ) {
+				showModal(InsertRow(Addrow_data$chrom1, Addrow_data$pos1, Addrow_data$gene1, Addrow_data$chrom2, Addrow_data$pos2, Addrow_data$gene2, Addrow_data$rna_name, Addrow_data$rna_split, Addrow_data$rna_span, Addrow_data$rna_strand1, Addrow_data$rna_strand2, Addrow_data$untemplated_insert, Addrow_data$rna_comment, tag = 8));
+			} else if ( input$add_rna_strand1=="" ) {
+				showModal(InsertRow(Addrow_data$chrom1, Addrow_data$pos1, Addrow_data$gene1, Addrow_data$chrom2, Addrow_data$pos2, Addrow_data$gene2, Addrow_data$rna_name, Addrow_data$rna_split, Addrow_data$rna_span, Addrow_data$rna_strand1, Addrow_data$rna_strand2, Addrow_data$untemplated_insert, Addrow_data$rna_comment, tag = 10));
+			} else if ( input$add_rna_strand2=="" ) {
+				showModal(InsertRow(Addrow_data$chrom1, Addrow_data$pos1, Addrow_data$gene1, Addrow_data$chrom2, Addrow_data$pos2, Addrow_data$gene2, Addrow_data$rna_name, Addrow_data$rna_split, Addrow_data$rna_span, Addrow_data$rna_strand1, Addrow_data$rna_strand2, Addrow_data$untemplated_insert, Addrow_data$rna_comment, tag = 11));
+			} else {
+				if ( TRUE %in% grepl("[^A|^T|^G|^C|^N|^a|^t|^g|^c|^n]", Addrow_data$untemplated_insert)  ) {
+					showModal(InsertRow(Addrow_data$chrom1, Addrow_data$pos1, Addrow_data$gene1, Addrow_data$chrom2, Addrow_data$pos2, Addrow_data$gene2, Addrow_data$rna_name, Addrow_data$rna_split, Addrow_data$rna_span, Addrow_data$rna_strand1, Addrow_data$rna_strand2, Addrow_data$untemplated_insert, Addrow_data$rna_comment, tag = 12));
+				} else {
+					rnaadd = inputFile$rnadata;
+					onerow = data.frame(chrom1=c(Addrow_data$chrom1), pos1=c(Addrow_data$pos1), gene1=c(Addrow_data$gene1), chrom2=c(Addrow_data$chrom2), pos2=c(Addrow_data$pos2), gene2=c(Addrow_data$gene2), name=c(Addrow_data$rna_name), split=c(Addrow_data$rna_split), span=c(Addrow_data$rna_span), strand1=c(Addrow_data$rna_strand1), strand2=c(Addrow_data$rna_strand2), untemplated_insert=c(Addrow_data$untemplated_insert), comment=c(Addrow_data$rna_comment));
+					inputFile$rnadata = rbind(rnaadd, onerow);
+					removeModal();
+				}
+			}
 		})
 
 		#// partner gene wordcloud of RNA SVs
@@ -2214,7 +2268,8 @@ options(ucscChromosomeNames=FALSE)
 				attr(tmp, "row.names") = paste0('<a href=\'#shiny-tab-igv\' data-toggle=\'tab\' onclick=\'myFunction(\"', tmp$chrom1, ':', tmp$start1-50, '-', tmp$end1+50, ' ', tmp$chrom2, ':', tmp$start2-50, '-', tmp$end2+50, '\");\'>', rownames(tmp), '</a>');
 				DT::datatable(tmp, escape = FALSE, editable = 'cell', extensions = 'Buttons', options = list(dom = 'Blfrtip', buttons = list(
 					list(extend = "collection", text = 'Download Data', action = DT::JS("function(e, dt, node, config) { Shiny.setInputValue('dnadownload', true, {priority: 'event'}); }")),
-					list(extend = "collection", text = 'Delete Row', action = DT::JS("function(e, dt, node, config) { Shiny.setInputValue('dnaDeleteRow', true, {priority: 'event'}); }"))),
+					list(extend = "collection", text = 'Delete Row', action = DT::JS("function(e, dt, node, config) { Shiny.setInputValue('dnaDeleteRow', true, {priority: 'event'}); }")),
+					list(extend = "collection", text = 'Insert Row', action = DT::JS("function(e, dt, node, config) { Shiny.setInputValue('dnaInsertRow', true, {priority: 'event'}); }"))),
 					autoWidth = TRUE, columnDefs = list(list(targets = c(14,15), visible = FALSE)), initComplete = JS("function(settings, json) { $(this.api().table().header()).css({'background-color': '#34495E', 'color': '#AEB6BF'});}")),
 					filter = list(position = 'top', clear = FALSE, plain = TRUE)) %>% DT::formatStyle(names(tmp), fontSize = '11px') %>%
 					DT::formatStyle('gene1','tag1', backgroundColor = DT::styleInterval(c(2, 4, 6), c("#ff8566", "#00ccff", "#ffcc33", "white"))) %>%
@@ -2240,6 +2295,91 @@ options(ucscChromosomeNames=FALSE)
 				ddd <- ddd[-as.numeric(input$DNAcontents_rows_selected),]
 			}
 			inputFile$dnadata = ddd
+		})
+
+		# Add row data for DNA SVs
+        Addrow_data_dna <- reactiveValues(chrom1="", start1=0, end1=0, chrom2="", start2=0, end2=0, dna_name="", type="", dna_split=0, dna_span=0, gene1="", gene2="", dna_comment="");
+		InsertRow_dna <- function(chrom1, start1, end1, chrom2, start2, end2, dna_name, type, dna_split, dna_span, gene1, gene2, dna_comment, tag = 0)  {
+			modalDialog(
+				selectizeInput("add_dna_chrom1", label = div("chrom1 (*)", title = "Chromosome name on which the first end of SV exists (must start with 'chr')", icon("info-circle", style="font-size: 11px")), 
+					choices = c("", "chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY", "chrM"), multiple = F, selected=chrom1),
+                numericInput("add_dna_start1", label = div("start1 (*)", title = "Zero-based starting position of the first end of SV on chrom1", icon("info-circle", style="font-size: 11px")), value=start1, min=0, max=500000000), 
+                numericInput("add_dna_end1", label = div("end1 (*)", title = "One-based ending position of the first end of SV on chrom1", icon("info-circle", style="font-size: 11px")), value=end1, min=0, max=500000000),
+                selectizeInput("add_dna_chrom2", label = div("chrom2 (*)", title = "Chromosome name on which the second end of SV exists (must start with 'chr')", icon("info-circle", style="font-size: 11px")), 
+                    choices = c("", "chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY", "chrM"), multiple = F, selected=chrom2),
+                numericInput("add_dna_start2", label = div("start2 (*)", title = "Zero-based starting position of the second end of SV on chrom2", icon("info-circle", style="font-size: 11px")), value=start2, min=0, max=500000000),
+                numericInput("add_dna_end2", label = div("end2 (*)", title = "One-based ending position of the second end of SV on chrom2", icon("info-circle", style="font-size: 11px")), value=end2, min=0, max=500000000),
+                textInput("add_dna_name", label = div("name (*)", title = "Sample/Patient/Case ID", icon("info-circle", style="font-size: 11px")), value=dna_name),
+                selectizeInput("add_dna_type", label = div("type (*)", title = "The type of SV (e.g. BND - translocation, DEL- deletion, DUP - duplication, INS - insertion, INV - inversion)", icon("info-circle", style="font-size: 11px")), 
+					choices = c("", "BND", "DEL", "DUP", "INS", "INV"), multiple = F, selected=type),
+				numericInput("add_dna_split", label = div("split (*)", title = "The number of support reads across the breakpoint of SV", icon("info-circle", style="font-size: 11px")), value=dna_split, min=0, max=100000),
+				numericInput("add_dna_span", label = div("span (*)", title = "The number of discordant read pairs supporting the SV", icon("info-circle", style="font-size: 11px")), value=dna_span, min=0, max=100000),
+				textInput("add_dna_gene1", label = div("gene1 (*)", title = "Gene symbol / ensembl id is required if the first end of SV within genic region, otherwise * is used to denote intergenic region", icon("info-circle", style="font-size: 11px")), value=gene1, placeholder = "e.g. TP53, Trp53 or *"),
+				textInput("add_dna_gene2", label = div("gene2 (*)", title = "Gene symbol / ensembl id is required if the second end of SV within genic region, otherwise * is used to denote intergenic region", icon("info-circle", style="font-size: 11px")), value=gene2, placeholder = "e.g. TP53, Trp53 or *"),
+				textInput("add_dna_comment", label = div("comment", title = 'Additional comment on SV entry (default: "")', icon("info-circle", style="font-size: 11px")), value=dna_comment),
+				span('(*) indicates required field!', style = "font-size: 12px; color: black;"),
+				if ( tag == 1 )
+                    div(tags$b('Invalid value of "chrom1", please check input format!', style = "color: red;")),
+                if ( tag == 2 )
+                    div(tags$b('Invalid value of "start1" or "end1" ("start1" must be smaller than "end1"), please check input format!', style = "color: red;")),
+                if ( tag == 3 )
+                    div(tags$b('Invalid value of "chrom2", please check input format!', style = "color: red;")),
+                if ( tag == 4 )
+                    div(tags$b('Invalid value of "start2" or "end2" ("start2" must be smaller than "end2"), please check input format!', style = "color: red;")),
+                if ( tag == 5 )
+                    div(tags$b('Invalid value of "name", please check input format!', style = "color: red;")),
+				if ( tag == 6 )
+                    div(tags$b('Invalid value of "type", please check input format!', style = "color: red;")),
+				if ( tag == 7 )
+                    div(tags$b('Invalid value of "split" (must be > 0), please check input format!', style = "color: red;")),
+                if ( tag == 8 )
+                    div(tags$b('Invalid value of "gene1", please input valid gene symbol / ensembl id or use "*" to denote intergenic region!', style = "color: red;")),
+                if ( tag == 9 )
+                    div(tags$b('Invalid value of "gene2", please input valid gene symbol / ensembl id or use "*" to denote intergenic region!', style = "color: red;")),
+                footer = tagList(
+                    modalButton("Cancel"),
+                    actionButton("dadd_dna_submit", "OK")
+                )
+            )
+        }
+
+		observeEvent(input$dnaInsertRow,{
+			showModal(InsertRow_dna("", 0, 0, "", 0, 0, "", "", 0, 0, "", "", "", tag = 0));
+		})
+
+		observeEvent(input$dadd_dna_submit, {
+			if ( is.null(inputFile$dnadata) ) { req(NULL); }
+			Addrow_data_dna$chrom1=input$add_dna_chrom1;	Addrow_data_dna$start1=input$add_dna_start1;	Addrow_data_dna$end1=input$add_dna_end1;
+			Addrow_data_dna$chrom2=input$add_dna_chrom2;	Addrow_data_dna$start2=input$add_dna_start2;	Addrow_data_dna$end2=input$add_dna_end2;
+			Addrow_data_dna$dna_name=input$add_dna_name;	Addrow_data_dna$type=input$add_dna_type;		Addrow_data_dna$dna_comment=input$add_dna_comment;
+			Addrow_data_dna$dna_split=input$add_dna_split;	Addrow_data_dna$dna_span=input$add_dna_span;
+			Addrow_data_dna$gene1=input$add_dna_gene1;		Addrow_data_dna$gene2=input$add_dna_gene2;
+            
+			#// check the input value
+			if ( input$add_dna_chrom1=="" ) {
+				showModal(InsertRow_dna(Addrow_data_dna$chrom1, Addrow_data_dna$start1, Addrow_data_dna$end1, Addrow_data_dna$chrom2, Addrow_data_dna$start2, Addrow_data_dna$end2, Addrow_data_dna$dna_name, Addrow_data_dna$type, Addrow_data_dna$dna_split, Addrow_data_dna$dna_span, Addrow_data_dna$gene1, Addrow_data_dna$gene2, Addrow_data_dna$dna_comment, tag = 1));
+			} else if ( input$add_dna_start1==0 || input$add_dna_end1==0 || input$add_dna_end1 < input$add_dna_start1 ) {
+				showModal(InsertRow_dna(Addrow_data_dna$chrom1, Addrow_data_dna$start1, Addrow_data_dna$end1, Addrow_data_dna$chrom2, Addrow_data_dna$start2, Addrow_data_dna$end2, Addrow_data_dna$dna_name, Addrow_data_dna$type, Addrow_data_dna$dna_split, Addrow_data_dna$dna_span, Addrow_data_dna$gene1, Addrow_data_dna$gene2, Addrow_data_dna$dna_comment, tag = 2));
+			} else if ( input$add_dna_chrom2=="" ) {
+				showModal(InsertRow_dna(Addrow_data_dna$chrom1, Addrow_data_dna$start1, Addrow_data_dna$end1, Addrow_data_dna$chrom2, Addrow_data_dna$start2, Addrow_data_dna$end2, Addrow_data_dna$dna_name, Addrow_data_dna$type, Addrow_data_dna$dna_split, Addrow_data_dna$dna_span, Addrow_data_dna$gene1, Addrow_data_dna$gene2, Addrow_data_dna$dna_comment, tag = 3));
+			} else if ( input$add_dna_start2==0 || input$add_dna_end2==0 || input$add_dna_end2 < input$add_dna_start2 ) {
+				showModal(InsertRow_dna(Addrow_data_dna$chrom1, Addrow_data_dna$start1, Addrow_data_dna$end1, Addrow_data_dna$chrom2, Addrow_data_dna$start2, Addrow_data_dna$end2, Addrow_data_dna$dna_name, Addrow_data_dna$type, Addrow_data_dna$dna_split, Addrow_data_dna$dna_span, Addrow_data_dna$gene1, Addrow_data_dna$gene2, Addrow_data_dna$dna_comment, tag = 4));
+			} else if ( input$add_dna_name=="" ) {
+				showModal(InsertRow_dna(Addrow_data_dna$chrom1, Addrow_data_dna$start1, Addrow_data_dna$end1, Addrow_data_dna$chrom2, Addrow_data_dna$start2, Addrow_data_dna$end2, Addrow_data_dna$dna_name, Addrow_data_dna$type, Addrow_data_dna$dna_split, Addrow_data_dna$dna_span, Addrow_data_dna$gene1, Addrow_data_dna$gene2, Addrow_data_dna$dna_comment, tag = 5));
+			} else if ( input$add_dna_type=="" ) {
+				showModal(InsertRow_dna(Addrow_data_dna$chrom1, Addrow_data_dna$start1, Addrow_data_dna$end1, Addrow_data_dna$chrom2, Addrow_data_dna$start2, Addrow_data_dna$end2, Addrow_data_dna$dna_name, Addrow_data_dna$type, Addrow_data_dna$dna_split, Addrow_data_dna$dna_span, Addrow_data_dna$gene1, Addrow_data_dna$gene2, Addrow_data_dna$dna_comment, tag = 6));
+			} else if ( input$add_dna_split==0 ) {
+				showModal(InsertRow_dna(Addrow_data_dna$chrom1, Addrow_data_dna$start1, Addrow_data_dna$end1, Addrow_data_dna$chrom2, Addrow_data_dna$start2, Addrow_data_dna$end2, Addrow_data_dna$dna_name, Addrow_data_dna$type, Addrow_data_dna$dna_split, Addrow_data_dna$dna_span, Addrow_data_dna$gene1, Addrow_data_dna$gene2, Addrow_data_dna$dna_comment, tag = 7));
+			} else if ( input$add_dna_gene1=="" || FALSE %in% grepl("^[A-Z][\\.A-Za-z0-9_-]+$|^\\*$", input$add_dna_gene1) ) {
+				showModal(InsertRow_dna(Addrow_data_dna$chrom1, Addrow_data_dna$start1, Addrow_data_dna$end1, Addrow_data_dna$chrom2, Addrow_data_dna$start2, Addrow_data_dna$end2, Addrow_data_dna$dna_name, Addrow_data_dna$type, Addrow_data_dna$dna_split, Addrow_data_dna$dna_span, Addrow_data_dna$gene1, Addrow_data_dna$gene2, Addrow_data_dna$dna_comment, tag = 8));
+			} else if ( input$add_dna_gene2=="" || FALSE %in% grepl("^[A-Z][\\.A-Za-z0-9_-]+$|^\\*$", input$add_dna_gene2) ) {
+				showModal(InsertRow_dna(Addrow_data_dna$chrom1, Addrow_data_dna$start1, Addrow_data_dna$end1, Addrow_data_dna$chrom2, Addrow_data_dna$start2, Addrow_data_dna$end2, Addrow_data_dna$dna_name, Addrow_data_dna$type, Addrow_data_dna$dna_split, Addrow_data_dna$dna_span, Addrow_data_dna$gene1, Addrow_data_dna$gene2, Addrow_data_dna$dna_comment, tag = 9));
+            } else {
+				dnaadd = inputFile$dnadata;
+				onerow = data.frame(chrom1=c(Addrow_data_dna$chrom1), start1=c(Addrow_data_dna$start1), end1=c(Addrow_data_dna$end1), chrom2=c(Addrow_data_dna$chrom2), start2=c(Addrow_data_dna$start2), end2=c(Addrow_data_dna$end2), name=c(Addrow_data_dna$dna_name), type=c(Addrow_data_dna$type), split=c(Addrow_data_dna$dna_split), span=c(Addrow_data_dna$dna_span), gene1=c(Addrow_data_dna$gene1), gene2=c(Addrow_data_dna$gene2), comment=c(Addrow_data_dna$dna_comment));
+				inputFile$dnadata = rbind(dnaadd, onerow);
+				removeModal();
+            }
 		})
 
 		#// partner gene wordcloud of DNA SVs
@@ -2348,6 +2488,7 @@ options(ucscChromosomeNames=FALSE)
 #---------------------
 		observe({
 			if ( is.null(input$genome) || input$genome == "" ) {
+				output$FuSViz <- NULL;	req(NULL);
 			} else {
 				if ( input$genome == "hg19" || input$genome == "hg38" || input$genome == "GRCm39" ) {
 					output$FuSViz <- FuSViz::renderFuSViz(
