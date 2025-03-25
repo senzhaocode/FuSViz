@@ -119,7 +119,17 @@
 						}
 					} else if ( type_A == "CDS" ) {
 						if ( type_B == "utr5" ) {
-							tag = 1; # "Unknown";
+							utr_A = (domain_breakpoint_A - cds_start_A + insert_length + 1) %% 3;
+							utr_B = (cds_start_B - domain_breakpoint_B + 1) %% 3;
+							if ( utr_A == 0 && utr_B == 1 ) {
+								tag = 2; # "Inframe";
+							} else if ( utr_A == 1 && utr_B == 2 ) {
+								tag = 2; # "Inframe";
+							} else if ( utr_A == 2 && utr_B == 0 ) {
+								tag = 2; # "Inframe";
+							} else {
+								tag = 1; # "Unknown"; # inserted 5-utr from partner B gives rise to out-frame
+							}
 						} else if ( type_B == "CDS" ) {
 							if ( upstream_type == 3 || downstream_type == 3 ) {
 								tag = 1; # "Unknown"; - breakpoint at intronic region
@@ -197,23 +207,49 @@
 #'        \code{'first_domain\$Domain_name'}: domain name abbreviation).
 #' @param first_motif A data.frame for collecting motif annotation (e.g. \code{'first_motif\$Start'}: motif start; \code{'first_motif\$End'}: motif end; 
 #'        \code{'first_motif\$Domain_name'}: motif name abbreviation).
+#' @param exon_index A pooler value - show exon index in the plot (default: TRUE).
 #' @param offset A numeric value - extend the partner gene interval (default: 0, e.g. [start-offset, end+offset]).
 #'
 #' @return A data.frame (i.e. \code{'A1_xy'}) that contains exon coordinates in the plot layout.
 #'
 #' @export
-plot_separate_domain_geneA <- function(first, first_name, first_domain, first_motif, offset=0) {
+plot_separate_domain_geneA <- function(first, first_name, first_domain, first_motif, exon_index=TRUE, offset=0) {
 	# For testing: first=geneA; first_name=symbol_A; first_domain=domain_geneA; first_motif=motif_geneA
 	chrom_f = first[[1]]$transcript$Chrom[1] #// chromosome name of first: Ensembl
 		
 	#// Set plotting tracks for geneA after reducing intron
 	tmp_transcript = first[[1]]$select_region$transcript;
 	first[[1]]$select_region$transcript = paste(first_name, " (", first[[1]]$select_region$transcript, ")", sep="")
-	grTrack_f = Gviz::GeneRegionTrack(first[[1]]$select_region, chromosome=chrom_f, showId=T, stacking="squish", geneSymbols=F, transcriptAnnotation="transcript", 
-		just.group="above", fontsize.group = 11, fontsize=7, fontcolor="black", fontcolor.group="black", showTitle=F, col="black", col.line="black", fill="green", col.symbol="black", 
-		lwd=0.1, lwd.border=1, lex=1, cex=0.6, cex.axis=0.6, background.title="transparent", background.panel="transparent", stackHeight=0.8, min.width=0.1, min.height=3, min.distance=0);	
+	grTrack_f = Gviz::GeneRegionTrack(first[[1]]$select_region, chromosome=chrom_f, showId=T, stacking="squish", geneSymbols=F, transcriptAnnotation="transcript", just.group="above", 
+		fontsize.group = 11, fontsize=7, fontcolor="black", fontcolor.group="black", showTitle=F, col="black", col.line="black", fill="green", col.symbol="black", lwd=0.1, lwd.border=1, 
+		lex=1, cex=0.6, cex.axis=0.6, background.title="transparent", background.panel="transparent", stackHeight=0.8, min.width=0.1, min.height=3, min.distance=0);	
 	first_vis_s = as.numeric(first[[1]]$transcript$TXSTART) #// start position of geneA for visualization
-	first_vis_e = as.numeric(first[[1]]$transcript$TXEND) #// end position of geneA for visualization	
+	first_vis_e = as.numeric(first[[1]]$transcript$TXEND) #// end position of geneA for visualization
+	# if exon_index is set as TRUE, it is shown in the plot
+	if ( exon_index == TRUE ) { 
+		number = length(first[[1]]$select_region$exon)
+		index=c()
+		if ( number == 1 ) {
+			index = c("1")
+		} else {
+			y = number-1
+			iteration = 1
+			for (z in 1:y) {
+				if ( first[[1]]$select_region$exon[z] == first[[1]]$select_region$exon[z+1] ) {
+					index[z]=""
+					index[z+1]=as.character(iteration)
+				} else {
+					index[z]=as.character(iteration)
+					index[z+1]=as.character(iteration+1)
+					iteration=iteration+1
+				}
+			}
+		}
+		grTrack_f@range@elementMetadata@listData$symbol=index
+		grTrack_f@dp@pars$fontcolor.item="black"
+		grTrack_f@dp@pars$exonAnnotation="symbol"
+		grTrack_f@dp@pars$fontsize=10
+	}	
 	#// Set plotting tracks of domain and motif for geneA
 	domain_f = NULL; motif_f = NULL;
 	if (! is.na(first_domain[1,1]) ) {
@@ -266,12 +302,13 @@ plot_separate_domain_geneA <- function(first, first_name, first_domain, first_mo
 #'        \code{'second_domain\$Domain_name'}: domain name abbreviation).
 #' @param second_motif A data.frame for collecting motif annotation (e.g. \code{'second_motif\$Start'}: motif start; \code{'secondt_motif\$End'}: motif end;
 #'        \code{'second_motif\$Domain_name'}: motif name abbreviation).
+#' @param exon_index A pooler value - show exon index in the plot (default: TRUE).
 #' @param offset A numeric value - extend the partner gene interval (default: 0, e.g. [start-offset, end+offset]).
 #'
 #' @return A data.frame (i.e. \code{'B1_xy'}) that contains exon coordinates in the plot layout.
 #'
 #' @export
-plot_separate_domain_geneB <- function(second, second_name, second_domain, second_motif, offset=0) {
+plot_separate_domain_geneB <- function(second, second_name, second_domain, second_motif, exon_index=TRUE, offset=0) {
 	# For testing: second=geneB; second_name=symbol_B; second_domain=domain_geneB; second_motif=motif_geneB; cytoband=chrTrack
 	chrom_s = second[[1]]$transcript$Chrom[1] #// chromosome name of second: Ensembl
 
@@ -283,6 +320,31 @@ plot_separate_domain_geneB <- function(second, second_name, second_domain, secon
 		lex=1, cex=0.6, cex.axis=0.6, background.title="transparent", background.panel="transparent", stackHeight=0.8, min.width=0.1, min.height=3, min.distance=0);
 	second_vis_s = as.numeric(second[[1]]$transcript$TXSTART)	#// start position of geneB for visualization
 	second_vis_e = as.numeric(second[[1]]$transcript$TXEND) #// start position of geneB for visualization
+	# if exon_index is set as TRUE, it is shown in the plot
+	if ( exon_index == TRUE ) { 
+		number = length(second[[1]]$select_region$exon)
+		index=c()
+		if ( number == 1 ) {
+			index = c("1")
+		} else {
+			y = number-1
+			iteration = 1
+			for (z in 1:y) {
+				if ( second[[1]]$select_region$exon[z] == second[[1]]$select_region$exon[z+1] ) {
+					index[z]=""
+					index[z+1]=as.character(iteration)
+				} else {
+					index[z]=as.character(iteration)
+					index[z+1]=as.character(iteration+1)
+					iteration=iteration+1
+				}
+			}
+		}
+		grTrack_s@range@elementMetadata@listData$symbol=index
+		grTrack_s@dp@pars$fontcolor.item="black"
+		grTrack_s@dp@pars$exonAnnotation="symbol"
+		grTrack_s@dp@pars$fontsize=10
+	}
 	#// Set plotting tracks of domain and motif for geneB
 	domain_s = NULL; motif_s = NULL;
 	if (! is.na(second_domain[1,1]) ) {
@@ -425,10 +487,12 @@ plot_separate_domain_arrow <- function(A1_xy, B1_xy, first, second, breakpoint) 
 #' @param second_motif A data.frame for collecting motif annotation (e.g. \code{'second_motif\$Start'}: motif start; \code{'secondt_motif\$End'}: motif end;
 #'        \code{'second_motif\$Domain_name'}: motif name abbreviation).
 #' @param breakpoint A data.frame with two columns (e.g. \code{'breakpoint[i,1]'} - breakpoint pos of geneA transcript; \code{'breakpoint[i,2]'} - breakpoint pos of geneB transcript; \code{'breakpoint[i,3]'} - fusion strand of geneA; \code{'breakpoint[i,4]'} - fusion strand of geneB; \code{'breakpoint[i,5]'} - insertion sequence if available).
+#' @param exon_index_A A pooler value - show exon index of geneA in the plot (default: TRUE).
+#' @param exon_index_B A pooler value - show exon index of geneB in the plot (default: TRUE).
 #' @param offset A numeric value - extend the partner gene interval (default: 0, e.g. [start-offset, end+offset]).
 #'
 #' @export
-plot_separate_domain_download <- function(first, first_name, first_domain, first_motif, second, second_name, second_domain, second_motif, breakpoint, offset=0) {
+plot_separate_domain_download <- function(first, first_name, first_domain, first_motif, second, second_name, second_domain, second_motif, breakpoint, exon_index_A=TRUE, exon_index_B=TRUE, offset=0) {
 
 	chrom_f = first[[1]]$transcript$Chrom[1] #// chromosome name of first: Ensembl
 	#// Set plotting tracks for geneA after reducing intron
@@ -438,7 +502,32 @@ plot_separate_domain_download <- function(first, first_name, first_domain, first
 		fontsize.group = 11, fontsize=7, fontcolor="black", fontcolor.group="black", showTitle=F, col="black", col.line="black", fill="green", col.symbol="black", lwd=0.1, 
 		lwd.border=1, lex=1, cex=0.6, cex.axis=0.6, background.title="transparent", background.panel="transparent", stackHeight=0.8, min.width=0.1, min.height=3, min.distance=0);     
 	first_vis_s = as.numeric(first[[1]]$transcript$TXSTART) #// start position of geneA for visualization
-	first_vis_e = as.numeric(first[[1]]$transcript$TXEND) #// end position of geneA for visualization       
+	first_vis_e = as.numeric(first[[1]]$transcript$TXEND) #// end position of geneA for visualization
+	# if exon_index_A is set as TRUE, it is shown in the plot
+	if ( exon_index_A == TRUE ) { 
+		number_A = length(first[[1]]$select_region$exon)
+		index_A=c()
+		if ( number_A == 1 ) {
+			index_A = c("1")
+		} else {
+			y_A = number_A-1
+			iteration_A = 1
+			for (z_A in 1:y_A) {
+				if ( first[[1]]$select_region$exon[z_A] == first[[1]]$select_region$exon[z_A+1] ) {
+					index_A[z_A]=""
+					index_A[z_A+1]=as.character(iteration_A)
+				} else {
+					index_A[z_A]=as.character(iteration_A)
+					index_A[z_A+1]=as.character(iteration_A+1)
+					iteration_A=iteration_A+1
+				}
+			}
+		}
+		grTrack_f@range@elementMetadata@listData$symbol=index_A
+		grTrack_f@dp@pars$fontcolor.item="black"
+		grTrack_f@dp@pars$exonAnnotation="symbol"
+		grTrack_f@dp@pars$fontsize=10
+	}   
 	#// Set plotting tracks of domain and motif for geneA
 	domain_f = NULL; motif_f = NULL;
 	if (! is.na(first_domain[1,1]) ) {
@@ -463,6 +552,31 @@ plot_separate_domain_download <- function(first, first_name, first_domain, first
 		lwd.border=1, lex=1, cex=0.6, cex.axis=0.6, background.title="transparent", background.panel="transparent", stackHeight=0.8, min.width=0.1, min.height=3, min.distance=0);
 	second_vis_s = as.numeric(second[[1]]$transcript$TXSTART)       #// start position of geneB for visualization
 	second_vis_e = as.numeric(second[[1]]$transcript$TXEND) #// start position of geneB for visualization
+	# if exon_index_B is set as TRUE, it is shown in the plot
+	if ( exon_index_B == TRUE ) { 
+		number_B = length(second[[1]]$select_region$exon)
+		index_B=c()
+		if ( number_B == 1 ) {
+			index_B = c("1")
+		} else {
+			y_B = number_B-1
+			iteration_B = 1
+			for (z_B in 1:y_B) {
+				if ( second[[1]]$select_region$exon[z_B] == second[[1]]$select_region$exon[z_B+1] ) {
+					index_B[z_B]=""
+					index_B[z_B+1]=as.character(iteration_B)
+				} else {
+					index_B[z_B]=as.character(iteration_B)
+					index_B[z_B+1]=as.character(iteration_B+1)
+					iteration_B=iteration_B+1
+				}
+			}
+		}
+		grTrack_s@range@elementMetadata@listData$symbol=index_B
+		grTrack_s@dp@pars$fontcolor.item="black"
+		grTrack_s@dp@pars$exonAnnotation="symbol"
+		grTrack_s@dp@pars$fontsize=10
+	}
 	#// Set plotting tracks of domain and motif for geneB
 	domain_s = NULL; motif_s = NULL;
 	if (! is.na(second_domain[1,1]) ) {
