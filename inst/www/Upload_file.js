@@ -13,7 +13,7 @@ function myFunction(element) {
 function load() {
 	var fileobj = document.getElementById("uploadfile");
 	var elements = fileobj.files;
-
+	
 	var filename = "<ul>";
 	for (let one of elements) {
 		filename += "<li>" + one.name + "</li>";
@@ -211,7 +211,6 @@ function load() {
 	// Load tracks to igv widget
 	if ( options !== undefined ) {
 		const div = document.getElementById("FuSViz");
-		igv.removeAllBrowsers()
 		igv.createBrowser(div, options).
 			then(function (browser) {
 				igv.browser = browser;
@@ -245,4 +244,5 @@ function load() {
 			igvFuSViz.loadTrackList(uploadtrack);
 		}
 	}
+	document.getElementById("uploadfile").value='';
 }
