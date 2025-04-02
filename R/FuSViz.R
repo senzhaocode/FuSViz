@@ -21,13 +21,13 @@ configure <- NULL
 FuSViz <- function(genomeName, trackHeight=300, displayMode="EXPANDED", initialLocus=NULL, width=NULL, height=NULL, elementId=NULL) {
 	# parameters "genomeName, trackHeight, displayMode and initialLocus" are related to setting in igv.js
 	print("Loading parameters from FuSViz class.");
-	stopifnot(genomeName == 'hg38' || genomeName == 'hg19' || genomeName == 'GRCm39');
-
+	if ( is.null(genomeName) ) { genomeName = ""; }
 	# create a list 
 	x <- list(genomeName=genomeName, displayMode=displayMode, trackHeight=trackHeight);
 
 	# binding to FuSViz.js using htmlwidgets::createWidget
 	htmlwidgets::createWidget(name = 'FuSViz', x, width = width, height = height, elementId = elementId, package = 'FuSViz');
+	
 }
 
 #' Shiny bindings for FuSViz
