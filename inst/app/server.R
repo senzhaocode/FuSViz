@@ -723,9 +723,6 @@ options(ucscChromosomeNames=FALSE)
 					dnabedpe = dnabedpe[which(dnabedpe$name %in% input$dna_sample_bedpe),];
 				}
 			}
-			#// adjust genomic coordinate of start1 and start2
-			if ( dnabedpe$start1 == dnabedpe$end1 ) { dnabedpe$start1 = dnabedpe$start1 - 1; }
-			if ( dnabedpe$start2 == dnabedpe$end2 ) { dnabedpe$start2 = dnabedpe$start2 - 1; }
 			#// Adding a new column 'label' by concatenating 'names' grouped by 'chrom1'-'start1'-'end1'-'chrom2'-'start2'-'end2'
 			dnabedpe = dnabedpe[, by=.(chrom1, start1, end1, chrom2, start2, end2), label := paste(name, collapse= ',')];
 			#// Create a new data.frame class after removing duplicate record 'chrom1'-'start1'-'end1'-'chrom2'-'start2'-'end2'-'label'-'type'
@@ -881,16 +878,8 @@ options(ucscChromosomeNames=FALSE)
 			} else {
 				#// set SVs tracks
 				chrom_A = circle_data_final_dna()$chrom1;	chrom_B = circle_data_final_dna()$chrom2;
-				if ( circle_data_final_dna()$start1 == circle_data_final_dna()$end1 ) {
-					pos_A_s = circle_data_final_dna()$start1 - 1;	pos_A_e = circle_data_final_dna()$end1;
-				} else {
-					pos_A_s = circle_data_final_dna()$start1;	pos_A_e = circle_data_final_dna()$end1;
-				}
-				if ( circle_data_final_dna()$start2 == circle_data_final_dna()$end2 ) {
-					pos_B_s = circle_data_final_dna()$start2 - 1;	pos_B_e = circle_data_final_dna()$end2;
-				} else {
-					pos_B_s = circle_data_final_dna()$start2;	pos_B_e = circle_data_final_dna()$end2;
-				}
+				pos_A_s = circle_data_final_dna()$start1;	pos_A_e = circle_data_final_dna()$end1;
+				pos_B_s = circle_data_final_dna()$start2;	pos_B_e = circle_data_final_dna()$end2;
 				gene1 = circle_data_final_dna()$gene1;		gene2 = circle_data_final_dna()$gene2;
 				labels = paste(chrom_A, ":", pos_A_s, "-", pos_A_e, ":", gene1, " | ", chrom_B, ":", pos_B_s, "-", pos_B_e, ":", gene2, 
 						   " (", circle_data_final_dna()$value, ")", " [",circle_data_final_dna()$label, "]", sep="");
@@ -2106,6 +2095,7 @@ options(ucscChromosomeNames=FALSE)
 		
 		# Add row data for RNA SVs
 		Addrow_data <- reactiveValues(chrom1="", pos1=0, gene1="", chrom2="", pos2=0, gene2="", rna_name="", rna_split=0, rna_span=0, rna_strand1="", rna_strand2="", untemplated_insert="", rna_comment="");
+
 		InsertRow <- function(chrom1, pos1, gene1, chrom2, pos2, gene2, rna_name, rna_split, rna_span, rna_strand1, rna_strand2, untemplated_insert, rna_comment, tag = 0)  {
 			modalDialog(
 				selectizeInput("add_rna_chrom1", label = div("chrom1 (*)", title = "Chromosome name of the upstream partner (must start with 'chr')", icon("info-circle", style="font-size: 11px")), 
@@ -2297,19 +2287,19 @@ options(ucscChromosomeNames=FALSE)
 		})
 
 		# Add row data for DNA SVs
-		Addrow_data_dna <- reactiveValues(chrom1="", start1=0, end1=0, chrom2="", start2=0, end2=0, dna_name="", type="", dna_split=0, dna_span=0, gene1="", gene2="", dna_comment="");
+        Addrow_data_dna <- reactiveValues(chrom1="", start1=0, end1=0, chrom2="", start2=0, end2=0, dna_name="", type="", dna_split=0, dna_span=0, gene1="", gene2="", dna_comment="");
 		InsertRow_dna <- function(chrom1, start1, end1, chrom2, start2, end2, dna_name, type, dna_split, dna_span, gene1, gene2, dna_comment, tag = 0)  {
 			modalDialog(
 				selectizeInput("add_dna_chrom1", label = div("chrom1 (*)", title = "Chromosome name on which the first end of SV exists (must start with 'chr')", icon("info-circle", style="font-size: 11px")), 
 					choices = c("", "chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY", "chrM"), multiple = F, selected=chrom1),
-				numericInput("add_dna_start1", label = div("start1 (*)", title = "Zero-based starting position of the first end of SV on chrom1", icon("info-circle", style="font-size: 11px")), value=start1, min=0, max=500000000), 
-				numericInput("add_dna_end1", label = div("end1 (*)", title = "One-based ending position of the first end of SV on chrom1", icon("info-circle", style="font-size: 11px")), value=end1, min=0, max=500000000),
-				selectizeInput("add_dna_chrom2", label = div("chrom2 (*)", title = "Chromosome name on which the second end of SV exists (must start with 'chr')", icon("info-circle", style="font-size: 11px")), 
-					choices = c("", "chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY", "chrM"), multiple = F, selected=chrom2),
-				numericInput("add_dna_start2", label = div("start2 (*)", title = "Zero-based starting position of the second end of SV on chrom2", icon("info-circle", style="font-size: 11px")), value=start2, min=0, max=500000000),
-				numericInput("add_dna_end2", label = div("end2 (*)", title = "One-based ending position of the second end of SV on chrom2", icon("info-circle", style="font-size: 11px")), value=end2, min=0, max=500000000),
-				textInput("add_dna_name", label = div("name (*)", title = "Sample/Patient/Case ID", icon("info-circle", style="font-size: 11px")), value=dna_name),
-				selectizeInput("add_dna_type", label = div("type (*)", title = "The type of SV (e.g. BND - translocation, DEL- deletion, DUP - duplication, INS - insertion, INV - inversion)", icon("info-circle", style="font-size: 11px")), 
+                numericInput("add_dna_start1", label = div("start1 (*)", title = "Zero-based starting position of the first end of SV on chrom1", icon("info-circle", style="font-size: 11px")), value=start1, min=0, max=500000000), 
+                numericInput("add_dna_end1", label = div("end1 (*)", title = "One-based ending position of the first end of SV on chrom1", icon("info-circle", style="font-size: 11px")), value=end1, min=0, max=500000000),
+                selectizeInput("add_dna_chrom2", label = div("chrom2 (*)", title = "Chromosome name on which the second end of SV exists (must start with 'chr')", icon("info-circle", style="font-size: 11px")), 
+                    choices = c("", "chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY", "chrM"), multiple = F, selected=chrom2),
+                numericInput("add_dna_start2", label = div("start2 (*)", title = "Zero-based starting position of the second end of SV on chrom2", icon("info-circle", style="font-size: 11px")), value=start2, min=0, max=500000000),
+                numericInput("add_dna_end2", label = div("end2 (*)", title = "One-based ending position of the second end of SV on chrom2", icon("info-circle", style="font-size: 11px")), value=end2, min=0, max=500000000),
+                textInput("add_dna_name", label = div("name (*)", title = "Sample/Patient/Case ID", icon("info-circle", style="font-size: 11px")), value=dna_name),
+                selectizeInput("add_dna_type", label = div("type (*)", title = "The type of SV (e.g. BND - translocation, DEL- deletion, DUP - duplication, INS - insertion, INV - inversion)", icon("info-circle", style="font-size: 11px")), 
 					choices = c("", "BND", "DEL", "DUP", "INS", "INV"), multiple = F, selected=type),
 				numericInput("add_dna_split", label = div("split (*)", title = "The number of support reads across the breakpoint of SV", icon("info-circle", style="font-size: 11px")), value=dna_split, min=0, max=100000),
 				numericInput("add_dna_span", label = div("span (*)", title = "The number of discordant read pairs supporting the SV", icon("info-circle", style="font-size: 11px")), value=dna_span, min=0, max=100000),
@@ -2318,29 +2308,29 @@ options(ucscChromosomeNames=FALSE)
 				textInput("add_dna_comment", label = div("comment", title = 'Additional comment on SV entry (default: "")', icon("info-circle", style="font-size: 11px")), value=dna_comment),
 				span('(*) indicates required field!', style = "font-size: 12px; color: black;"),
 				if ( tag == 1 )
-					div(tags$b('Invalid value of "chrom1", please check input format!', style = "color: red;")),
-				if ( tag == 2 )
-					div(tags$b('Invalid value of "start1" or "end1" ("start1" must be smaller than "end1"), please check input format!', style = "color: red;")),
-				if ( tag == 3 )
-					div(tags$b('Invalid value of "chrom2", please check input format!', style = "color: red;")),
-				if ( tag == 4 )
-					div(tags$b('Invalid value of "start2" or "end2" ("start2" must be smaller than "end2"), please check input format!', style = "color: red;")),
-				if ( tag == 5 )
-					div(tags$b('Invalid value of "name", please check input format!', style = "color: red;")),
+                    div(tags$b('Invalid value of "chrom1", please check input format!', style = "color: red;")),
+                if ( tag == 2 )
+                    div(tags$b('Invalid value of "start1" or "end1" ("start1" must be smaller than "end1"), please check input format!', style = "color: red;")),
+                if ( tag == 3 )
+                    div(tags$b('Invalid value of "chrom2", please check input format!', style = "color: red;")),
+                if ( tag == 4 )
+                    div(tags$b('Invalid value of "start2" or "end2" ("start2" must be smaller than "end2"), please check input format!', style = "color: red;")),
+                if ( tag == 5 )
+                    div(tags$b('Invalid value of "name", please check input format!', style = "color: red;")),
 				if ( tag == 6 )
-					div(tags$b('Invalid value of "type", please check input format!', style = "color: red;")),
+                    div(tags$b('Invalid value of "type", please check input format!', style = "color: red;")),
 				if ( tag == 7 )
-					div(tags$b('Invalid value of "split" (must be > 0), please check input format!', style = "color: red;")),
-				if ( tag == 8 )
-					div(tags$b('Invalid value of "gene1", please input valid gene symbol / ensembl id or use "*" to denote intergenic region!', style = "color: red;")),
-				if ( tag == 9 )
-					div(tags$b('Invalid value of "gene2", please input valid gene symbol / ensembl id or use "*" to denote intergenic region!', style = "color: red;")),
-				footer = tagList(
-					modalButton("Cancel"),
-					actionButton("dadd_dna_submit", "OK")
-				)
-			)
-		}
+                    div(tags$b('Invalid value of "split" (must be > 0), please check input format!', style = "color: red;")),
+                if ( tag == 8 )
+                    div(tags$b('Invalid value of "gene1", please input valid gene symbol / ensembl id or use "*" to denote intergenic region!', style = "color: red;")),
+                if ( tag == 9 )
+                    div(tags$b('Invalid value of "gene2", please input valid gene symbol / ensembl id or use "*" to denote intergenic region!', style = "color: red;")),
+                footer = tagList(
+                    modalButton("Cancel"),
+                    actionButton("dadd_dna_submit", "OK")
+                )
+            )
+        }
 
 		observeEvent(input$dnaInsertRow,{
 			showModal(InsertRow_dna("", 0, 0, "", 0, 0, "", "", 0, 0, "", "", "", tag = 0));
@@ -2373,12 +2363,12 @@ options(ucscChromosomeNames=FALSE)
 				showModal(InsertRow_dna(Addrow_data_dna$chrom1, Addrow_data_dna$start1, Addrow_data_dna$end1, Addrow_data_dna$chrom2, Addrow_data_dna$start2, Addrow_data_dna$end2, Addrow_data_dna$dna_name, Addrow_data_dna$type, Addrow_data_dna$dna_split, Addrow_data_dna$dna_span, Addrow_data_dna$gene1, Addrow_data_dna$gene2, Addrow_data_dna$dna_comment, tag = 8));
 			} else if ( input$add_dna_gene2=="" || FALSE %in% grepl("^[A-Z][\\.A-Za-z0-9_-]+$|^\\*$", input$add_dna_gene2) ) {
 				showModal(InsertRow_dna(Addrow_data_dna$chrom1, Addrow_data_dna$start1, Addrow_data_dna$end1, Addrow_data_dna$chrom2, Addrow_data_dna$start2, Addrow_data_dna$end2, Addrow_data_dna$dna_name, Addrow_data_dna$type, Addrow_data_dna$dna_split, Addrow_data_dna$dna_span, Addrow_data_dna$gene1, Addrow_data_dna$gene2, Addrow_data_dna$dna_comment, tag = 9));
-			} else {
+            } else {
 				dnaadd = inputFile$dnadata;
 				onerow = data.frame(chrom1=c(Addrow_data_dna$chrom1), start1=c(Addrow_data_dna$start1), end1=c(Addrow_data_dna$end1), chrom2=c(Addrow_data_dna$chrom2), start2=c(Addrow_data_dna$start2), end2=c(Addrow_data_dna$end2), name=c(Addrow_data_dna$dna_name), type=c(Addrow_data_dna$type), split=c(Addrow_data_dna$dna_split), span=c(Addrow_data_dna$dna_span), gene1=c(Addrow_data_dna$gene1), gene2=c(Addrow_data_dna$gene2), comment=c(Addrow_data_dna$dna_comment));
 				inputFile$dnadata = rbind(dnaadd, onerow);
 				removeModal();
-			}
+            }
 		})
 
 		#// partner gene wordcloud of DNA SVs
@@ -2485,16 +2475,10 @@ options(ucscChromosomeNames=FALSE)
 #---------------------
 # Vis in Linear plot
 #---------------------
-		observe({
-			if ( is.null(input$genome) || input$genome == "" ) {
-				output$FuSViz <- NULL;	req(NULL);
-			} else {
-				if ( input$genome == "hg19" || input$genome == "hg38" || input$genome == "GRCm39" ) {
-					output$FuSViz <- FuSViz::renderFuSViz(
-						FuSViz::FuSViz(genomeName=input$genome, displayMode="EXPANDED", trackHeight=200)
-					)
-				}
-			}
+		observeEvent(input$genome, {
+			output$FuSViz <- FuSViz::renderFuSViz(
+				FuSViz::FuSViz(genomeName=input$genome, displayMode="EXPANDED", trackHeight=200)
+			)
 		})
 		#// load gene annotation file in offline mode
 		observeEvent(input$offlineTrackButton, {
