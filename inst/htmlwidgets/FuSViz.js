@@ -20,8 +20,9 @@ HTMLWidgets.widget({
 				console.log("el.id:" + el.id + '!'); // contents of el object
 				var options = selectIGVoptions(x.genomeName, x.initialLocus, x.displayMode, x.trackHeight);
 				
-				igv.removeAllBrowsers()
-				igv.createBrowser(div, options).
+				igv.removeAllBrowsers();
+				if ( x.genomeName == 'hg38' || x.genomeName == 'hg19' || x.genomeName == 'GRCm39') {
+					igv.createBrowser(div, options).
 					then(function (browser) {
 						igv.browser = browser;
 						// assign igv browser to html container id
@@ -37,10 +38,10 @@ HTMLWidgets.widget({
 								if (element.name) {
 									var value = element.name.toLowerCase() === 'name' ? '<a href="https://www.genecards.org/Search/Keyword?queryString=' + element.value + '" target="_blank">' + element.value + '</a>' : element.value;
 									markup += "<tr><td class=\"igv-popover-td\">"
-											+ "<div class=\"igv-popover-name-value\">"
-											+ "<span class=\"igv-popover-name\">" + element.name + ": " + "</span>"
-											+ "<span class=\"igv-popover-value\">" + value + "</span>"
-											+ "</div>" + "</td></tr>";
+										+ "<div class=\"igv-popover-name-value\">"
+										+ "<span class=\"igv-popover-name\">" + element.name + ": " + "</span>"
+										+ "<span class=\"igv-popover-value\">" + value + "</span>"
+										+ "</div>" + "</td></tr>";
 								} else {
 									markup += "<tr><td>" + element.toString() + "</td></tr>";
 								}
@@ -50,7 +51,8 @@ HTMLWidgets.widget({
 							return markup;
 						})
 						console.log("Create IGV browser embedded in Shiny app!");
-				})
+					})
+				}
 			},
 
 			resize: function(width, height) {
