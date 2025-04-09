@@ -384,10 +384,12 @@ options(ucscChromosomeNames=FALSE)
 			if ( any(is.na(mutdata$Tumor_Seq_Allele2)) == T || any(mutdata$Tumor_Seq_Allele2 == "") == T ) { showModal(modalDialog(title = "Error message", "'Tumor_Seq_Allele2' column has an incorrect header or empty/NA value for mutation profile!")); req(NULL); }
 			if ( any(is.na(mutdata$Variant_Classification)) == T || any(mutdata$Variant_Classification == "") == T ) { showModal(modalDialog(title = "Error message", "'Variant_Classification' column has an incorrect header or empty/NA value for mutation profile!")); req(NULL); }
 			if ( any(is.na(mutdata$Tumor_Sample_Barcode)) == T || any(mutdata$Tumor_Sample_Barcode == "") == T ) { showModal(modalDialog(title = "Error message", "'Tumor_Sample_Barcode' column has an incorrect header or empty/NA value for mutation profile!")); req(NULL); }
-
+			
+			#// check if 'Chromosome' column has 'chr' prefix
+			if ( FALSE %in% grepl("^chr", mutdata$Chromosome) ) { mutdata$Chromosome = paste("chr", mutdata$Chromosome, sep="");}
 			if ( is.null(input$file_rna_data) ) { # dna_sv file not load
 				if ( is.null(input$file_dna_data) ) { # rna_sv file not load
-					shiny::showModal(modalDialog(title = "Warning message", "Before load mutation data, please load SV data firstly!!!"));	req(NULL);
+					shiny::showModal(modalDialog(title = "Warning message", "Before load mutation data, please load SV data firstly!!!"));
 				} else { # dna_sv file load 
 					mutdata = mutdata[Tumor_Sample_Barcode %in% unique(as.character(inputFile$dnadata$name))];
 				}
