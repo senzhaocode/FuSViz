@@ -2097,7 +2097,6 @@ options(ucscChromosomeNames=FALSE)
 		
 		# Add row data for RNA SVs
 		Addrow_data <- reactiveValues(chrom1="", pos1=0, gene1="", chrom2="", pos2=0, gene2="", rna_name="", rna_split=0, rna_span=0, rna_strand1="", rna_strand2="", untemplated_insert="", rna_comment="");
-
 		InsertRow <- function(chrom1, pos1, gene1, chrom2, pos2, gene2, rna_name, rna_split, rna_span, rna_strand1, rna_strand2, untemplated_insert, rna_comment, tag = 0)  {
 			modalDialog(
 				selectizeInput("add_rna_chrom1", label = div("chrom1 (*)", title = "Chromosome name of the upstream partner (must start with 'chr')", icon("info-circle", style="font-size: 11px")), 
@@ -2289,7 +2288,7 @@ options(ucscChromosomeNames=FALSE)
 		})
 
 		# Add row data for DNA SVs
-        Addrow_data_dna <- reactiveValues(chrom1="", start1=0, end1=0, chrom2="", start2=0, end2=0, dna_name="", type="", dna_split=0, dna_span=0, gene1="", gene2="", dna_comment="");
+		Addrow_data_dna <- reactiveValues(chrom1="", start1=0, end1=0, chrom2="", start2=0, end2=0, dna_name="", type="", dna_split=0, dna_span=0, gene1="", gene2="", dna_comment="");
 		InsertRow_dna <- function(chrom1, start1, end1, chrom2, start2, end2, dna_name, type, dna_split, dna_span, gene1, gene2, dna_comment, tag = 0)  {
 			modalDialog(
 				selectizeInput("add_dna_chrom1", label = div("chrom1 (*)", title = "Chromosome name on which the first end of SV exists (must start with 'chr')", icon("info-circle", style="font-size: 11px")), 
@@ -2309,7 +2308,7 @@ options(ucscChromosomeNames=FALSE)
 				textInput("add_dna_gene2", label = div("gene2 (*)", title = "Gene symbol / ensembl id is required if the second end of SV within genic region, otherwise * is used to denote intergenic region", icon("info-circle", style="font-size: 11px")), value=gene2, placeholder = "e.g. TP53, Trp53 or *"),
 				textInput("add_dna_comment", label = div("comment", title = 'Additional comment on SV entry (default: "")', icon("info-circle", style="font-size: 11px")), value=dna_comment),
 				span('(*) indicates required field!', style = "font-size: 12px; color: black;"),
-				if ( tag == 1 )
+		if ( tag == 1 )
                     div(tags$b('Invalid value of "chrom1", please check input format!', style = "color: red;")),
                 if ( tag == 2 )
                     div(tags$b('Invalid value of "start1" or "end1" ("start1" must be smaller than "end1"), please check input format!', style = "color: red;")),
@@ -2319,9 +2318,9 @@ options(ucscChromosomeNames=FALSE)
                     div(tags$b('Invalid value of "start2" or "end2" ("start2" must be smaller than "end2"), please check input format!', style = "color: red;")),
                 if ( tag == 5 )
                     div(tags$b('Invalid value of "name", please check input format!', style = "color: red;")),
-				if ( tag == 6 )
+		if ( tag == 6 )
                     div(tags$b('Invalid value of "type", please check input format!', style = "color: red;")),
-				if ( tag == 7 )
+		if ( tag == 7 )
                     div(tags$b('Invalid value of "split" (must be > 0), please check input format!', style = "color: red;")),
                 if ( tag == 8 )
                     div(tags$b('Invalid value of "gene1", please input valid gene symbol / ensembl id or use "*" to denote intergenic region!', style = "color: red;")),
@@ -2365,12 +2364,12 @@ options(ucscChromosomeNames=FALSE)
 				showModal(InsertRow_dna(Addrow_data_dna$chrom1, Addrow_data_dna$start1, Addrow_data_dna$end1, Addrow_data_dna$chrom2, Addrow_data_dna$start2, Addrow_data_dna$end2, Addrow_data_dna$dna_name, Addrow_data_dna$type, Addrow_data_dna$dna_split, Addrow_data_dna$dna_span, Addrow_data_dna$gene1, Addrow_data_dna$gene2, Addrow_data_dna$dna_comment, tag = 8));
 			} else if ( input$add_dna_gene2=="" || FALSE %in% grepl("^[A-Z][\\.A-Za-z0-9_-]+$|^\\*$", input$add_dna_gene2) ) {
 				showModal(InsertRow_dna(Addrow_data_dna$chrom1, Addrow_data_dna$start1, Addrow_data_dna$end1, Addrow_data_dna$chrom2, Addrow_data_dna$start2, Addrow_data_dna$end2, Addrow_data_dna$dna_name, Addrow_data_dna$type, Addrow_data_dna$dna_split, Addrow_data_dna$dna_span, Addrow_data_dna$gene1, Addrow_data_dna$gene2, Addrow_data_dna$dna_comment, tag = 9));
-            } else {
+			} else {
 				dnaadd = inputFile$dnadata;
 				onerow = data.frame(chrom1=c(Addrow_data_dna$chrom1), start1=c(Addrow_data_dna$start1), end1=c(Addrow_data_dna$end1), chrom2=c(Addrow_data_dna$chrom2), start2=c(Addrow_data_dna$start2), end2=c(Addrow_data_dna$end2), name=c(Addrow_data_dna$dna_name), type=c(Addrow_data_dna$type), split=c(Addrow_data_dna$dna_split), span=c(Addrow_data_dna$dna_span), gene1=c(Addrow_data_dna$gene1), gene2=c(Addrow_data_dna$gene2), comment=c(Addrow_data_dna$dna_comment));
 				inputFile$dnadata = rbind(dnaadd, onerow);
 				removeModal();
-            }
+			}
 		})
 
 		#// partner gene wordcloud of DNA SVs
