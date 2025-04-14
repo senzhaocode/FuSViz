@@ -2140,9 +2140,9 @@ options(ucscChromosomeNames=FALSE)
 				if ( tag == 12 )
 					div(tags$b('Invalid characters (execpt A, T, C, G and N) are present in "untemplated_insert", please check input format!', style = "color: red;")),
 				footer = tagList(
-          			modalButton("Cancel"),
-          			actionButton("radd_rna_submit", "OK")
-        		)
+          				modalButton("Cancel"),
+          				actionButton("radd_rna_submit", "OK")
+        			)
 			)
 		}
 
@@ -2293,14 +2293,14 @@ options(ucscChromosomeNames=FALSE)
 			modalDialog(
 				selectizeInput("add_dna_chrom1", label = div("chrom1 (*)", title = "Chromosome name on which the first end of SV exists (must start with 'chr')", icon("info-circle", style="font-size: 11px")), 
 					choices = c("", "chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY", "chrM"), multiple = F, selected=chrom1),
-                numericInput("add_dna_start1", label = div("start1 (*)", title = "Zero-based starting position of the first end of SV on chrom1", icon("info-circle", style="font-size: 11px")), value=start1, min=0, max=500000000), 
-                numericInput("add_dna_end1", label = div("end1 (*)", title = "One-based ending position of the first end of SV on chrom1", icon("info-circle", style="font-size: 11px")), value=end1, min=0, max=500000000),
-                selectizeInput("add_dna_chrom2", label = div("chrom2 (*)", title = "Chromosome name on which the second end of SV exists (must start with 'chr')", icon("info-circle", style="font-size: 11px")), 
-                    choices = c("", "chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY", "chrM"), multiple = F, selected=chrom2),
-                numericInput("add_dna_start2", label = div("start2 (*)", title = "Zero-based starting position of the second end of SV on chrom2", icon("info-circle", style="font-size: 11px")), value=start2, min=0, max=500000000),
-                numericInput("add_dna_end2", label = div("end2 (*)", title = "One-based ending position of the second end of SV on chrom2", icon("info-circle", style="font-size: 11px")), value=end2, min=0, max=500000000),
-                textInput("add_dna_name", label = div("name (*)", title = "Sample/Patient/Case ID", icon("info-circle", style="font-size: 11px")), value=dna_name),
-                selectizeInput("add_dna_type", label = div("type (*)", title = "The type of SV (e.g. BND - translocation, DEL- deletion, DUP - duplication, INS - insertion, INV - inversion)", icon("info-circle", style="font-size: 11px")), 
+				numericInput("add_dna_start1", label = div("start1 (*)", title = "Zero-based starting position of the first end of SV on chrom1", icon("info-circle", style="font-size: 11px")), value=start1, min=0, max=500000000), 
+				numericInput("add_dna_end1", label = div("end1 (*)", title = "One-based ending position of the first end of SV on chrom1", icon("info-circle", style="font-size: 11px")), value=end1, min=0, max=500000000),
+				selectizeInput("add_dna_chrom2", label = div("chrom2 (*)", title = "Chromosome name on which the second end of SV exists (must start with 'chr')", icon("info-circle", style="font-size: 11px")), 
+					choices = c("", "chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY", "chrM"), multiple = F, selected=chrom2),
+				numericInput("add_dna_start2", label = div("start2 (*)", title = "Zero-based starting position of the second end of SV on chrom2", icon("info-circle", style="font-size: 11px")), value=start2, min=0, max=500000000),
+				numericInput("add_dna_end2", label = div("end2 (*)", title = "One-based ending position of the second end of SV on chrom2", icon("info-circle", style="font-size: 11px")), value=end2, min=0, max=500000000),
+				textInput("add_dna_name", label = div("name (*)", title = "Sample/Patient/Case ID", icon("info-circle", style="font-size: 11px")), value=dna_name),
+				selectizeInput("add_dna_type", label = div("type (*)", title = "The type of SV (e.g. BND - translocation, DEL- deletion, DUP - duplication, INS - insertion, INV - inversion)", icon("info-circle", style="font-size: 11px")), 
 					choices = c("", "BND", "DEL", "DUP", "INS", "INV"), multiple = F, selected=type),
 				numericInput("add_dna_split", label = div("split (*)", title = "The number of support reads across the breakpoint of SV", icon("info-circle", style="font-size: 11px")), value=dna_split, min=0, max=100000),
 				numericInput("add_dna_span", label = div("span (*)", title = "The number of discordant read pairs supporting the SV", icon("info-circle", style="font-size: 11px")), value=dna_span, min=0, max=100000),
@@ -2308,30 +2308,30 @@ options(ucscChromosomeNames=FALSE)
 				textInput("add_dna_gene2", label = div("gene2 (*)", title = "Gene symbol / ensembl id is required if the second end of SV within genic region, otherwise * is used to denote intergenic region", icon("info-circle", style="font-size: 11px")), value=gene2, placeholder = "e.g. TP53, Trp53 or *"),
 				textInput("add_dna_comment", label = div("comment", title = 'Additional comment on SV entry (default: "")', icon("info-circle", style="font-size: 11px")), value=dna_comment),
 				span('(*) indicates required field!', style = "font-size: 12px; color: black;"),
-		if ( tag == 1 )
-                    div(tags$b('Invalid value of "chrom1", please check input format!', style = "color: red;")),
-                if ( tag == 2 )
-                    div(tags$b('Invalid value of "start1" or "end1" ("start1" must be smaller than "end1"), please check input format!', style = "color: red;")),
-                if ( tag == 3 )
-                    div(tags$b('Invalid value of "chrom2", please check input format!', style = "color: red;")),
-                if ( tag == 4 )
-                    div(tags$b('Invalid value of "start2" or "end2" ("start2" must be smaller than "end2"), please check input format!', style = "color: red;")),
-                if ( tag == 5 )
-                    div(tags$b('Invalid value of "name", please check input format!', style = "color: red;")),
-		if ( tag == 6 )
-                    div(tags$b('Invalid value of "type", please check input format!', style = "color: red;")),
-		if ( tag == 7 )
-                    div(tags$b('Invalid value of "split" (must be > 0), please check input format!', style = "color: red;")),
-                if ( tag == 8 )
-                    div(tags$b('Invalid value of "gene1", please input valid gene symbol / ensembl id or use "*" to denote intergenic region!', style = "color: red;")),
-                if ( tag == 9 )
-                    div(tags$b('Invalid value of "gene2", please input valid gene symbol / ensembl id or use "*" to denote intergenic region!', style = "color: red;")),
-                footer = tagList(
-                    modalButton("Cancel"),
-                    actionButton("dadd_dna_submit", "OK")
-                )
-            )
-        }
+				if ( tag == 1 )
+                    			div(tags$b('Invalid value of "chrom1", please check input format!', style = "color: red;")),
+				if ( tag == 2 )
+                    			div(tags$b('Invalid value of "start1" or "end1" ("start1" must be smaller than "end1"), please check input format!', style = "color: red;")),
+				if ( tag == 3 )
+					div(tags$b('Invalid value of "chrom2", please check input format!', style = "color: red;")),
+				if ( tag == 4 )
+					div(tags$b('Invalid value of "start2" or "end2" ("start2" must be smaller than "end2"), please check input format!', style = "color: red;")),
+				if ( tag == 5 )
+					div(tags$b('Invalid value of "name", please check input format!', style = "color: red;")),
+				if ( tag == 6 )
+					div(tags$b('Invalid value of "type", please check input format!', style = "color: red;")),
+				if ( tag == 7 )
+					div(tags$b('Invalid value of "split" (must be > 0), please check input format!', style = "color: red;")),
+				if ( tag == 8 )
+					div(tags$b('Invalid value of "gene1", please input valid gene symbol / ensembl id or use "*" to denote intergenic region!', style = "color: red;")),
+				if ( tag == 9 )
+					div(tags$b('Invalid value of "gene2", please input valid gene symbol / ensembl id or use "*" to denote intergenic region!', style = "color: red;")),
+				footer = tagList(
+					modalButton("Cancel"),
+					actionButton("dadd_dna_submit", "OK")
+				)
+			)
+		}
 
 		observeEvent(input$dnaInsertRow,{
 			showModal(InsertRow_dna("", 0, 0, "", 0, 0, "", "", 0, 0, "", "", "", tag = 0));
