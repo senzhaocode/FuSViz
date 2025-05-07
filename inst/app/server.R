@@ -1094,8 +1094,8 @@ options(ucscChromosomeNames=FALSE)
 		filter_origin = data.table(breakpoint_A=as.character(filter_origin$pos1), breakpoint_B=as.character(filter_origin$pos2), 
 					count=rep(1, length(filter_origin$pos1)), stringsAsFactors=FALSE)
 		filter_overview$value = as.data.frame(filter_origin[, by=.(breakpoint_A, breakpoint_B), .(value = sum(count))]);
-    })
-    overview_data <- select_group_server(id = "overview2", data = reactive(filter_overview$value), vars = reactive(c("breakpoint_A", "breakpoint_B")))
+	})
+	overview_data <- select_group_server(id = "overview2", data = reactive(filter_overview$value), vars = reactive(c("breakpoint_A", "breakpoint_B")))
 
 	#// when input[['overview1-gene1']] NOT null, assign 'object_over_A$value' using FUNCTION "get_annotation_db_extend"
 	observeEvent(input[['overview1-gene1']], {
@@ -1527,8 +1527,8 @@ options(ucscChromosomeNames=FALSE)
 	domain_plot_link <- reactiveValues(A1_xy=NULL, B1_xy=NULL)
 	domain_filter <- reactiveValues(value=NULL)
 
-    domain_1 <- select_group_server(id = "domain1", data = reactive(inputFile$rnadata), vars = reactive(c("gene1", "gene2")))
-    #// filter breakpoints (i.e. keep breakpoints inside of the selected transcript_id of geneA and geneB)
+	domain_1 <- select_group_server(id = "domain1", data = reactive(inputFile$rnadata), vars = reactive(c("gene1", "gene2")))
+	#// filter breakpoints (i.e. keep breakpoints inside of the selected transcript_id of geneA and geneB)
 	observe({
 		if ( is.null(inputFile$rnadata) ) {
 			output$domain_up <- renderPlot({ return(NULL); })
@@ -1587,7 +1587,7 @@ options(ucscChromosomeNames=FALSE)
 			}
 		}
 	})
-    domain_data <- select_group_server(id = "domain2", data = reactive(domain_filter$value), vars = reactive(c("pos1", "pos2")))
+	domain_data <- select_group_server(id = "domain2", data = reactive(domain_filter$value), vars = reactive(c("pos1", "pos2")))
 	# convert input$domainA and input$domainB to numeric type
 	Trans_domainA <- reactive({
 		if ( is.null(input$domainA) ) { return(0); } else { tmp_A=as.numeric(gsub('[A-Za-z@-]+[0]+', '', input$domainA)); 
@@ -1598,8 +1598,8 @@ options(ucscChromosomeNames=FALSE)
 			if ( is.na(tmp_B) ) { return(0); } else { return(tmp_B); }}
 	})
 
-    #// if gene symbol is selected in input[['domain1-gene1']], set'control_break_AB$A', 'control_break_AB$B' and 'domain_plotA$geneA' as NULL when only one symbol selected
-    observeEvent(input[['domain1-gene1']], {
+	#// if gene symbol is selected in input[['domain1-gene1']], set'control_break_AB$A', 'control_break_AB$B' and 'domain_plotA$geneA' as NULL when only one symbol selected
+	observeEvent(input[['domain1-gene1']], {
 		if ( is.null(database$txdb) || is.null(database$grTrack) || is.null(database$domain) || is.null(database$motif) ) { req(NULL); }
 		if ( length(unique(as.character(domain_1()$gene1))) == 1 ) { #// make sure only one symbol of geneA selected
 			choice_geneA = unique(as.character(domain_1()$gene1))
@@ -1849,7 +1849,7 @@ options(ucscChromosomeNames=FALSE)
 			} else {
 				pdf(file, width=input$domain_width, height=input$domain_height)
 			}
-            if ( !is.null(object_domain_A$value) && !is.null(object_domain_B$value) ) {
+			if ( !is.null(object_domain_A$value) && !is.null(object_domain_B$value) ) {
 				if ( length(domain_plotA$geneA) > 0 && length(domain_plotB$geneB) > 0 && length(rownames(domain_data())) > 0 ) {
 			    	FuSViz::plot_separate_domain_download(domain_plotA$geneA, domain_plotA$symbol_A, domain_plotA$domainA, domain_plotA$motifA,
 						domain_plotB$geneB, domain_plotB$symbol_B, domain_plotB$domainB, domain_plotB$motifB, domain_data(), exon_index_A=input$index_A, exon_index_B=input$index_B)
@@ -1857,8 +1857,8 @@ options(ucscChromosomeNames=FALSE)
 					plot.new()
 				}
 			} else {
-                plot.new()
-            }
+				plot.new()
+			}
 			dev.off()
 		}
 	)
