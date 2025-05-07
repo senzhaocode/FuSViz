@@ -12,7 +12,7 @@ split=499
 span=0
 
 # plot read coverage using reads with markduplicates
-sudo docker run --rm -v /data:/data senzhao/fusviz_shiny_app:1.7.0 \
+sudo docker run --rm -v /data:/data senzhao/fusviz_shiny_app:1.9.0 \
   R -e "library(FuSViz); \
 	options(uscsChromosomeName=FALSE); \
 	pdf(file=paste('/data/admsenzha/', '$geneA', '-', '$geneB', '_', $split, '_', $span, '-markduplicates.pdf', sep=''), height=7, width=14); \
@@ -20,7 +20,7 @@ sudo docker run --rm -v /data:/data senzhao/fusviz_shiny_app:1.7.0 \
 	dev.off();"
 
 # plot read coverage using reads with unmarkduplicates
-sudo docker run --rm -v /data:/data senzhao/fusviz_shiny_app:1.7.0 \
+sudo docker run --rm -v /data:/data senzhao/fusviz_shiny_app:1.9.0 \
   R -e "library(FuSViz); \
 	options(uscsChromosomeName=FALSE); \
 	pdf(file=paste('/data/admsenzha/', '$geneA', '-', '$geneB', '_', $split, '_', $span, '-unmarkduplicates.pdf', sep=''), height=7, width=14); \
