@@ -26,9 +26,9 @@
 	#----------------------
 	bodyIntro <- tabItem(tabName = "main", value="main_panel",
 		tags$head(tags$script(HTML('Shiny.addCustomMessageHandler("disablebutton", function(message) {
-          	console.log(message)
-          	eval(message.code);
-        });'))),
+          		console.log(message)
+          		eval(message.code);
+		});'))),
 		tags$head(tags$style(".box-header h3 {font-weight: bold; }")),
 		fluidRow(
 			box(
@@ -579,7 +579,7 @@
 									)
 								)
 							)
-               			)
+						)
 					),	
 					tabPanel("Sample_plot", 
 						sidebarLayout(
@@ -623,12 +623,12 @@
 					tabPanel("Domain_plot", 
 						sidebarLayout(
 							sidebarPanel(width = 3,
-								select_group_ui(
-			            			id = "domain1",
-			            			params = list(
-				            			list(inputId = "gene1", label = div("GeneA (*)", style = "display:inline-block; font-size:12px", title = "Choose the gene name of upstream partner [gene symbol or Ensembl entry is acceptable]", icon("info-circle", style="font-size: 10px")), multiple=TRUE, placeholder = 'select', choices = NULL),
-				            			list(inputId = "gene2", label = div("GeneB (*)", style = "display:inline-block; font-size:12px", title = "Choose the gene name of downstream partner [gene symbol or Ensembl entry is acceptable]", icon("info-circle", style="font-size: 10px")), multiple=TRUE, placeholder = 'select', choices = NULL)
-			            			), vs_args = list(search = TRUE, maxValues=1, autoSelectFirstOption = F)
+							select_group_ui(
+			            				id = "domain1",
+			            				params = list(
+				            				list(inputId = "gene1", label = div("GeneA (*)", style = "display:inline-block; font-size:12px", title = "Choose the gene name of upstream partner [gene symbol or Ensembl entry is acceptable]", icon("info-circle", style="font-size: 10px")), multiple=TRUE, placeholder = 'select', choices = NULL),
+				            				list(inputId = "gene2", label = div("GeneB (*)", style = "display:inline-block; font-size:12px", title = "Choose the gene name of downstream partner [gene symbol or Ensembl entry is acceptable]", icon("info-circle", style="font-size: 10px")), multiple=TRUE, placeholder = 'select', choices = NULL)
+			            				), vs_args = list(search = TRUE, maxValues=1, autoSelectFirstOption = F)
 			        			),
 			        			hr(tags$style("border-top: 1px dotted; color: black; background-color: black;")),
 			        			fluidRow(
@@ -637,7 +637,7 @@
 				        			column(6, div(class="two-way-select", selectizeInput(inputId = "domainB", label = div("TranscriptB (*)", style = "display:inline-block; font-size:12px", title = "Choose transcript isoforms of downstream partner gene [the canonical transcript and ones with domain/motif annotation are highlighted with underline and bold font, respectively]", icon("info-circle", style="font-size: 10px")), choices = NULL, 
 						        		multiple = TRUE, options = list(placeholder = "Ensembl transcript id", maxItems = 1))))
 			        			),
-                    			select_group_ui(
+							select_group_ui(
 				        			id = "domain2",
 				        			params = list(
 					        			list(inputId = "pos1", label = div("Breakpoint A", style = "display:inline-block; font-size:12px", title = "Choose a breakpoint coordinate of upstream partner gene", icon("info-circle", style="font-size: 10px")), multiple=TRUE, placeholder = 'select', choices = NULL),
@@ -649,11 +649,11 @@
 				        			column(6, numericInput("offset_base_A", label = div("Offset base for breakpointA", style = "display:inline-block; font-size:12px", title = "Offset value is the adjusted number of bases for provisional breakpoint coordinate of upstream parnter gene to match the genomic coordinate of nearby exon boundary in the codon frame calculation [default value: 5 - do offset adjustment if a distance between the coordinates of provisional breakpoint and nearby exon boundary <= 5 bases]", icon("info-circle", style="font-size: 10px")), value=5, min=0, max=10)),
 				        			column(6, numericInput("offset_base_B", label = div("Offset base for breakpointB", style = "display:inline-block; font-size:12px", title = "Offset value is the adjusted number of bases for provisional breakpoint coordinate of downstream parnter gene to match the genomic coordinate of nearby exon boundary in the codon frame calculation [default value: 5 - do offset adjustment if a distance between the coordinates of provisional breakpoint and nearby exon boundary <= 5 bases]", icon("info-circle", style="font-size: 10px")), value=5, min=0, max=10))
 			        			),
-								br(),
-								fluidRow(
-									column(6, checkboxInput(inputId="index_A", label = div("Display exon index of geneA", style = "display:inline-block; font-size:12px", title = "Exon index of geneA is shown in plot after clicking on ", icon("info-circle", style="font-size: 11px")), TRUE)),
-									column(6, checkboxInput(inputId="index_B", label = div("Display exon index of geneB", style = "display:inline-block; font-size:12px", title = "Exon index of geneB is shown in plot after clicking on ", icon("info-circle", style="font-size: 11px")), TRUE))
-								),
+							br(),
+							fluidRow(
+								column(6, checkboxInput(inputId="index_A", label = div("Display exon index of geneA", style = "display:inline-block; font-size:12px", title = "Exon index of geneA is shown in plot after clicking on ", icon("info-circle", style="font-size: 11px")), TRUE)),
+								column(6, checkboxInput(inputId="index_B", label = div("Display exon index of geneB", style = "display:inline-block; font-size:12px", title = "Exon index of geneB is shown in plot after clicking on ", icon("info-circle", style="font-size: 11px")), TRUE))
+							),
 			        			fluidRow(column(12, div(style="font-size:12px", HTML("<b>(*)</b> indicates required input for plotting")))),
 			        			br()
 							),
@@ -668,7 +668,7 @@
 										.domainB{background-color: transparent; z-index: 0;}"
 									))
 								),
-                   				box(width = NULL,  status = "warning",
+								box(width = NULL,  status = "warning",
 									fluidRow(
 										column(3, radioButtons(inputId = "file_fusion3", label = "Choose file type to download:", inline = TRUE, choices = list("PDF", "PNG"))),
 										column(2, numericInput("domain_width", label = div("Layout_width", style = "display:inline-block; font-size:12px", title = "Set the width of plot layout (unit: inches)", icon("info-circle", style="font-size: 9px")), value=20, min=1, max=50)),
@@ -676,7 +676,7 @@
 										column(3, downloadButton(outputId = "FusionDown3", label = "Download plot"))
 									)
 								)
-                			)
+							)
 						)
 					)
 				)
