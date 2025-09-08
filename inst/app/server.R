@@ -2546,13 +2546,6 @@ options(ucscChromosomeNames=FALSE)
 				}
 			}
 		})
-		#// Load annotation files
-		observeEvent(input$load_file, {
-			print("@ Load userdefined and indexed *.gz file with bed, vcf and gtf format@")
-			if (! is.null(input$load_file) ) {
-				FuSViz::TrackinFile(session, input$load_file)
-			}
-		})
 		#// Load alignment url
 		observeEvent(input$addTrackButtonBAM, {
 			print("@ Add alignment tracks via URL@");
@@ -2562,6 +2555,19 @@ options(ucscChromosomeNames=FALSE)
 				showModal(modalDialog(title = "Warning message", "Either hosted BAM/CRAM alignment or its index file is not available!"));
 			}
 		})
+		#// Load splice junction track
+		observeEvent(input$cnv_baf_data$datapath, {
+			print("@ Add BAF plot Track for DNA-seq data@")
+			#// Avoid 'input$cnv_baf_data' infinite problem when no file loading; the req() basically aborts the rest of the block
+			req(input$cnv_baf_data);
+			FuSViz::FileBAF(session, input$cnv_baf_data, tempdir(), input$bin_size)
+		})
+		#// Update splice junction track
+		observeEvent(input$BinCustomize, {
+			print("@ Update BAF plot Track for DNA-seq data@")
+			FuSViz::UpdateBAF(session, input$bin_size)
+		})
+
 		#// Load RNA SV events
 		observeEvent(input$addTrackButtonRNABed, {
 			print("@ Add Bed-Track and Bedgraph-Track for RNA-seq data@")
@@ -2581,6 +2587,18 @@ options(ucscChromosomeNames=FALSE)
 			} else {
 				showModal(modalDialog(title = "Warning message", "No RNA-SV data available for bedpe track after filtering control!")); req(NULL);
 			}
+		})
+		#// Load splice junction track
+		observeEvent(input$junction_bed_data$datapath, {
+			print("@ Add Splice Junction Track for RNA-seq data@")
+			#// Avoid 'input$junction_bed_data' infinite problem when no file loading; the req() basically aborts the rest of the block
+			req(input$junction_bed_data);
+			FuSViz::FileinJunction(session, input$junction_bed_data, tempdir(), input$rna_junction_unique, input$rna_junction_total, input$rna_junction_percet, input$rna_junction_overhang, input$rna_junction_color, input$rna_junction_thick, input$rna_junction_curve)
+		})
+		#// Update splice junction track
+		observeEvent(input$JunctionCustomize, {
+			print("@ Update Splice Junction Track for RNA-seq data@")
+			FuSViz::UpdateJunction(session, input$rna_junction_unique, input$rna_junction_total, input$rna_junction_percet, input$rna_junction_overhang, input$rna_junction_color, input$rna_junction_thick, input$rna_junction_curve)
 		})
 		#// Load mutation data
 		observeEvent(input$addTrackButtonMut, {
