@@ -191,6 +191,104 @@ TrackinBedPe <- function(session, datastr, name, color="blue", thickness=0.5, tr
 	session$sendCustomMessage("TrackinBedPe", connect.igvjs)
 }
 
+#' Load a BAF plot track
+#'
+#' @description Load a compressed VCF (*.vcf.gz) file - import the BAF plot track
+#'
+#' @param session An environment object that is used to access information and functionality by shiny.
+#' @param filedata A data.frame of imported compressed vcf files with four columns (e.g. \code{name}, \code{size}, \code{type} and \code{datapath}).
+#' @param local A string - the tmp path of shiny app (e.g. \code{/var/folders/tt/qx4jdszs5sj533vn92lrcx4m0000gn/T//Rtmpr6bFPt}).
+#' @param BinSize Bin size value for BAF plot, available values: 10000, 100000, 1000000, 10000000 or 100000000 (e.g. \code{default: 1000000}).
+#' @param trackHeight Initial height of track viewport in pixels (e.g. \code{100}).
+#' @param displayMode Display mode of annotation track (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
+#'
+#' @export
+FileBAF <- function(session, filedata, local, BinSize, trackHeight=200, displayMode="EXPANDED", SameNameDel=TRUE) {
+	print("load a BAF-plot file in vcf format")
+	for ( name in filedata$name ) {
+		if ( SameNameDel ) { #// if userdefined track has been loaded, please remove the previous one first
+			DuplicateTrackRemove(session, name)
+		}
+		configure <- unique(c(configure, name))
+	}
+
+	connect.igvjs <- list(filedata=jsonlite::toJSON(filedata), local=local, BinSize=BinSize, trackHeight=trackHeight, displayMode=displayMode); # convert datastr to JSON format
+	session$sendCustomMessage("FileBAF", connect.igvjs)
+}
+
+#' Update a BAF plot track
+#'
+#' @description Update BAF plot track with more customized settings
+#'
+#' @param session An environment object that is used to access information and functionality by shiny.
+#' @param BinSize Bin size value for BAF plot, available values: 10000, 100000, 1000000, 10000000 or 100000000 (e.g. \code{default: 1000000}).
+#' @param trackHeight Initial height of track viewport in pixels (e.g. \code{100}).
+#' @param displayMode Display mode of annotation track (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
+#'
+#' @export
+UpdateBAF <- function(session, BinSize, trackHeight=200, displayMode="EXPANDED") {
+	print("Update the BAF plot track")
+
+	connect.igvjs <- list(BinSize=BinSize, trackHeight=trackHeight, displayMode=displayMode);
+	session$sendCustomMessage("UpdateBAF", connect.igvjs)
+}
+
+#' Load a splice junction track
+#'
+#' @description Load junction bed (*.SJ.out.bed.gz and *.SJ.out.bed.gz.tbi) files - import splice junction tracks
+#'
+#' @param session An environment object that is used to access information and functionality by shiny.
+#' @param filedata A data.frame of imported splice junction bed files with four columns (e.g. \code{name}, \code{size}, \code{type} and \code{datapath}).
+#' @param local A string - the tmp path of shiny app (e.g. \code{/var/folders/tt/qx4jdszs5sj533vn92lrcx4m0000gn/T//Rtmpr6bFPt}).
+#' @param unique Junction must be supported by at least this number of uniquely-mapped reads (e.g. \code{10}).
+#' @param total Junction must be supported by at least this number of uniquely-mapped + multi-mapped reads (e.g. \code{10}).
+#' @param percet (uniquely-mapped reads)/(total reads) must be <= this threshold (e.g. \code{0-1}).
+#' @param overhang Mininum spliced alignment overhang in base pairs (e.g. \code{20}).
+#' @param Selectcolor Splice junction color, available values: 'numUniqueReads', 'numReads', 'isAnnotatedJunction', 'strand', 'motif' (e.g. \code{default: numUniqueReads}).
+#' @param Selectthick Splice junction line thickness, available values: 'numUniqueReads', 'numReads', 'isAnnotatedJunction' (e.g. \code{default: numUniqueReads}).
+#' @param Selectcurve Splice junction curve height, available values: 'random', 'distance', 'thickness' (e.g. \code{default: random}).
+#' @param trackHeight Initial height of track viewport in pixels (e.g. \code{100}).
+#' @param displayMode Display mode of annotation track (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
+#'
+#' @export
+FileinJunction <- function(session, filedata, local, unique, total, percet, overhang, Selectcolor, Selectthick, Selectcurve, trackHeight=200, displayMode="EXPANDED", SameNameDel=TRUE) {
+	print("load splice junction file in bed format")
+	for ( name in filedata$name ) {
+		if ( SameNameDel ) { #// if userdefined track has been loaded, please remove the previous one first
+			DuplicateTrackRemove(session, name)
+		}
+		configure <- unique(c(configure, name))
+	}
+
+	connect.igvjs <- list(filedata=jsonlite::toJSON(filedata), local=local, unique=unique, total=total, percet=percet, overhang=overhang, Selectcolor=Selectcolor, Selectthick=Selectthick, 
+			Selectcurve=Selectcurve, trackHeight=trackHeight, displayMode=displayMode); # convert datastr to JSON format
+	session$sendCustomMessage("FileinJunction", connect.igvjs)
+}
+
+#' Update a splice junction track
+#'
+#' @description Update splice junction track with more customized settings
+#'
+#' @param session An environment object that is used to access information and functionality by shiny.
+#' @param unique Junction must be supported by at least this number of uniquely-mapped reads (e.g. \code{10}).
+#' @param total Junction must be supported by at least this number of uniquely-mapped + multi-mapped reads (e.g. \code{10}).
+#' @param percet (uniquely-mapped reads)/(total reads) must be <= this threshold (e.g. \code{0-1}).
+#' @param overhang Mininum spliced alignment overhang in base pairs (e.g. \code{20}).
+#' @param Selectcolor Splice junction color, available values: 'numUniqueReads', 'numReads', 'isAnnotatedJunction', 'strand', 'motif' (e.g. \code{default: numUniqueReads}).
+#' @param Selectthick Splice junction line thickness, available values: 'numUniqueReads', 'numReads', 'isAnnotatedJunction' (e.g. \code{default: numUniqueReads}).
+#' @param Selectcurve Splice junction curve height, available values: 'random', 'distance', 'thickness' (e.g. \code{default: random}).
+#' @param trackHeight Initial height of track viewport in pixels (e.g. \code{100}).
+#' @param displayMode Display mode of annotation track (e.g. \code{COLLAPSED}, \code{EXPANDED}, \code{SQUISHED}).
+#'
+#' @export
+UpdateJunction <- function(session, unique, total, percet, overhang, Selectcolor, Selectthick, Selectcurve, trackHeight=200, displayMode="EXPANDED") {
+	print("Update splice junction track")
+
+	connect.igvjs <- list(unique=unique, total=total, percet=percet, overhang=overhang, Selectcolor=Selectcolor, Selectthick=Selectthick, 
+			Selectcurve=Selectcurve, trackHeight=trackHeight, displayMode=displayMode);
+	session$sendCustomMessage("UpdateJunction", connect.igvjs)
+}
+
 #' Load a seg format track
 #'
 #' @description Load a seg format track - count the DEL and DUP events of DNA SVs (small copy number variations)
