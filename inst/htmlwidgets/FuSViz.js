@@ -74,7 +74,7 @@ Shiny.addCustomMessageHandler("TrackinBed",
 		var displayMode = message.displayMode;
 		var datastr = message.datastr;
 
-		var setting = { type: "annotation", format: "bed", features: datastr, indexed: false, name: name, 
+		var setting = { type: "annotation", format: "bed", features: datastr, indexed: false, name: name, visibilityWindow: -1,
 						order: Number.MAX_VALUE, displayMode: displayMode, color: color, height: trackHeight, removable: true };
 		igv.browser.loadTrack(setting);
 	}
@@ -95,7 +95,7 @@ Shiny.addCustomMessageHandler("TrackinBedGraph",
 		var max = message.max;
 		var datastr = message.datastr;
 
-		var setting = { type: "wig", format: "bedgraph", features: datastr, indexed: false, name: name, autoscale: autoscale,
+		var setting = { type: "wig", format: "bedgraph", features: datastr, indexed: false, name: name, autoscale: autoscale, visibilityWindow: -1,
 						order: Number.MAX_VALUE, displayMode: displayMode, color: color, height: trackHeight, min: min, max: max, removable: true };
 		igv.browser.loadTrack(setting);
 	}
@@ -116,8 +116,9 @@ Shiny.addCustomMessageHandler("TrackinBedPe",
 		var alpha = message.alpha;
 		var thickness = message.thickness;
 		var datastr = message.datastr;
+		console.log(datastr)
 
-		var setting = { type: "interaction", format: "bedpe", features: datastr, indexed: false, name: name, logScale: logScale, order: Number.MAX_VALUE,
+		var setting = { type: "interact", format: "bedpe", features: datastr, indexed: false, name: name, logScale: logScale, order: Number.MAX_VALUE, visibilityWindow: -1,
 						color: color, height: trackHeight, showBlocks: true, arcType: "nested", alpha: alpha, displayMode: displayMode, thickness: thickness, removable: true };
 		igv.browser.loadTrack(setting);
 	}
@@ -141,6 +142,137 @@ Shiny.addCustomMessageHandler("TrackinSeg",
 	}
 );
 
+//-------------------------------------------------------
+// function for load BAF plot track in vcf format
+//-------------------------------------------------------
+Shiny.addCustomMessageHandler("FileBAF",
+	function(message){
+		console.log("FileBAF in js");
+		var filedata = message.filedata;
+		var BinSize = message.BinSize;
+		var trackHeight = message.trackHeight;
+		var displayMode = message.displayMode;
+
+		var baf = {}; // link *.vcf.gz per sample
+		for (let one of filedata) {
+			if ( one.name.endsWith(".baf.vcf.gz") ) {
+				if ( one.name in baf ) {
+					baf[one.name]["file"] = one;
+				} else {
+					baf[one.name] = {};
+					baf[one.name]["file"] = one;
+				}
+			} else {
+				alert("File format is not accetped: " + one.name);
+			}
+		}
+
+		var filebaf = []; // set splice junction track configuration
+		for (let one in baf) {
+			var file = baf[one]["file"];
+			if ( file !== undefined ) {
+				var host_path = window.location.href + "tmp";
+				var local_path = message.local;
+				file.datapath=file.datapath.replace(local_path, host_path);
+				filebaf.push({ name: one, type: "cnvpytor", 
+					url: file.datapath, 
+					bin_size: BinSize,
+					height: trackHeight,
+					visibilityWindow: -1
+				});
+			} else {
+				alert("BAF VCF file does not meet requirement: " + one);
+			}
+		}
+
+		if ( filebaf.length > 0 ) {
+			console.log(filebaf);
+			igv.browser.loadTrackList(filebaf);
+		}
+	}
+);
+
+//-------------------------------------------------------
+// function for load splice junction track in bed format
+//-------------------------------------------------------
+Shiny.addCustomMessageHandler("FileinJunction",
+	function(message){
+		console.log("FileinJunction in js");
+		var filedata = message.filedata;
+		var unique = message.unique;
+		var total = message.total;
+		var percet = message.percet;
+		var overhang = message.overhang;
+		var Selectcolor = message.Selectcolor;
+		var Selectthick = message.Selectthick;
+		var Selectcurve = message.Selectcurve;
+		var trackHeight = message.trackHeight;
+		var displayMode = message.displayMode;
+
+		var junction = {}; // link *.SJ.out.bed.gz and *.SJ.out.bed.gz.tbi together per sample
+		for (let one of filedata) {
+			if ( one.name.endsWith(".SJ.out.bed.gz") ) {
+				if ( one.name in junction ) {
+					junction[one.name]["file"] = one;
+				} else {
+					junction[one.name] = {};
+					junction[one.name]["file"] = one;
+				}
+			} else if ( one.name.endsWith(".SJ.out.bed.gz.tbi") ) {
+				var tmp_name = one.name.replace(/\.tbi$/, "");
+				 if ( tmp_name in junction ) {
+					junction[tmp_name]["index"] = one;
+				} else {
+					junction[tmp_name] = {};
+					junction[tmp_name]["index"] = one;
+				}
+			} else {
+				alert("File format is not accetped: " + one.name);
+			}				
+		}
+
+		var filejunction = []; // set splice junction track configuration
+		for (let one in junction) {
+			var file = junction[one]["file"];
+			var index = junction[one]["index"];
+			if ( file !== undefined && index !== undefined ) {
+				var host_path = window.location.href + "tmp";
+				var local_path = message.local;
+				file.datapath=file.datapath.replace(local_path, host_path);
+				index.datapath=index.datapath.replace(local_path, host_path);
+				filejunction.push({ name: one, type: "junction", format: "bed", 
+					url: file.datapath, 
+					indexURL: index.datapath,
+					minUniquelyMappedReads: unique, 
+					minTotalReads: total, 
+					maxFractionMultiMappedReads: percet, 
+					minSplicedAlignmentOverhang: overhang, 
+					thicknessBasedOn: Selectthick, 
+					bounceHeightBasedOn: Selectcurve,
+					colorBy: Selectcolor,
+					labelUniqueReadCount: true,
+					labelMultiMappedReadCount: false,
+					labelTotalReadCount: false,
+					labelMotif: false,
+					labelIsAnnotatedJunction: " [A]",
+					hideAnnotatedJunctions: false,
+					hideUnannotatedJunctions: false,
+					hideMotifs: ['GT/AT', 'non-canonical'],
+					height: trackHeight,
+					visibilityWindow: -1
+				});
+			} else {
+				alert("Junction bed and index files do not match: " + one);
+			}
+		}
+
+		if ( filejunction.length > 0 ) {
+			console.log(filejunction);
+			igv.browser.loadTrackList(filejunction);
+		}
+	}
+);
+
 //------------------------------------------------
 // function for load gene track in offline mode 
 //------------------------------------------------
@@ -154,16 +286,133 @@ Shiny.addCustomMessageHandler("Trackoffline",
 		var setting = undefined;
 		
 		if ( version === 'hg19' ) {
-			setting = {format: "bed", name: name, url: window.location.href + "Reference/refGene.hg19.bed", indexed: false,
+			setting = {format: "refgene", name: name, url: window.location.href + "Reference/ncbiRefSeq_hg19.txt", indexed: false,
 					visibilityWindow: -1, height: trackHeight, searchable: true, displayMode: displayMode};
 		} else if ( version === 'hg38' ) {
-			setting = {format: "refgene", name: name, url: window.location.href + "Reference/refGene.sorted.txt", indexed: false,
+			setting = {format: "refgene", name: name, url: window.location.href + "Reference/ncbiRefSeq_hg38.txt", indexed: false,
 					visibilityWindow: -1, height: trackHeight, searchable: true, displayMode: displayMode};
 		} else if ( version === 'GRCm39' ) {
-			setting = {format: "refgene", name: name, url: window.location.href + "Reference/ncbiRefSeq.txt", indexed: false,
+			setting = {format: "refgene", name: name, url: window.location.href + "Reference/ncbiRefSeq_mm39.txt", indexed: false,
 					visibilityWindow: -1, height: trackHeight, searchable: true, displayMode: displayMode};
 		}
 		igv.browser.loadTrack(setting);
+	}
+);
+
+//-------------------------------------------------------
+// function for update BAF plot track in vcf format
+//-------------------------------------------------------
+Shiny.addCustomMessageHandler("UpdateBAF",
+	function(message){
+		console.log("UpdateBAF in js");
+		var BinSize = message.BinSize;
+		var trackHeight = message.trackHeight;
+		var displayMode = message.displayMode;
+
+		var i = 0; // count loop step
+		var baf = [];
+		while ( i <= (igv.browser.trackViews.length - 1) ) {
+			var trackName = igv.browser.trackViews[i].track.name;
+			if ( trackName ) {
+				if ( trackName.match(/.baf.vcf.gz$/) ) { // match to splice junction track
+					baf.push({name: trackName, url: igv.browser.trackViews[i].track.config.url});
+					igv.browser.removeTrack(igv.browser.trackViews[i].track);
+					console.log("Remove replicated track: "+ trackName);
+				} else {
+					i++;
+				}
+			} else {
+				i++;
+			}
+		}
+
+		var filebaf = []; // set splice junction track configuration
+		if ( baf ) {
+			for (let one of baf) {
+				filebaf.push({ name: one.name, type: "cnvpytor", 
+					url: one.url,
+					bin_size: BinSize,
+					height: trackHeight,
+					visibilityWindow: -1
+				});
+			}
+		} else {
+			alert("No BAF plot tracks are available!");
+		}
+
+		if ( filebaf.length > 0 ) {
+			console.log(filebaf);
+			igv.browser.loadTrackList(filebaf);
+		}
+	}
+);
+			
+//-------------------------------------------------------
+// function for update splice junction track in bed format
+//-------------------------------------------------------
+Shiny.addCustomMessageHandler("UpdateJunction",
+	function(message){
+		console.log("UpdateJunction in js");
+		var unique = message.unique;
+		var total = message.total;
+		var percet = message.percet;
+		var overhang = message.overhang;
+		var Selectcolor = message.Selectcolor;
+		var Selectthick = message.Selectthick;
+		var Selectcurve = message.Selectcurve;
+		var trackHeight = message.trackHeight;
+		var displayMode = message.displayMode;
+
+		var i = 0; // count loop step
+		var junction = [];
+		while ( i <= (igv.browser.trackViews.length - 1) ) {
+			var trackName = igv.browser.trackViews[i].track.name;
+			if ( trackName ) {
+				if ( trackName.match(/SJ.out.bed.gz$/) ) { // match to splice junction track
+					junction.push({name: trackName, url: igv.browser.trackViews[i].track.config.url, indexURL: igv.browser.trackViews[i].track.config.indexURL});
+					igv.browser.removeTrack(igv.browser.trackViews[i].track);
+					console.log("Remove replicated track: "+ trackName);
+				} else {
+					i++;
+				}
+			} else {
+				i++;
+			}
+		}
+
+		var filejunction = []; // set splice junction track configuration
+		if ( junction ) {
+			for (let one of junction) {
+				filejunction.push({ name: one.name, type: "junction", format: "bed", 
+					url: one.url, 
+					indexURL: one.indexURL,
+					minUniquelyMappedReads: unique, 
+					minTotalReads: total, 
+					maxFractionMultiMappedReads: percet, 
+					minSplicedAlignmentOverhang: overhang, 
+					thicknessBasedOn: Selectthick, 
+					bounceHeightBasedOn: Selectcurve,
+					colorBy: Selectcolor,
+					labelUniqueReadCount: true,
+					labelMultiMappedReadCount: false,
+					labelTotalReadCount: false,
+					labelMotif: false,
+					labelIsAnnotatedJunction: " [A]",
+					hideAnnotatedJunctions: false,
+					hideUnannotatedJunctions: false,
+					hideMotifs: ['GT/AT', 'non-canonical'],
+					height: trackHeight,
+					visibilityWindow: -1
+				});
+			}
+		} else {
+			alert("No splice junction tracks are available!");
+		}
+
+		if ( filejunction.length > 0 ) {
+			console.log(filejunction);
+			igv.browser.loadTrackList(filejunction);
+		}
 	}
 );
 
@@ -201,8 +450,8 @@ Shiny.addCustomMessageHandler("Coordinate",
 		var inputid = message.inputid;
 		var position = igv.browser.currentLoci();
 
-		if ( typeof(position[0]) == "string" ) {
-			Shiny.setInputValue(inputid, position[0], {priority: "event"});
+		if ( typeof(position) == "string" ) {
+			Shiny.setInputValue(inputid, position, {priority: "event"});
 			console.log("current position: " + position);
 		} else {
 			Shiny.setInputValue(inputid, "", {priority: "event"});
@@ -290,7 +539,7 @@ function selectIGVoptions(genomeName, initialLocus, displayMode, trackHeight) {
 			}
 		]
 	}
-	// setting for hg38 version
+	// setting for mm39 version
 	var genome_mm39 = {
 		minimumBases: 5,
 		flanking: 1000,
