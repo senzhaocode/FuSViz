@@ -115,7 +115,7 @@ function load() {
 				gtf[tmp_name]["index"] = one;
 			}
 		} else {
-			alert("File type not accetped: " + one.name);
+			alert("File format not accetped: " + one.name);
 		}
 	}
 
