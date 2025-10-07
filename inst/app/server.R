@@ -38,14 +38,12 @@ options(ucscChromosomeNames=FALSE)
 					chrom_cir = c("chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chrX","chrY"); 
 				}
 				shiny::withProgress(message='Load genomic/transcriptomic annotations', detail="Please wait for a while...", min=0, max=1, value=0.1, {
-					txdb <- suppressWarnings(suppressPackageStartupMessages(AnnotationDbi::loadDb(file=file.path(extdata, paste(organism, ".gencode.annotation.", version, ".sqlite", sep="")))));
-					shiny::incProgress(0.2);
+					load(file=file.path(extdata, paste(organism, ".transcriptBygene.", version, ".Rd", sep="")));
+					shiny::incProgress(0.1);
 					load(file=file.path(extdata, paste(organism, ".grTrack.", version, ".Rd", sep="")));
 					shiny::incProgress(0.1);
 					load(file=file.path(extdata, paste(organism, ".cytoband.", version, ".Rd", sep="")));
 					shiny::incProgress(0.1);
-					whole_txdb <- GenomicFeatures::exonsBy(txdb, by = "tx", use.names=TRUE); # group exons by transcript_id
-					shiny::incProgress(0.2);
 
 					#// load domain annotation - one data.frame: domain
 					load(file=file.path(extdata, paste(organism, ".Domain_interval.", version, ".Rd", sep="")));
@@ -84,22 +82,21 @@ options(ucscChromosomeNames=FALSE)
 					shiny::incProgress(0.1);
 
 					#// create gene annotation for circle plot
-					gene_range = as.data.frame(genes(txdb), stringsAsFactors=F);
-					names(gene_range)[6] = "Gene_ID";
-					ensembl_id = unique(gene_range$Gene_ID);
+					names(gene_transcript_exon$gene_range)[6] = "Gene_ID";
+					ensembl_id = unique(gene_transcript_exon$gene_range$Gene_ID);
 					#// union of x and y by "Gene_ID" - merge(gene_range, gene_id, by="Gene_ID", all.x=T, all.y=T)
 					#// intersection of x and y by "Gene_ID" - merge(gene_range, gene_id, by="Gene_ID", all.x=F, all.y=F)
 					#// only use "Gene_id" of y - merge(gene_range, gene_id, by="Gene_ID", all.x=F, all.y=T)
-					gene_range=merge(gene_range, gene_id, by="Gene_ID", all.x=T, all.y=F); #// only use "Gene_id" of x
-					gene_range$seqnames = as.character(gene_range$seqnames);
-					gene_range = gene_range[gene_range$seqnames %in% chrom_cir, ];
-					names(gene_range)[7] = "gene";	names(gene_range)[2] = "chr";
-					gene_range$strand = as.character(gene_range$strand);
+					gene_transcript_exon$gene_range=merge(gene_transcript_exon$gene_range, gene_id, by="Gene_ID", all.x=T, all.y=F); #// only use "Gene_id" of x
+					gene_transcript_exon$gene_range$seqnames = as.character(gene_transcript_exon$gene_range$seqnames);
+					gene_transcript_exon$gene_range = gene_transcript_exon$gene_range[gene_transcript_exon$gene_range$seqnames %in% chrom_cir, ];
+					names(gene_transcript_exon$gene_range)[7] = "gene";	names(gene_transcript_exon$gene_range)[2] = "chr";
+					gene_transcript_exon$gene_range$strand = as.character(gene_transcript_exon$gene_range$strand);
 					#// if gene_symbol is NA, substitute with ensembl_id
-					gene_update=apply(gene_range, 1, function(x){
+					gene_update=apply(gene_transcript_exon$gene_range, 1, function(x){
         					if ( is.na(x[7]) ) { return(as.character(x[1])); } else { return(as.character(x[7])); }
 					})
-					gene_range$gene = gene_update
+					gene_transcript_exon$gene_range$gene = gene_update;
 					shiny::incProgress(0.1);
 
 					#// Create cytoband info for circule plot
@@ -114,8 +111,8 @@ options(ucscChromosomeNames=FALSE)
 					karyto = karyto[order(karyto$chr), ]; #// re-order by chromosome names
 					shiny::incProgress(0.1);
 				})
-				database$txdb=txdb;	database$whole_txdb=whole_txdb;	database$grTrack=grTrack;	database$chrTrack=chrTrack;	database$domain=domain;	database$symbol_ensem=symbol_ensem;	
-				database$cancergenes=cancergenes;	database$motif=motif;	database$genome_cir=genome_cir;	database$gene_range=gene_range;	database$karyto=karyto; 
+				database$txdb=gene_transcript_exon$txdb;	database$whole_txdb=gene_transcript_exon$whole_txdb;	database$grTrack=grTrack;	database$chrTrack=chrTrack;	database$domain=domain;	database$symbol_ensem=symbol_ensem;	
+				database$cancergenes=cancergenes;	database$motif=motif;	database$genome_cir=genome_cir;	database$gene_range=gene_transcript_exon$gene_range;	database$karyto=karyto; 
 				database$ensembl_id=ensembl_id;	database$canonical=canonical;	database$chrom_cir=chrom_cir;	database$organism=organism;
 			}
 		})
@@ -1267,7 +1264,7 @@ options(ucscChromosomeNames=FALSE)
 					}
 				}, height = overview_size_up, width = overview_size_down)
 			} else {
-				showModal(modalDialog(title = "Warning message", paste("No or multiple geneA(", choice_geneA, ") / geneB(", choice_geneB, ") is present (check gene symbol!)", sep="")));
+				showModal(modalDialog(title = "Warning message", paste("Either no or multiple geneA geneB is present (check gene symbol!)", sep="")));
 				shinycssloaders::hideSpinner("chimerics_down")
 			}
 		} else {
@@ -1359,7 +1356,7 @@ options(ucscChromosomeNames=FALSE)
 				object_individual_A$value <- FuSViz::get_annotation_db(ens_A, database$txdb, database$grTrack)
 				if ( is.null(object_individual_A$value) ) {
 					updateSelectizeInput(session = session, inputId = "transA_individual", choices = "") #// NOTE: set choices = "" not (NULL)
-					howModal(modalDialog(title = "Warning message", paste("GeneA(", choice_geneA, ") is not available in annotation database, and process stops here!", sep=""))); req(NULL)
+					showModal(modalDialog(title = "Warning message", paste("GeneA(", choice_geneA, ") is not available in annotation database, and process stops here!", sep=""))); req(NULL)
 				} else {
 					#// update the choice values in selectInput
 					canonical_transA = database$canonical[database$canonical$ensembl_gene_id == ens_A,]$ensembl_transcript_id
@@ -1398,7 +1395,7 @@ options(ucscChromosomeNames=FALSE)
 				object_individual_B$value <- FuSViz::get_annotation_db(ens_B, database$txdb, database$grTrack)
 				if ( is.null(object_individual_B$value) ) {
 					updateSelectizeInput(session = session, inputId = "transB_individual", choices = "") #// NOTE: set choices = "" not (NULL)
-					howModal(modalDialog(title = "Warning message", paste("GeneB(", choice_geneB, ") is not available in annotation database, and process stops here!", sep="")));	req(NULL)
+					showModal(modalDialog(title = "Warning message", paste("GeneB(", choice_geneB, ") is not available in annotation database, and process stops here!", sep="")));	req(NULL)
 				} else {
 					#// update the choice values in selectInput
 					canonical_transB = database$canonical[database$canonical$ensembl_gene_id == ens_B,]$ensembl_transcript_id
@@ -1741,6 +1738,7 @@ options(ucscChromosomeNames=FALSE)
 			domain_plotA$geneA = NULL; domain_plotA$symbol_A = NULL; domain_plotA$domainA = NULL; domain_plotA$motifA = NULL;
 			domain_plot_link$A1_xy = NULL;
 		} else {
+			shinycssloaders::showSpinner("domain_up");
 			name_domainA = input$domainA;	name_domainA = gsub('-', '', name_domainA); name_domainA = gsub('@', '', name_domainA);
 			#// a subset transcript of geneA after update the choice values in selectInput
 			mytmp_A = list(); #// a subset of 'object_domain_A' (for selected transcripts of geneA)
@@ -1776,6 +1774,7 @@ options(ucscChromosomeNames=FALSE)
 				output$domain_up <- renderPlot({ return(NULL); })
 				showModal(modalDialog(title = "Warning message", paste("Breakpoint coordinates out of ", name_domainA, " bound (please try alternative transcript isoforms)!", sep="")));
 				domain_plot_link$A1_xy=NULL;
+				shinycssloaders::hideSpinner("domain_up");
 			}
 		}
 	})
@@ -1786,6 +1785,7 @@ options(ucscChromosomeNames=FALSE)
 			domain_plotB$geneB = NULL; domain_plotB$symbol_B = NULL; domain_plotB$domainB = NULL; domain_plotB$motifB = NULL;
 			domain_plot_link$B1_xy = NULL;
 		} else {
+			shinycssloaders::showSpinner("domain_down");
 			name_domainB = input$domainB;	name_domainB = gsub('-', '', name_domainB); name_domainB = gsub('@', '', name_domainB);
 			#// a subset transcript of geneB after update the choice values in selectInput
 			mytmp_B = list(); #// a subset of 'object_domain_B' (for selected transcripts of geneB)
@@ -1821,6 +1821,7 @@ options(ucscChromosomeNames=FALSE)
 				output$domain_down <- renderPlot({ return(NULL); })
 				showModal(modalDialog(title = "Warning message", paste("Breakpoint coordinates out of ", name_domainB, " bound (please try alternative transcript isoforms)!", sep="")));
 				domain_plot_link$B1_xy=NULL;
+				shinycssloaders::hideSpinner("domain_down");
 			}
 		}
 	})

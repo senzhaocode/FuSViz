@@ -396,7 +396,7 @@
 					column(12, tags$p(tags$b("* Upload annotation and its index files (bgzipped and tabixed", tags$u("VCF"), ", ", tags$u("BED"), " and ", tags$u("GTF"), " format)", style = "font-size:12px"))),
 					column(12, tags$p(tags$b("* Upload genome reference and its index files (indexed ", tags$u("fasta"), ") and cytoband information in ", tags$u("txt"), " format - used to enable offline mode", style = "font-size:12px"))),
 					br(),
-					column(12, HTML("<input id='uploadfile' class='hidden' type='file' multiple='true' accept='.bam,.bai,.cram,.crai,.gz,.tbi,.fasta,.fai,.txt' onchange=\"load()\"/>
+					column(12, HTML("<input id='uploadfile' class='hidden' type='file' multiple='true' accept='.bam,.bai,.csi,.cram,.crai,.gz,.tbi,.fasta,.fai,.txt' onchange=\"load()\"/>
 						<label for='uploadfile'><img src='Visualize/Button.png' alt='Upload img' height='80' width='160'></label>")),
 					br(),
 					column(12, HTML("<div id='filename'></div>")),
