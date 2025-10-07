@@ -61,6 +61,14 @@ function load() {
 				bam[one.name] = {};
 				bam[one.name]["file"] = one;
 			}			
+		} else if ( one.name.endsWith(".csi") ) {
+			var tmp_name = one.name.replace(/\.csi$/, "");
+			if ( tmp_name in bam ) {
+				bam[tmp_name]["index"] = one;
+			} else {
+				bam[tmp_name] = {};
+				bam[tmp_name]["index"] = one;
+			}
 		} else if ( one.name.endsWith(".bai") ) {
 			var tmp_name = one.name.replace(/\.bai$/, "");
 			if ( tmp_name in bam ) {
