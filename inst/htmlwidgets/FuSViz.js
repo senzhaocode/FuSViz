@@ -451,8 +451,8 @@ Shiny.addCustomMessageHandler("Coordinate",
 		var position = igv.browser.currentLoci();
 
 		if ( typeof(position) == "string" ) {
-			position = position.replace(/\.[\d]+/g, "");
-			Shiny.setInputValue(inputid, position, {priority: "event"});
+			var posnew = position.replace(/\.[\d]+/g, "");
+			Shiny.setInputValue(inputid, posnew, {priority: "event"});
 			console.log("current position: " + position);
 		} else {
 			Shiny.setInputValue(inputid, "", {priority: "event"});
