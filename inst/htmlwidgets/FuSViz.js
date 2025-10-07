@@ -451,6 +451,7 @@ Shiny.addCustomMessageHandler("Coordinate",
 		var position = igv.browser.currentLoci();
 
 		if ( typeof(position) == "string" ) {
+			position = position.replace(/\.[\d]+/g, "");
 			Shiny.setInputValue(inputid, position, {priority: "event"});
 			console.log("current position: " + position);
 		} else {
@@ -470,7 +471,7 @@ Shiny.addCustomMessageHandler("TrackinBAM",
 		var bam_name = null;
 		var bam_type = null;
 
-		if ( bam.endsWith(".bam") && bamindex.endsWith(".bam.bai") ) { // BAM format
+		if ( bam.endsWith(".bam") && (bamindex.endsWith(".bam.bai") || bamindex.endsWith(".bam.csi")) ) { // BAM format
 			bam_name = bam.split(/\/|\\/).pop();
 			bam_type = "bam";
 		} else if ( bam.endsWith(".cram") && bamindex.endsWith(".cram.crai")  ) { // CRAM format
