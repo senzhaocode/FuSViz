@@ -453,7 +453,7 @@ Shiny.addCustomMessageHandler("Coordinate",
 		if ( typeof(position) == "string" ) {
 			var posnew = position.replace(/\.[\d]+/g, "");
 			Shiny.setInputValue(inputid, posnew, {priority: "event"});
-			console.log("current position: " + position);
+			console.log("current position: " + posnew);
 		} else {
 			Shiny.setInputValue(inputid, "", {priority: "event"});
 		}
