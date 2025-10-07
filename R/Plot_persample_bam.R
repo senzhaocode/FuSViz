@@ -31,7 +31,7 @@ chrom_name_function <- function(file, selection) {
 	# shift mapped sequence width to avoid out of [start, end]
 	if ( length(read_align@elementMetadata$seq) ) {
 		seq_shift = GenomicAlignments::sequenceLayer(read_align@elementMetadata$seq, read_align@elementMetadata$cigar)
-		seq_new = Biostrings::stackStrings(seq_shift, start(selection@ranges), end(selection@ranges),
+		seq_new = Biostrings::stackStrings(seq_shift, IRanges::start(selection@ranges), IRanges::end(selection@ranges),
 			shift = read_align@elementMetadata$pos - 1L, Lpadding.letter = "+", Rpadding.letter = "+")
 		names(seq_new) = seq_along(read_align@elementMetadata$qname)
 	} else {
@@ -113,14 +113,12 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	symbol_ensem = gene_id$Gene_name;
 	names(symbol_ensem) = gene_id$Gene_ID;
 	#// load genomic annotation file
-	txdb <- suppressWarnings(suppressPackageStartupMessages(AnnotationDbi::loadDb(file=file.path(extdata, paste(organism, ".gencode.annotation.", version, ".sqlite", sep="")))));
+	load(file=file.path(extdata, paste(organism, ".transcriptBygene.", version, ".Rd", sep="")));
 	load(file=file.path(extdata, paste(organism, ".grTrack.", version, ".Rd", sep="")));
 	load(file=file.path(extdata, paste(organism, ".cytoband.", version, ".Rd", sep="")));
-	whole_txdb <- GenomicFeatures::exonsBy(txdb, by = "tx", use.names=TRUE); # group exons by transcript_id
 	#// obtain ensembl_id
-	gene_range = as.data.frame(genes(txdb), stringsAsFactors=F);
-	names(gene_range)[6] = "Gene_ID";
-	ensembl_id = unique(gene_range$Gene_ID);
+	names(gene_transcript_exon$gene_range)[6] = "Gene_ID";
+	ensembl_id = unique(gene_transcript_exon$gene_range$Gene_ID);
 
 	ens_A = NULL;	ens_B = NULL;
 	if ( grepl("ENSG00", first_name) ) {	
@@ -134,12 +132,12 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 		ens_B = names(symbol_ensem[symbol_ensem == second_name])
 	}
 	if ( length(ens_A) > 0 ) { 
-		object_individual_A <- get_annotation_db(ens_A, txdb, grTrack)
+		object_individual_A <- get_annotation_db(ens_A, gene_transcript_exon$txdb, grTrack)
 	} else { #// if symbol_A invalid
 		stop(paste(ens_A, " is invalid or matched ensembl_id in database!"));
 	}
 	if ( length(ens_B) > 0 ) { 
-		object_individual_B <- get_annotation_db(ens_B, txdb, grTrack)
+		object_individual_B <- get_annotation_db(ens_B, gene_transcript_exon$txdb, grTrack)
 	} else { #// if symbol_B invalid
 		stop(paste(ens_B, " is invalid or matched ensembl_id in database!"));
 	}
@@ -153,7 +151,7 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 			stop(paste(transcriptA, " not present in annotation database!"));
 		}
 	}
-	first[[as.character(breakpoint_A)]] <- gene_trans_ex(breakpoint_A, object_individual_A, whole_txdb)
+	first[[as.character(breakpoint_A)]] <- gene_trans_ex(breakpoint_A, object_individual_A, gene_transcript_exon$whole_txdb)
 	# select transcript for geneB
 	if (! is.null(transcriptB) ) {
 		transcriptB_vector = unlist(strsplit(transcriptB, " "))
@@ -162,7 +160,7 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 			stop(paste(transcriptB, " not present in annotation database!"));
 		}
 	}
-	second[[as.character(breakpoint_B)]] <- gene_trans_ex(breakpoint_B, object_individual_B, whole_txdb)
+	second[[as.character(breakpoint_B)]] <- gene_trans_ex(breakpoint_B, object_individual_B, gene_transcript_exon$whole_txdb)
 
 	if ( length(first) == 0 ) { stop("first object is empty, breakpoint coordinate out of geneA range!"); }
 	if ( length(second) == 0 ) { stop("second object is empty, breakpoint coordinate out of geneB range!"); }
@@ -194,7 +192,7 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	if ( coverage_plot_trans == F ) { #// coverage calculated by all reads mapped to regions of upstream genes
 		collapse_trans_A=GenomicRanges::GRanges(seqnames = S4Vectors::Rle(c(chrom_f), c(1)),
     		ranges = IRanges::IRanges(start=first_vis_s, end=first_vis_e, names = NULL),
-			strand = S4Vectors::Rle(strand(c(first[[1]]$transcript$Strand[1])), c(1)),
+			strand = S4Vectors::Rle(GenomicRanges::strand(c(first[[1]]$transcript$Strand[1])), c(1)),
 			feature = "CDS", id = "unknown", exon=first_name, transcript=first_name, gene=first_name, symbol=first_name, density = 1)
 	} else { #// coverage calculated by reads mapped to selected transcripts of upstream genes
 		df_A = GenomicRanges::makeGRangesFromDataFrame(first[[1]]$select_region, keep.extra.columns=TRUE)
@@ -206,37 +204,37 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	# extend an interval if breakpoint at intron / out of genic region for upstream partner
 	first_len = length(collapse_trans_A);
 	if ( first_len == 1 ) { # only one interval
-		if ( breakpoint_A < start(collapse_trans_A[1]) ) { # < gene start
+		if ( breakpoint_A < GenomicRanges::start(collapse_trans_A[1]) ) { # < gene start
 			if ( breakpoint_A > first_vis_s - offset + 200 ) {
-				start(collapse_trans_A[1]) = breakpoint_A - 200;
+				GenomicRanges::start(collapse_trans_A[1]) = breakpoint_A - 200;
 			} else {
-				start(collapse_trans_A[1]) = first_vis_s - offset;
+				GenomicRanges::start(collapse_trans_A[1]) = first_vis_s - offset;
 			}
-		} else if ( breakpoint_A > end(collapse_trans_A[1]) ) { # > gene end
+		} else if ( breakpoint_A > GenomicRanges::end(collapse_trans_A[1]) ) { # > gene end
 			if ( breakpoint_A < first_vis_e + offset - 200 ) {
-				end(collapse_trans_A[1]) = breakpoint_A + 200;
+				GenomicRanges::end(collapse_trans_A[1]) = breakpoint_A + 200;
 			} else {
-				end(collapse_trans_A[1]) = first_vis_e + offset;
+				GenomicRanges::end(collapse_trans_A[1]) = first_vis_e + offset;
 			}
 		}
 	} else {
-		if ( breakpoint_A < start(collapse_trans_A[1]) ) { # < gene start
+		if ( breakpoint_A < GenomicRanges::start(collapse_trans_A[1]) ) { # < gene start
 			if ( breakpoint_A > first_vis_s - offset + 200 ) {
-				start(collapse_trans_A[1]) = breakpoint_A - 200;
+				GenomicRanges::start(collapse_trans_A[1]) = breakpoint_A - 200;
 			} else {
-				start(collapse_trans_A[1]) = first_vis_s - offset;
+				GenomicRanges::start(collapse_trans_A[1]) = first_vis_s - offset;
 			}
-		} else if ( breakpoint_A > end(collapse_trans_A[first_len]) ) { # > gene end
+		} else if ( breakpoint_A > GenomicRanges::end(collapse_trans_A[first_len]) ) { # > gene end
 			if ( breakpoint_A < first_vis_e + offset - 200 ) {
-				end(collapse_trans_A[first_len]) = breakpoint_A + 200;
+				GenomicRanges::end(collapse_trans_A[first_len]) = breakpoint_A + 200;
 			} else {
-				end(collapse_trans_A[first_len]) = first_vis_e + offset;
+				GenomicRanges::end(collapse_trans_A[first_len]) = first_vis_e + offset;
 			}
 		} else {
 			y = first_len - 1;
 			for (z in 1:y) {
-				if ( breakpoint_A > end(collapse_trans_A[z]) && breakpoint_A < start(collapse_trans_A[z+1]) ) { # within intron
-					start(collapse_trans_A[z+1]) = end(collapse_trans_A[z]) + 1;
+				if ( breakpoint_A > GenomicRanges::end(collapse_trans_A[z]) && breakpoint_A < GenomicRanges::start(collapse_trans_A[z+1]) ) { # within intron
+					GenomicRanges::start(collapse_trans_A[z+1]) = GenomicRanges::end(collapse_trans_A[z]) + 1;
 					break;
 				}
 			}
@@ -272,7 +270,7 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	if ( coverage_plot_trans == F ) { #// coverage calculated by all reads mapped to regions of upstream genes
 		collapse_trans_B=GenomicRanges::GRanges(seqnames = S4Vectors::Rle(c(chrom_s), c(1)),
     		ranges = IRanges::IRanges(start=second_vis_s, end=second_vis_e, names = NULL),
-			strand = S4Vectors::Rle(strand(c(second[[1]]$transcript$Strand[1])), c(1)),
+			strand = S4Vectors::Rle(GenomicRanges::strand(c(second[[1]]$transcript$Strand[1])), c(1)),
 			feature = "CDS", id = "unknown", exon=second_name, transcript=second_name, gene=second_name, symbol=second_name, density = 1)
 	} else { #// coverage calculated by reads mapped to selected transcripts of upstream genes
 		df_B = GenomicRanges::makeGRangesFromDataFrame(second[[1]]$select_region, keep.extra.columns=TRUE)
@@ -284,37 +282,37 @@ plot_separate_individual_bam <- function(first_name, second_name, breakpoint_A, 
 	# extend an interval if breakpoint at intron / out of genic region for downstram partner
 	second_len = length(collapse_trans_B);
 	if ( second_len == 1 ) { # only one interval
-		if ( breakpoint_B < start(collapse_trans_B[1]) ) { # < gene start
+		if ( breakpoint_B < GenomicRanges::start(collapse_trans_B[1]) ) { # < gene start
 			if ( breakpoint_B > second_vis_s - offset + 200 ) {
-				start(collapse_trans_B[1]) = breakpoint_B - 200;
+				GenomicRanges::start(collapse_trans_B[1]) = breakpoint_B - 200;
 			} else {
-				start(collapse_trans_B[1]) = second_vis_s - offset;
+				GenomicRanges::start(collapse_trans_B[1]) = second_vis_s - offset;
 			}
-		} else if ( breakpoint_B > end(collapse_trans_B[1]) ) { # > gene end
+		} else if ( breakpoint_B > GenomicRanges::end(collapse_trans_B[1]) ) { # > gene end
 			if ( breakpoint_B < second_vis_e + offset - 200 ) {
-				end(collapse_trans_B[1]) = breakpoint_B + 200;
+				GenomicRanges::end(collapse_trans_B[1]) = breakpoint_B + 200;
 			} else {
-				end(collapse_trans_B[1]) = second_vis_e + offset;
+				GenomicRanges::end(collapse_trans_B[1]) = second_vis_e + offset;
 			}
 		}
 	} else {
-		if ( breakpoint_B < start(collapse_trans_B[1]) ) {
+		if ( breakpoint_B < GenomicRanges::start(collapse_trans_B[1]) ) {
 			if ( breakpoint_B > second_vis_s - offset + 200 ) { # < gene start
-				start(collapse_trans_B[1]) = breakpoint_B - 200;
+				GenomicRanges::start(collapse_trans_B[1]) = breakpoint_B - 200;
 			} else {
-				start(collapse_trans_B[1]) = second_vis_s - offset;
+				GenomicRanges::start(collapse_trans_B[1]) = second_vis_s - offset;
 			}
-		} else if ( breakpoint_B > end(collapse_trans_B[second_len]) ) { # > gene end
+		} else if ( breakpoint_B > GenomicRanges::end(collapse_trans_B[second_len]) ) { # > gene end
 			if ( breakpoint_B < second_vis_e + offset - 200 ) {
-				end(collapse_trans_B[second_len]) = breakpoint_B + 200;
+				GenomicRanges::end(collapse_trans_B[second_len]) = breakpoint_B + 200;
 			} else {
-				end(collapse_trans_B[second_len]) = second_vis_e + offset;
+				GenomicRanges::end(collapse_trans_B[second_len]) = second_vis_e + offset;
 			}
 		} else {
 			y = second_len - 1;
 			for (z in 1:y) {
-				if ( breakpoint_B > end(collapse_trans_B[z]) && breakpoint_B < start(collapse_trans_B[z+1]) ) { # within intron
-					start(collapse_trans_B[z+1]) = end(collapse_trans_B[z]) + 1;
+				if ( breakpoint_B > GenomicRanges::end(collapse_trans_B[z]) && breakpoint_B < GenomicRanges::start(collapse_trans_B[z+1]) ) { # within intron
+					GenomicRanges::start(collapse_trans_B[z+1]) = GenomicRanges::end(collapse_trans_B[z]) + 1;
 					break;
 				}
 			}

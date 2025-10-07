@@ -80,8 +80,8 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset)
 				
 			region_f_group = region_f_group[rev(order(region_f_group$start)), ] #// reverse coordinate
 			region_f_group_relative <- IRanges::IRanges(start = 0 - region_f_group$end, end = 0 - region_f_group$start)
-			region_f_group$start = start(region_f_group_relative)
-			region_f_group$end = end(region_f_group_relative)
+			region_f_group$start = IRanges::start(region_f_group_relative)
+			region_f_group$end = IRanges::end(region_f_group_relative)
 			breakpoint_relative = IRanges::IRanges(start = breakpoint, end = breakpoint);
 		}
 			
@@ -90,7 +90,7 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset)
 		#// process 'region_f_group_relative' and 'breakpoint_relative' (reduce intron and calculate relative coordinates)
 		#// NOTE: if breakpoint within intron, we regard the breakpoint at the end_boundary of front exon and assume no intron sequences are included in reduced transcripts
 		if ( length(region_f_group[,1]) == 1 ) { #// if the transcript has only one exon
-			tmp_shift = 1 - start(region_f_group_relative[1])
+			tmp_shift = 1 - IRanges::start(region_f_group_relative[1])
 			region_f_group_relative[1] = IRanges::shift(region_f_group_relative[1], shift = tmp_shift)
 			if ( breakpoint >= region_f_group[1,]$start && region_f_group[1,]$end >= breakpoint ) { #// breakpoint at exon boundary or within exon
 				prop = (breakpoint - region_f_group[1,]$start + 1)/(region_f_group[1,]$end - region_f_group[1,]$start + 1); #// 0 <= prop <= 1
@@ -106,10 +106,10 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset)
 			y = length(region_f_group[,1]) - 1
 			for (z in 1:y) {
 				if (z == 1) { #// if loop at the first exon
-					tmp_shift = 1 - start(region_f_group_relative[z]);
+					tmp_shift = 1 - IRanges::start(region_f_group_relative[z]);
 					region_f_group_relative[z] = IRanges::shift(region_f_group_relative[z], shift = tmp_shift)
 				} else {
-					tmp_shift =	- (start(region_f_group_relative[z]) - end(region_f_group_relative[z-1])) + 1; 
+					tmp_shift =	- (IRanges::start(region_f_group_relative[z]) - IRanges::end(region_f_group_relative[z-1])) + 1; 
 					region_f_group_relative[z] = IRanges::shift(region_f_group_relative[z], shift = tmp_shift)
 				}
 						
@@ -152,7 +152,7 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset)
 					break; #// quit the loop
 				} else if ( breakpoint > region_f_group[z,]$end && region_f_group[z+1,]$start > breakpoint ) { #// breakpoint within intron
 					Exon_num = paste(region_f_group[z,]$EXONRANK, '-', region_f_group[z+1,]$EXONRANK, sep="")
-					end_to_breakpoint = end(region_f_group_relative[z])
+					end_to_breakpoint = IRanges::end(region_f_group_relative[z])
 					m = 1; # set start point = 1
 					while ( m <= offset ) { # if breakpoint does not match to exon boundrary exactly, and set a offset value with maximum 5 bp
 						if ( AB_order == "upstream" ) {
@@ -188,7 +188,7 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset)
 				}
 					
 				if ( z == y ) { #// loop at the second last exon
-					tmp_plus_shift = - (start(region_f_group_relative[z+1]) - end(region_f_group_relative[z])) + 1; 
+					tmp_plus_shift = - (IRanges::start(region_f_group_relative[z+1]) - IRanges::end(region_f_group_relative[z])) + 1; 
 					region_f_group_relative[z+1] = IRanges::shift(region_f_group_relative[z+1], shift = tmp_plus_shift)
 					if ( breakpoint >= region_f_group[z+1,]$start && region_f_group[z+1,]$end >= breakpoint ) { #// breakpoint at the boundary or within the last exon
 						prop = (breakpoint - region_f_group[z+1,]$start + 1)/(region_f_group[z+1,]$end - region_f_group[z+1,]$start + 1); #// 0 <= prop <= 1
@@ -226,7 +226,7 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset)
 			Trans_length = dataset[x,]$TXEND - dataset[x,]$TXSTART + 1; #// get transcript length
 			tmp = cbind(t(Judge), t(flag$Prop), t(flag$EXONRANK), t(flag$exon), t(Exon_num), t(Exon_max), t(Trans_length), t(chr), t(strand), t(start), t(end));
 			JE = rbind(JE, tmp, deparse.level=0); #// extend row of JE data.frame (including Judge, flag, Exon_num....)
-			breakpoint_current = start(breakpoint_relative); names(breakpoint_current) = name;
+			breakpoint_current = IRanges::start(breakpoint_relative); names(breakpoint_current) = name;
 			breakpoint_collect = c(breakpoint_collect, breakpoint_current)
 		} else {
 			tmp = cbind(t(Judge), t(NA), t(NA), t(NA), t(Exon_num), t(NA), t(NA), t(chr), t(strand), t(start), t(end));
@@ -236,14 +236,14 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset)
 			#// 'region_f_relative' (reduce intron and calculate relative coordinates)
 			for (i in seq_along(region_f_relative)) {
 				if (i == 1) {
-					region_f_relative[i] = IRanges::shift(region_f_relative[i], shift = 1 - start(region_f_relative[i]))
+					region_f_relative[i] = IRanges::shift(region_f_relative[i], shift = 1 - IRanges::start(region_f_relative[i]))
 				} else {
-					tmp_shift = - (start(region_f_relative[i]) - end(region_f_relative[i-1])) + 1
+					tmp_shift = - (IRanges::start(region_f_relative[i]) - IRanges::end(region_f_relative[i-1])) + 1
 					region_f_relative[i] = IRanges::shift(region_f_relative[i], shift = tmp_shift)
 				}
 			}
-			region_f$start = start(region_f_relative) #// replace relative start coordinates to absolute start coordinates in 'region_f'
-			region_f$end = end(region_f_relative) #// replace relative end coordinates to absolute end coordinates in 'region_f'
+			region_f$start = IRanges::start(region_f_relative) #// replace relative start coordinates to absolute start coordinates in 'region_f'
+			region_f$end = IRanges::end(region_f_relative) #// replace relative end coordinates to absolute end coordinates in 'region_f'
 			dataset[x,]$TXSTART = min(region_f$start); #// start of transcript in 'dataset' after reducing intron
 			dataset[x,]$TXEND = max(region_f$end); #// end of transcript in 'dataset' after reducing intron
 			select_region_f = rbind(select_region_f, region_f) 
