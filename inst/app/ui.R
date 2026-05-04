@@ -409,8 +409,9 @@
 				),
 				hr(tags$style("border-top: 3px solid #000000; color: black; background-color: black")),
 				fluidRow(
-					column(12, textInput(inputId = "BAM", label = div("Alignment URL", style = "display:inline-block; font-size:12px", title = "Load a hosted BAM/CRAM file via URL", icon("info-circle", style="font-size: 9px")), value = NULL)),
-					column(12, textInput(inputId = "BAMindex", label = div("Alignment index URL", style = "display:inline-block; font-size:12px", title = "Load a hosted BAM/CRAM index file via URL", icon("info-circle", style="font-size: 9px")), value = NULL)),
+					column(12, textInput(inputId = "BAM", label = div("URL of hosted file", style = "display:inline-block; font-size:12px", title = "Load a hosted BAM/CRAM/GTF/GFF/BED/VCF file via URL", icon("info-circle", style="font-size: 9px")), value = NULL)),
+					column(12, textInput(inputId = "BAMindex", label = div("URL of hosted file index", style = "display:inline-block; font-size:12px", title = "Load a hosted BAM/CRAM/GTF/GFF/BED/VCF index file via URL", icon("info-circle", style="font-size: 9px")), value = NULL)),
+					column(12, textInput(inputId = "Token", label = div("Oauth token (optional)", style = "display:inline-block; font-size:12px", title = "Authentication token to get a control-access to hosted file", icon("info-circle", style="font-size: 9px")), value = NULL)),
 					column(12, actionButton("addTrackButtonBAM", label = NULL, style = "width: 89px; height: 55px;
 						background: url('Visualize/cloud_upload.png');  background-size: cover; background-position: center;"))
 				),

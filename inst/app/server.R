@@ -2551,9 +2551,9 @@ options(ucscChromosomeNames=FALSE)
 		observeEvent(input$addTrackButtonBAM, {
 			print("@ Add alignment tracks via URL@");
 			if (! is.null(input$BAM) && ! is.null(input$BAMindex) ) {
-				FuSViz::TrackinBAM(session, input$BAM, input$BAMindex)
+				FuSViz::TrackinBAM(session, input$BAM, input$BAMindex, input$Token)
 			} else {
-				showModal(modalDialog(title = "Warning message", "Either hosted BAM/CRAM alignment or its index file is not available!"));
+				showModal(modalDialog(title = "Warning message", "Either hosted BAM/CRAM/BED/VCF/GTF/GFF or its index file is not available!"));
 			}
 		})
 		#// Load splice junction track
