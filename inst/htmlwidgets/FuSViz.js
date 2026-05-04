@@ -467,21 +467,48 @@ Shiny.addCustomMessageHandler("TrackinBAM",
 	function(message){
 		var bam = message.bam;
 		var bamindex = message.bamindex;
+		var token = message.token;
 		var trackHeight = message.trackHeight;
 		var bam_name = null;
-		var bam_type = null;
+		var setting = null;
+		bam_name = bam.split(/\/|\\/).pop().split(/\?/).shift();
 
-		if ( bam.endsWith(".bam") && (bamindex.endsWith(".bam.bai") || bamindex.endsWith(".bam.csi")) ) { // BAM format
-			bam_name = bam.split(/\/|\\/).pop();
-			bam_type = "bam";
-		} else if ( bam.endsWith(".cram") && bamindex.endsWith(".cram.crai")  ) { // CRAM format
-			bam_name = bam.split(/\/|\\/).pop();
-			bam_type = "cram";
+		if ( token ) {
+			// Oauth token is available
+			if ( bam.endsWith(".bam") && (bamindex.endsWith(".bam.bai") || bamindex.endsWith(".bam.csi")) ) { // BAM format
+				setting = {type: "alignment", format: 'bam', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight, oauthToken: token};
+			} else if ( bam.endsWith(".cram") && bamindex.endsWith(".cram.crai")  ) { // CRAM format
+				setting = {type: "alignment", format: 'cram', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight, oauthToken: token};
+			} else if ( bam.endsWith(".vcf.gz") && bamindex.endsWith(".vcf.gz.tbi") ) { // VCF format
+				setting = {type: "variant", format: 'vcf', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight, oauthToken: token};
+			} else if ( bam.endsWith(".gtf.gz") && bamindex.endsWith(".gtf.gz.tbi") ) { // GTF format
+				setting = {type: "annotation", format: 'gtf', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight, oauthToken: token};
+			} else if ( bam.endsWith(".gff3.gz") && bamindex.endsWith(".gff3.gz.tbi") ) { // GFF3 format
+				setting = {type: "annotation", format: 'gff3', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight, oauthToken: token};
+			} else if ( bam.endsWith(".bed.gz") && bamindex.endsWith(".bed.gz.tbi") ) { // BED format
+				setting = {type: "annotation", format: 'bed', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight, oauthToken: token};
+			} else {
+				alert("BAM/CRAM, VCF, GTF, GFF3 and BED format not correct: " + bam);
+			}
 		} else {
-			alert("BAM / CRAM format not correct: " + bam);
-		}
+			// Oauth token is not available
+			if ( bam.endsWith(".bam") && (bamindex.endsWith(".bam.bai") || bamindex.endsWith(".bam.csi")) ) { // BAM format
+				setting = {type: "alignment", format: 'bam', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight};
+			} else if ( bam.endsWith(".cram") && bamindex.endsWith(".cram.crai")  ) { // CRAM format
+				setting = {type: "alignment", format: 'cram', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight};
+			} else if ( bam.endsWith(".vcf.gz") && bamindex.endsWith(".vcf.gz.tbi") ) { // VCF format
+				setting = {type: "variant", format: 'vcf', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight};
+			} else if ( bam.endsWith(".gtf.gz") && bamindex.endsWith(".gtf.gz.tbi") ) { // GTF format
+				setting = {type: "annotation", format: 'gtf', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight};
+			} else if ( bam.endsWith(".gff3.gz") && bamindex.endsWith(".gff3.gz.tbi") ) { // GFF3 format
+				setting = {type: "annotation", format: 'gff3', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight};
+			} else if ( bam.endsWith(".bed.gz") && bamindex.endsWith(".bed.gz.tbi") ) { // BED format
+				setting = {type: "annotation", format: 'bed', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight};
+			} else {
+				alert("BAM/CRAM, VCF, GTF, GFF3 and BED format not correct: " + bam);
+			}
 
-		var setting = {type: "alignment", format: bam_type, url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight};
+		}
 		igv.browser.loadTrack(setting);
 	}
 );
