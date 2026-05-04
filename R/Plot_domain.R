@@ -62,10 +62,36 @@
 	domain_breakpoint_A = upstream_flag[[as.character(break_A)]]$breakpoint_collect;
 	cds_start_A = coding_A[coding_A$feature == "CDS", ][1,]$start; # or NA
 	type_A = apply(coding_A, 1, function(x){ #// utr5, CDS, utr3 and other
-		feature_A = ifelse(test = domain_breakpoint_A >= as.numeric(x[2]) && domain_breakpoint_A <= as.numeric(x[3]), yes = as.character(x[6]), no = "");
+		if ( domain_breakpoint_A >= as.numeric(x[2]) && domain_breakpoint_A < as.numeric(x[3]) ) {
+			feature_A = as.character(x[6]);
+		} else if ( domain_breakpoint_A == as.numeric(x[3]) ) {
+			if ( as.character(x[6]) == "CDS" ) {
+				feature_A = "CDS-1"
+			} else {
+				feature_A = as.character(x[6])
+			}
+		} else {
+			feature_A = ""
+		}
 		return(feature_A);
 	})
+	names(type_A) = coding_A$feature;
+	# if breakpint at the stop codon exactly, then use 'utr3' instead of 'CDS'
+	if ( length(type_A) > 1 ) {
+		for ( i in 1:(length(type_A)-1) ) {
+			if ( names(type_A[i]) == "CDS" && names(type_A[i+1]) == "utr3" ) {
+				if ( type_A[i] == "CDS-1" ) {
+					type_A[i] = "utr3"
+				}
+			}
+		}
+	} else {
+		if ( type_A[1] == "CDS-1" ) {
+			type_A[1] = "utr3"
+		}
+	}
 	type_A = type_A[type_A != ""];
+	if ( type_A == "CDS-1" ) { type_A = "CDS"; }
 
 	#// process exon coordinates for geneB
 	y_pos_gene_downstream = min(exon_match_pos_B1[, 2]); #// get coordinates of extracted exon_id at the top of plotting for geneB
@@ -96,10 +122,36 @@
 	domain_breakpoint_B = downstream_flag[[as.character(break_B)]]$breakpoint_collect;
 	cds_start_B = coding_B[coding_B$feature == "CDS", ][1,]$start; # or NA
 	type_B = apply(coding_B, 1, function(x){ #// utr5, CDS, utr3 and other
-		feature_B = ifelse(test = domain_breakpoint_B >= as.numeric(x[2]) && domain_breakpoint_B <= as.numeric(x[3]), yes = as.character(x[6]), no = "");
+		if ( domain_breakpoint_B > as.numeric(x[2]) && domain_breakpoint_B <= as.numeric(x[3]) ) {
+			feature_B = as.character(x[6]);
+		} else if ( domain_breakpoint_B == as.numeric(x[2]) ) {
+			if ( as.character(x[6]) == "CDS" ) {
+				feature_B = "CDS-1"
+			} else {
+				feature_B = as.character(x[6])
+			}
+		} else {
+			feature_B = ""
+		}
 		return(feature_B);
 	})
+	names(type_B) = coding_B$feature;
+	# if breakpint at the stop codon exactly, then use 'utr3' instead of 'CDS'
+	if ( length(type_B) > 1 ) {
+		for ( i in 1:(length(type_B)-1) ) {
+			if ( names(type_B[i]) == "utr5" && names(type_B[i+1]) == "CDS" ) {
+				if ( type_B[i] == "CDS-1" ) {
+					type_B[i] = "utr5"
+				}
+			}
+		}
+	} else {
+		if ( type_B[1] == "CDS-1" ) {
+			type_B[1] = "utr5"
+		}
+	}
 	type_B = type_B[type_B != ""];
+	if ( type_B == "CDS-1" ) { type_B = "CDS"; }
 
 	#// assign biological consequence of breakpoint
 	#// tag = 0 (initial - "black"), 1 (Unknown - "black"), 2 (Inframe - "blue"), 3 (Outframe - "red"), 4 (Noncoding - "#008080")

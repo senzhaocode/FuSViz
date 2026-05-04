@@ -93,7 +93,11 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset)
 			tmp_shift = 1 - IRanges::start(region_f_group_relative[1])
 			region_f_group_relative[1] = IRanges::shift(region_f_group_relative[1], shift = tmp_shift)
 			if ( breakpoint >= region_f_group[1,]$start && region_f_group[1,]$end >= breakpoint ) { #// breakpoint at exon boundary or within exon
-				prop = (breakpoint - region_f_group[1,]$start + 1)/(region_f_group[1,]$end - region_f_group[1,]$start + 1); #// 0 <= prop <= 1
+				if ( breakpoint == region_f_group[1,]$start ) {
+					prop = 0
+				} else {
+					prop = (breakpoint - region_f_group[1,]$start + 1)/(region_f_group[1,]$end - region_f_group[1,]$start + 1); #// 0 <= prop <= 1
+				}
 				flag = region_f_group[1,]; flag[,"Prop"] = prop;
 				if ( breakpoint == region_f_group[1,]$start || region_f_group[1,]$end == breakpoint ) { #// breakpoint at exon boundary
 					Judge = 1; Exon_num = region_f_group[1,]$EXONRANK
@@ -114,7 +118,11 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset)
 				}
 						
 				if ( breakpoint >= region_f_group[z,]$start && breakpoint <= region_f_group[z,]$end ) { #// breakpoint at exon boundary or within exon
-					prop = (breakpoint - region_f_group[z,]$start + 1)/(region_f_group[z,]$end - region_f_group[z,]$start + 1); #// 0 <= prop <= 1
+					if ( breakpoint == region_f_group[z,]$start ) {
+						prop = 0
+					} else {
+						prop = (breakpoint - region_f_group[z,]$start + 1)/(region_f_group[z,]$end - region_f_group[z,]$start + 1); #// 0 <= prop <= 1
+					}
 					flag = region_f_group[z,]; flag[,"Prop"] = prop
 					Exon_num = region_f_group[z,]$EXONRANK
 					if ( breakpoint == region_f_group[z,]$start || region_f_group[z,]$end == breakpoint ) { #// breakpoint at exon boundary
@@ -158,7 +166,11 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset)
 						if ( AB_order == "upstream" ) {
 							breakpoint_down = breakpoint - m;
 							if ( breakpoint_down >= region_f_group[z,]$start && breakpoint_down <= region_f_group[z,]$end ) { #// breakpoint at exon boundary or within exon
-								prop = (breakpoint_down - region_f_group[z,]$start + 1)/(region_f_group[z,]$end - region_f_group[z,]$start + 1); #// 0 <= prop <= 1
+								if ( breakpoint_down == region_f_group[z,]$start ) {
+									prop = 0
+								} else {
+									prop = (breakpoint_down - region_f_group[z,]$start + 1)/(region_f_group[z,]$end - region_f_group[z,]$start + 1); #// 0 <= prop <= 1
+								}
 								flag = region_f_group[z,]; flag[,"Prop"] = prop
 								Judge = 1;
 								breakpoint_relative = IRanges::IRanges(start=end_to_breakpoint, end=end_to_breakpoint)
@@ -167,7 +179,11 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset)
 						} else if ( AB_order == "downstream" ) { # downstream
 							breakpoint_up = breakpoint + m;
 							if ( breakpoint_up >= region_f_group[z+1,]$start && breakpoint_up <= region_f_group[z+1,]$end ) { #// breakpoint at exon boundary or within exon
-								prop = (breakpoint_up - region_f_group[z+1,]$start + 1)/(region_f_group[z+1,]$end - region_f_group[z+1,]$start + 1); #// 0 <= prop <= 1
+								if ( breakpoint_up == region_f_group[z+1,]$start ) {
+									prop = 0
+								} else {
+									prop = (breakpoint_up - region_f_group[z+1,]$start + 1)/(region_f_group[z+1,]$end - region_f_group[z+1,]$start + 1); #// 0 <= prop <= 1
+								}
 								flag = region_f_group[z+1,]; flag[,"Prop"] = prop
 								Judge = 1;
 								breakpoint_relative = IRanges::IRanges(start=end_to_breakpoint+1, end=end_to_breakpoint+1)
@@ -191,7 +207,11 @@ gene_trans_ex_reduce <- function(breakpoint, object, whole_tx, AB_order, offset)
 					tmp_plus_shift = - (IRanges::start(region_f_group_relative[z+1]) - IRanges::end(region_f_group_relative[z])) + 1; 
 					region_f_group_relative[z+1] = IRanges::shift(region_f_group_relative[z+1], shift = tmp_plus_shift)
 					if ( breakpoint >= region_f_group[z+1,]$start && region_f_group[z+1,]$end >= breakpoint ) { #// breakpoint at the boundary or within the last exon
-						prop = (breakpoint - region_f_group[z+1,]$start + 1)/(region_f_group[z+1,]$end - region_f_group[z+1,]$start + 1); #// 0 <= prop <= 1
+						if ( breakpoint == region_f_group[z+1,]$start ) {
+							prop = 0
+						} else {
+							prop = (breakpoint - region_f_group[z+1,]$start + 1)/(region_f_group[z+1,]$end - region_f_group[z+1,]$start + 1); #// 0 <= prop <= 1
+						}
 						flag = region_f_group[z+1,]; flag[,"Prop"] = prop
 						Exon_num = region_f_group[z+1,]$EXONRANK
 						if ( breakpoint == region_f_group[z+1,]$start || region_f_group[z+1,]$end == breakpoint ) { #// breakpoint at exon boundary

@@ -58,10 +58,18 @@ gene_trans_ex <- function(breakpoint, object, whole_tx, offset=2000) {
 		if ( length(region_f_group[,1]) == 1 ) { #// if the transcript has only one exon
 			if ( breakpoint >= region_f_group[1,]$start && region_f_group[1,]$end >= breakpoint ) { #// breakpoint at exon boundary or within exon
 				if ( as.character(region_f_group[1,]$strand) == "+" ) {
-					prop = (breakpoint - region_f_group[1,]$start + 1)/(region_f_group[1,]$end - region_f_group[1,]$start + 1); #// 0 <= prop <= 1
+					if ( breakpoint == region_f_group[1,]$start ) {
+						prop = 0;
+					} else {
+						prop = (breakpoint - region_f_group[1,]$start + 1)/(region_f_group[1,]$end - region_f_group[1,]$start + 1); #// 0 <= prop <= 1
+					}
 					flag = region_f_group[1,]; flag[,"Prop"] = prop;
 				} else if ( as.character(region_f_group[1,]$strand) == "-" ) {
-					prop = (region_f_group[1,]$end - breakpoint + 1)/(region_f_group[1,]$end - region_f_group[1,]$start + 1); #// 0 <= prop <= 1
+					if ( region_f_group[1,]$end == breakpoint ) {
+						prop = 0;
+					} else {
+						prop = (region_f_group[1,]$end - breakpoint + 1)/(region_f_group[1,]$end - region_f_group[1,]$start + 1); #// 0 <= prop <= 1
+					}
 					flag = region_f_group[1,]; flag[,"Prop"] = prop;
 				}
 				if ( breakpoint == region_f_group[1,]$start || region_f_group[1,]$end == breakpoint ) { #// breakpoint at exon boundary
@@ -106,10 +114,18 @@ gene_trans_ex <- function(breakpoint, object, whole_tx, offset=2000) {
 				}
 				if ( breakpoint >= region_f_group[z,]$start && breakpoint <= region_f_group[z,]$end ) { #// breakpoint at exon boundary or within exon
 					if ( as.character(region_f_group[z,]$strand) == "+" ) {
-						prop = (breakpoint - region_f_group[z,]$start + 1)/(region_f_group[z,]$end - region_f_group[z,]$start + 1); #// 0 <= prop <= 1
+						if ( breakpoint == region_f_group[z,]$start ) {
+							prop = 0;
+						} else {
+							prop = (breakpoint - region_f_group[z,]$start + 1)/(region_f_group[z,]$end - region_f_group[z,]$start + 1); #// 0 <= prop <= 1
+						}
 						flag = region_f_group[z,]; flag[,"Prop"] = prop
 					} else if ( as.character(region_f_group[z,]$strand) == "-" ) {
-						prop = (region_f_group[z,]$end - breakpoint + 1)/(region_f_group[z,]$end - region_f_group[z,]$start + 1); #// 0 <= prop <= 1
+						if ( region_f_group[z,]$end == breakpoint ) {
+							prop = 0;
+						} else {
+							prop = (region_f_group[z,]$end - breakpoint + 1)/(region_f_group[z,]$end - region_f_group[z,]$start + 1); #// 0 <= prop <= 1
+						}
 						flag = region_f_group[z,]; flag[,"Prop"] = prop
 					}
 					if ( breakpoint == region_f_group[z,]$start || region_f_group[z,]$end == breakpoint ) { #// breakpoint at exon boundary
@@ -120,10 +136,18 @@ gene_trans_ex <- function(breakpoint, object, whole_tx, offset=2000) {
 					break
 				} else if ( breakpoint > region_f_group[z,]$end && region_f_group[z+1,]$start > breakpoint ) { #// breakpoint within intron
 					if ( as.character(region_f_group[z,]$strand) == "+" ) {
-						prop = (breakpoint - region_f_group[z,]$end + 1)/(region_f_group[z+1,]$start - region_f_group[z,]$end + 1); #// 0 <= prop <= 1
+						if ( breakpoint == region_f_group[z,]$end ) {
+							prop = 0;
+						} else {
+							prop = (breakpoint - region_f_group[z,]$end + 1)/(region_f_group[z+1,]$start - region_f_group[z,]$end + 1); #// 0 <= prop <= 1
+						}
 						flag = region_f_group[z,]; flag[,"Prop"] = prop
 					} else if ( as.character(region_f_group[z,]$strand) == "-" ) {
-						prop = (region_f_group[z+1,]$start - breakpoint + 1)/(region_f_group[z+1,]$start - region_f_group[z,]$end+ 1); #// 0 <= prop <= 1
+						if ( region_f_group[z+1,]$start == breakpoint ) {
+							prop = 0;
+						} else {
+							prop = (region_f_group[z+1,]$start - breakpoint + 1)/(region_f_group[z+1,]$start - region_f_group[z,]$end+ 1); #// 0 <= prop <= 1
+						}
 						flag = region_f_group[z+1,]; flag[,"Prop"] = prop
 					}
 					Judge = 3; Exon_num = paste(region_f_group[z,]$EXONRANK, '-', region_f_group[z+1,]$EXONRANK, sep="")
@@ -132,10 +156,18 @@ gene_trans_ex <- function(breakpoint, object, whole_tx, offset=2000) {
 				if ( z == y ) { #// loop at the second last exon
 					if ( breakpoint >= region_f_group[z+1,]$start && region_f_group[z+1,]$end >= breakpoint ) { #// breakpoint at the boundary or within the last exon
 						if ( as.character(region_f_group[z+1,]$strand) == "+" ) {
-							prop = (breakpoint - region_f_group[z+1,]$start + 1)/(region_f_group[z+1,]$end - region_f_group[z+1,]$start + 1); #// 0 <= prop <= 1
+							if ( breakpoint == region_f_group[z+1,]$start ) {
+								prop = 0;
+							} else {
+								prop = (breakpoint - region_f_group[z+1,]$start + 1)/(region_f_group[z+1,]$end - region_f_group[z+1,]$start + 1); #// 0 <= prop <= 1
+							}
 							flag = region_f_group[z+1,]; flag[,"Prop"] = prop
 						} else if ( as.character(region_f_group[z+1,]$strand) == "-" ) {
-							prop = (region_f_group[z+1,]$end - breakpoint + 1)/(region_f_group[z+1,]$end - region_f_group[z+1,]$start + 1); #// 0 <= prop <= 1
+							if ( region_f_group[z+1,]$end == breakpoint ) {
+								prop = 0;
+							} else {
+								prop = (region_f_group[z+1,]$end - breakpoint + 1)/(region_f_group[z+1,]$end - region_f_group[z+1,]$start + 1); #// 0 <= prop <= 1
+							}
 							flag = region_f_group[z+1,]; flag[,"Prop"] = prop
 						}
 						if ( breakpoint == region_f_group[z+1,]$start || region_f_group[z+1,]$end == breakpoint ) { #// breakpoint at the boundary of the last exon

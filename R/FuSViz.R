@@ -328,13 +328,14 @@ TrackinSeg <- function(session, datastr, name, trackHeight=50, isLog=TRUE, displ
 #' @param session An environment object that is used to access information and functionality by shiny.
 #' @param bam An url link of BAM file.
 #' @param bamindex An url link of BAM index file.
+#' @param token A string value of oauthtoken.
 #' @param trackHeight Initial height of track viewport in pixels (e.g. \code{200}).
 #'
 #' @export
-TrackinBAM <- function(session, bam, bamindex, trackHeight=200) {
-	print("Load http:// or s3:// BAM and CRAM url");
+TrackinBAM <- function(session, bam, bamindex, token, trackHeight=200) {
+	print("Load hosted URL, e.g. http:// or s3://");
 
-	connect.igvjs <- list(bam=bam, bamindex=bamindex, trackHeight=trackHeight)
+	connect.igvjs <- list(bam=bam, bamindex=bamindex, token=token, trackHeight=trackHeight)
 	session$sendCustomMessage("TrackinBAM", connect.igvjs)
 }
 
