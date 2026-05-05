@@ -469,41 +469,57 @@ Shiny.addCustomMessageHandler("TrackinBAM",
 		var bamindex = message.bamindex;
 		var token = message.token;
 		var trackHeight = message.trackHeight;
-		var bam_name = null;
+		var bam_name = bam.split(/\/|\\/).pop().split(/\?/).shift();
+		var bamindex_name = bamindex.split(/\/|\\/).pop().split(/\?/).shift();
 		var setting = null;
-		bam_name = bam.split(/\/|\\/).pop().split(/\?/).shift();
 
 		if ( token ) {
 			// Oauth token is available
-			if ( bam.endsWith(".bam") && (bamindex.endsWith(".bam.bai") || bamindex.endsWith(".bam.csi")) ) { // BAM format
+			if ( bam_name.endsWith(".bam") && (bamindex_name.endsWith(".bam.bai") || bamindex_name.endsWith(".bam.csi")) ) { // BAM format
 				setting = {type: "alignment", format: 'bam', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight, oauthToken: token};
-			} else if ( bam.endsWith(".cram") && bamindex.endsWith(".cram.crai")  ) { // CRAM format
+			} else if ( bam_name.endsWith(".cram") && bamindex_name.endsWith(".cram.crai")  ) { // CRAM format
 				setting = {type: "alignment", format: 'cram', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight, oauthToken: token};
-			} else if ( bam.endsWith(".vcf.gz") && bamindex.endsWith(".vcf.gz.tbi") ) { // VCF format
+			} else if ( bam_name.endsWith(".vcf.gz") && bamindex_name.endsWith(".vcf.gz.tbi") ) { // VCF format
 				setting = {type: "variant", format: 'vcf', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight, oauthToken: token};
-			} else if ( bam.endsWith(".gtf.gz") && bamindex.endsWith(".gtf.gz.tbi") ) { // GTF format
+			} else if ( bam_name.endsWith(".gtf.gz") && bamindex_name.endsWith(".gtf.gz.tbi") ) { // GTF format
 				setting = {type: "annotation", format: 'gtf', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight, oauthToken: token};
-			} else if ( bam.endsWith(".gff3.gz") && bamindex.endsWith(".gff3.gz.tbi") ) { // GFF3 format
+			} else if ( bam_name.endsWith(".gff3.gz") && bamindex_name.endsWith(".gff3.gz.tbi") ) { // GFF3 format
 				setting = {type: "annotation", format: 'gff3', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight, oauthToken: token};
-			} else if ( bam.endsWith(".bed.gz") && bamindex.endsWith(".bed.gz.tbi") ) { // BED format
-				setting = {type: "annotation", format: 'bed', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight, oauthToken: token};
+			} else if ( bam_name.endsWith(".bed.gz") && bamindex_name.endsWith(".bed.gz.tbi") ) { // BED format
+				if ( bam_name.endsWith(".SJ.out.bed.gz") && bamindex_name.endsWith(".SJ.out.bed.gz.tbi") ) {
+					setting = {type: "junction", format: "bed", url: bam, indexURL: bamindex, name: bam_name, 
+						minUniquelyMappedReads: rna_junction_unique.value, minTotalReads: rna_junction_total.value, maxFractionMultiMappedReads: rna_junction_percet.value, 
+						minSplicedAlignmentOverhang: rna_junction_overhang.value, thicknessBasedOn: rna_junction_thick.value, bounceHeightBasedOn: rna_junction_curve.value,
+						colorBy: rna_junction_color.value, labelUniqueReadCount: true, labelMultiMappedReadCount: false, labelTotalReadCount: false, labelMotif: false, labelIsAnnotatedJunction: " [A]",
+						hideAnnotatedJunctions: false, hideUnannotatedJunctions: false, hideMotifs: ['GT/AT', 'non-canonical'], height: trackHeight, visibilityWindow: -1, oauthToken: token}
+				} else {
+					setting = {type: "annotation", format: 'bed', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight, oauthToken: token};
+				}
 			} else {
 				alert("BAM/CRAM, VCF, GTF, GFF3 and BED format not correct: " + bam);
 			}
 		} else {
 			// Oauth token is not available
-			if ( bam.endsWith(".bam") && (bamindex.endsWith(".bam.bai") || bamindex.endsWith(".bam.csi")) ) { // BAM format
+			if ( bam_name.endsWith(".bam") && (bamindex_name.endsWith(".bam.bai") || bamindex_name.endsWith(".bam.csi")) ) { // BAM format
 				setting = {type: "alignment", format: 'bam', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight};
-			} else if ( bam.endsWith(".cram") && bamindex.endsWith(".cram.crai")  ) { // CRAM format
+			} else if ( bam_name.endsWith(".cram") && bamindex_name.endsWith(".cram.crai")  ) { // CRAM format
 				setting = {type: "alignment", format: 'cram', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight};
-			} else if ( bam.endsWith(".vcf.gz") && bamindex.endsWith(".vcf.gz.tbi") ) { // VCF format
+			} else if ( bam_name.endsWith(".vcf.gz") && bamindex_name.endsWith(".vcf.gz.tbi") ) { // VCF format
 				setting = {type: "variant", format: 'vcf', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight};
-			} else if ( bam.endsWith(".gtf.gz") && bamindex.endsWith(".gtf.gz.tbi") ) { // GTF format
+			} else if ( bam_name.endsWith(".gtf.gz") && bamindex_name.endsWith(".gtf.gz.tbi") ) { // GTF format
 				setting = {type: "annotation", format: 'gtf', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight};
-			} else if ( bam.endsWith(".gff3.gz") && bamindex.endsWith(".gff3.gz.tbi") ) { // GFF3 format
+			} else if ( bam_name.endsWith(".gff3.gz") && bamindex_name.endsWith(".gff3.gz.tbi") ) { // GFF3 format
 				setting = {type: "annotation", format: 'gff3', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight};
-			} else if ( bam.endsWith(".bed.gz") && bamindex.endsWith(".bed.gz.tbi") ) { // BED format
-				setting = {type: "annotation", format: 'bed', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight};
+			} else if ( bam_name.endsWith(".bed.gz") && bamindex_name.endsWith(".bed.gz.tbi") ) { // BED format
+				if ( bam_name.endsWith(".SJ.out.bed.gz") && bamindex_name.endsWith(".SJ.out.bed.gz.tbi") ) {
+					setting = {type: "junction", format: "bed", url: bam, indexURL: bamindex, name: bam_name, 
+						minUniquelyMappedReads: rna_junction_unique.value, minTotalReads: rna_junction_total.value, maxFractionMultiMappedReads: rna_junction_percet.value, 
+						minSplicedAlignmentOverhang: rna_junction_overhang.value, thicknessBasedOn: rna_junction_thick.value, bounceHeightBasedOn: rna_junction_curve.value,
+						colorBy: rna_junction_color.value, labelUniqueReadCount: true, labelMultiMappedReadCount: false, labelTotalReadCount: false, labelMotif: false, labelIsAnnotatedJunction: " [A]",
+						hideAnnotatedJunctions: false, hideUnannotatedJunctions: false, hideMotifs: ['GT/AT', 'non-canonical'], height: trackHeight, visibilityWindow: -1}
+				} else {
+					setting = {type: "annotation", format: 'bed', url: bam, indexURL: bamindex, name: bam_name, order: Number.MAX_VALUE, height: trackHeight};
+				}
 			} else {
 				alert("BAM/CRAM, VCF, GTF, GFF3 and BED format not correct: " + bam);
 			}
