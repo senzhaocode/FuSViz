@@ -276,7 +276,7 @@ options(ucscChromosomeNames=FALSE)
 			dnaclmn = input$DNAcontents_cell_edit$col;
 			info = input[["DNAcontents_cell_edit"]];
 			dnavalue = inputFile$dnadata[dnarow, dnaclmn, with=FALSE];
-			inputFile$dnadata <<- editData(inputFile$dnadata, input$DNAcontents_cell_edit, 'DNAcontents')
+#			inputFile$dnadata <<- editData(inputFile$dnadata, input$DNAcontents_cell_edit, 'DNAcontents')
 			if ( dnaclmn == 1 || dnaclmn == 4 ) {
 				if ( info[["value"]] %in% database$chrom_cir ) {
 					inputFile$dnadata <<- editData(inputFile$dnadata, info, 'DNAcontents')
